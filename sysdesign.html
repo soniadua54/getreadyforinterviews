@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Interview Prep — System Design</title>
+<style>
+:root{--bg:#0f1117;--bg2:#1a1d27;--bg3:#222536;--bg4:#2a2d3e;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);--text:#e8eaf0;--text2:#9498b0;--text3:#5a5f7a;--accent:#6c63ff;--accent2:#a5a0ff;--tag:#ff6b4a;--tag-bg:rgba(255,107,74,0.12);--must:#ff4d6d;--must-bg:rgba(255,77,109,0.12);--green:#10b981;--green-bg:rgba(16,185,129,0.1);--blue:#38bdf8;--blue-bg:rgba(56,189,248,0.1);--warn:#f59e0b;--warn-bg:rgba(245,158,11,0.1);--r:8px;--rl:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.6;min-height:100vh}
+a{color:inherit;text-decoration:none}
+.topnav{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;height:50px;position:sticky;top:0;z-index:100;gap:8px}
+.nav-brand{font-size:14px;font-weight:700;white-space:nowrap;flex-shrink:0}.nav-brand span{color:var(--accent2)}
+.nav-links{display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex:1}.nav-links::-webkit-scrollbar{display:none}
+.nav-link{padding:6px 10px;border-radius:var(--r);font-size:12px;color:var(--text2);white-space:nowrap;flex-shrink:0}
+.nav-link.active{background:rgba(108,99,255,0.15);color:var(--accent2);font-weight:500}
+.countdown{background:var(--tag-bg);border:1px solid rgba(255,107,74,0.3);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--tag);font-weight:600;white-space:nowrap;flex-shrink:0}
+.page{padding:16px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px}
+.stat-n{font-size:20px;font-weight:700;line-height:1}.stat-l{font-size:10px;color:var(--text3);margin-top:3px}
+.prog-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px;margin-bottom:16px}
+.prog-label{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:8px}
+.prog-bar{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:2px;transition:width .3s}
+.section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);margin-bottom:10px;overflow:hidden}
+.sec-hd{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;user-select:none}
+.sec-hd:active{background:var(--bg3)}
+.sec-icon{width:30px;height:30px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.ph1 .sec-icon{background:rgba(108,99,255,0.15)}.ph2 .sec-icon{background:rgba(16,185,129,0.15)}.ph3 .sec-icon{background:rgba(245,158,11,0.15)}.ph4 .sec-icon{background:rgba(255,77,109,0.15)}
+.sec-title{font-size:13px;font-weight:600;flex:1;line-height:1.3}
+.chev{font-size:10px;color:var(--text3);margin-left:4px;transition:transform .2s;flex-shrink:0}.chev.open{transform:rotate(180deg)}
+.sec-body{display:none;border-top:1px solid var(--border)}.sec-body.open{display:block}
+.sec-sum{font-size:12px;color:var(--text2);padding:10px 14px 0;line-height:1.6}
+.block{padding:14px;border-top:1px solid var(--border)}
+.block:first-child{border-top:none}
+.block-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.block-desc{font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:10px}
+pre{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px;font-family:'Fira Code',monospace;font-size:11.5px;line-height:1.7;overflow-x:auto;-webkit-overflow-scrolling:touch;margin:8px 0;white-space:pre}
+.kw{color:#c084fc}.fn{color:#60a5fa}.str{color:#4ade80}.cm{color:var(--text3);font-style:italic}.nu{color:#fb923c}.cl{color:#f472b6}
+.callout{border-radius:var(--r);padding:10px 12px;margin:8px 0;font-size:12px;line-height:1.6;border-left:3px solid}
+.c-info{background:var(--blue-bg);border-color:var(--blue);color:var(--text2)}.c-warn{background:var(--warn-bg);border-color:var(--warn);color:var(--text2)}.c-good{background:var(--green-bg);border-color:var(--green);color:var(--text2)}.c-tag{background:var(--tag-bg);border-color:var(--tag);color:var(--text2)}
+.callout strong{color:var(--text)}
+.badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600}
+.b-tag{background:var(--tag-bg);color:var(--tag);border:1px solid rgba(255,107,74,0.25)}
+.b-generic{background:rgba(148,152,176,0.12);color:var(--text2);border:1px solid var(--border2)}
+.b-must{background:var(--must-bg);color:var(--must);border:1px solid rgba(255,77,109,0.25)}
+.chk-list{list-style:none}
+.chk-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.chk-item:last-child{border-bottom:none}
+.chk{width:18px;height:18px;min-width:18px;border:1.5px solid var(--border2);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px;flex-shrink:0;transition:all .12s}
+.chk.done{background:var(--green);border-color:var(--green)}.chk.done::after{content:"✓";font-size:11px;color:#fff;font-weight:700}
+.chk-text{flex:1;color:var(--text2);line-height:1.5;font-size:12px}.chk-text.done{color:var(--text3);text-decoration:line-through}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.col-card{background:var(--bg3);border-radius:var(--r);padding:10px 12px}
+.col-card h4{font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px}
+.col-card p{font-size:11px;color:var(--text2);line-height:1.6}
+@media(max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}.stat-n{font-size:18px}pre{font-size:11px;padding:10px}.two-col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="topnav" id="topnav"></nav>
+
+<div class="page">
+  <div class="stats">
+    <div class="stat"><div class="stat-n" style="color:var(--accent2)">8</div><div class="stat-l">Designs</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--tag)">5</div><div class="stat-l">Travel-domain</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--green)" id="sd-done">0</div><div class="stat-l">Checked off</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--warn)">60m</div><div class="stat-l">Avg round</div></div>
+  </div>
+
+  <div class="prog-wrap">
+    <div class="prog-label"><span>Checklist progress</span><span id="sd-pct">0 / 12</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="sd-fill" style="width:0%"></div></div>
+  </div>
+
+  <!-- FRAMEWORK -->
+  <div class="section ph1">
+    <div class="sec-hd" onclick="toggleSec(this)">
+      <div class="sec-icon">📐</div>
+      <div class="sec-title">The framework — use every time</div>
+      <span class="chev open">▼</span>
+    </div>
+    <div class="sec-body open">
+      <div class="sec-sum">Every system design answer follows the same 5-step structure. Interviewers expect you to drive it. If they're asking "what about scale?" — you already lost points.</div>
+      <div class="block">
+        <div class="block-title">5-step template</div>
+        <div class="callout c-info">
+          <strong>Step 1 — Clarify (2 min):</strong> Functional requirements (what must it do?) and non-functional (scale: DAU, req/sec; latency: &lt;200ms?; consistency: strong or eventual OK?; availability: 99.9% or 99.99%?)<br><br>
+          <strong>Step 2 — Estimate (2 min):</strong> DAU × requests/user = req/day → ÷86400 = req/sec. Storage: record_size × writes/day × retention_days. Read:write ratio. Tells you where bottlenecks will be.<br><br>
+          <strong>Step 3 — HLD (5 min):</strong> Draw boxes first. Client → LB → API Gateway → Services → DB/Cache → Queue. No details yet — get the skeleton agreed on.<br><br>
+          <strong>Step 4 — Data model (5 min):</strong> Key tables, primary keys, important indexes. Don't skip — candidates get eliminated here most often.<br><br>
+          <strong>Step 5 — Deep dive on hardest part (15 min):</strong> Usually: concurrency (double booking), caching strategy, failure handling. Staff-level is differentiated from Senior here.
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-title">Senior vs Staff level answers</div>
+        <div class="callout c-warn">
+          <strong>Senior:</strong> "I'd use a unique constraint on (roomId, checkIn) to prevent double bookings."<br><br>
+          <strong>Staff:</strong> "At low scale: DB unique constraint. At high concurrency: Redis distributed lock (SETNX with TTL) as first gate, optimistic locking with version column in DB as second, unique constraint as final backstop. Three layers, each handles a different load range, each with different trade-offs I'm happy to walk through."
+        </div>
+        <div class="callout c-good"><strong>Always give trade-offs.</strong> "Use Kafka" is not an answer. "Kafka for at-least-once delivery with replay capability, vs SQS which is simpler to operate but loses ordering — for this use case I'd choose X because Y" is a Staff-level answer.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CORE CONCEPTS -->
+  <div class="section ph1">
+    <div class="sec-hd" onclick="toggleSec(this)">
+      <div class="sec-icon">🧠</div>
+      <div class="sec-title">Core concepts — know these cold</div>
+      <span class="chev open">▼</span>
+    </div>
+    <div class="sec-body open">
+      <div class="block">
+        <div class="block-title">CAP theorem</div>
+        <div class="block-desc">Distributed systems can guarantee only 2 of 3: Consistency, Availability, Partition tolerance. Since network partitions always happen — you choose CP or AP.</div>
+        <div class="two-col">
+          <div class="col-card">
+            <h4>CP — Consistency + Partition</h4>
+            <p>Return error if data may be stale. Use for: payments, bookings, inventory. You'd rather say "room unavailable" than double-book.</p>
+          </div>
+          <div class="col-card">
+            <h4>AP — Availability + Partition</h4>
+            <p>Return potentially stale data rather than error. Use for: hotel search results, review counts, recommendations. Stale for a few seconds is fine.</p>
+          </div>
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-title">Caching strategies</div>
+<pre>Cache-aside (lazy):  App checks cache → miss → load DB → store cache.
+                     Most common. App owns cache logic. TTL-based eviction.
+
+Write-through:       Write to cache AND DB together. Always consistent.
+                     Slower writes. Good when reads immediately follow writes.
+
+Write-behind:        Write cache only. Async flush to DB. Fastest writes.
+                     Risk: data loss if cache crashes before flush.
+
+Cache key design:    search:{city}:{checkIn}:{checkOut}:{guests}
+TTL strategy:        Availability data: 5 min (changes frequently)
+                     Hotel metadata: 24h (changes rarely)</pre>
+      </div>
+      <div class="block">
+        <div class="block-title">When to use which database</div>
+        <div class="callout c-info">
+          <strong>PostgreSQL / MySQL:</strong> Transactions, ACID guarantees, complex joins. Use for: bookings, payments, user accounts. Correctness over performance.<br><br>
+          <strong>MongoDB / DynamoDB:</strong> Flexible schema, horizontal scale. Use for: hotel catalog (different hotels have different attributes), user preferences, product catalog.<br><br>
+          <strong>Redis:</strong> Cache, sessions, rate limiting, distributed locks, leaderboards. Sub-ms reads. Data must fit in memory.<br><br>
+          <strong>Elasticsearch:</strong> Full-text search, faceted filtering, geo queries. Use for: hotel search by name/location/amenities. NOT for transactional data.<br><br>
+          <strong>Cassandra:</strong> Write-heavy, time-series, multi-region. Use for: event logs, analytics, IoT data. Wide column, no joins.
+        </div>
+      </div>
+      <div class="block">
+        <div class="block-title">Message queues — when to use which</div>
+<pre>Kafka:      High throughput (1M msg/sec). Durable. Replayable.
+            Ordered within partition. Consumer groups for parallel processing.
+            Use for: event streaming, audit logs, notification fanout, analytics.
+
+SQS:        Managed, auto-scales, at-least-once delivery.
+            No ordering guarantee (FIFO queue variant exists).
+            Use for: task queues, async jobs, simple decoupling.
+
+RabbitMQ:   Flexible routing (exchanges), dead-letter queues, ack-based.
+            Use for: task distribution, priority queues, complex routing.</pre>
+      </div>
+      <div class="block">
+        <div class="block-title">Numbers to know</div>
+<pre>L1 cache:          0.5 ns   | RAM:           100 ns
+SSD random read:   150 µs   | Network same DC: 500 µs
+Network cross-DC:  150 ms
+
+1M  req/day  →   ~12 req/sec
+10M req/day  →  ~115 req/sec
+1B  req/day  → ~11,600 req/sec
+
+Single PostgreSQL write: ~1,000 QPS | read replica: ~10,000 QPS
+Redis:                   ~100,000 ops/sec
+Kafka (cluster):         ~1,000,000 msg/sec</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOTEL BOOKING -->
+  <div class="section ph2">
+    <div class="sec-hd" onclick="toggleSec(this)">
+      <div class="sec-icon">🏨</div>
+      <div class="sec-title">Design: hotel booking system <span class="badge b-tag" style="font-size:10px;margin-left:4px">★ Company</span></div>
+      <span class="chev open">▼</span>
+    </div>
+    <div class="sec-body open">
+      <div class="sec-sum">The core travel product. Very likely to appear in a system design round. Know every layer and the concurrency solution cold.</div>
+      <div class="block">
+        <div class="block-title">Requirements to state upfront</div>
+        <div class="callout c-info"><strong>Functional:</strong> Search hotels by city/dates/guests. View room availability. Book a room. Cancel booking. View booking history.<br><br><strong>Non-functional:</strong> 10M DAU. 100K concurrent searches. 1K bookings/sec at peak. Search latency &lt;200ms. No double booking (strong consistency on inventory). 99.99% availability.</div>
+      </div>
+      <div class="block">
+        <div class="block-title">Data model</div>
+<pre>Hotel     (id, name, city, country, lat, lng, star_rating, amenities[])
+Room      (id, hotel_id, type, max_guests, price_per_night, total_rooms)
+Inventory (room_id, date, available_count, booked_count)   ← key table
+Booking   (id, user_id, room_id, check_in, check_out, status,
+           total_price, idempotency_key, created_at)
+           status: PENDING | CONFIRMED | CANCELLED | REFUNDED
+Payment   (id, booking_id, amount, currency, status, gateway_txn_id)
+
+Indexes:
+  Hotel search:   INDEX(city, star_rating) + GEO INDEX(lat, lng)
+  Availability:   INDEX(room_id, date) on Inventory table
+  User history:   INDEX(user_id, created_at DESC) on Booking</pre>
+      </div>
+      <div class="block">
+        <div class="block-title">Preventing double booking — three layers</div>
+        <div class="callout c-warn"><strong>Problem:</strong> 500 users request the last room simultaneously. All read available_count=1. All proceed to book. Without protection: 500 confirmed bookings for 1 room.</div>
+<pre><span class="cm">-- Layer 1: Redis distributed lock (fast gate, rejects most)</span>
+SET lock:room:123:2026-07-01 {userId} NX PX 30000
+<span class="cm">-- NX = only set if not exists. PX = auto-expire in 30s.
+-- Returns nil if key exists → another user holds lock → reject</span>
+
+<span class="cm">-- Layer 2: Optimistic locking in DB (handles what Redis misses)</span>
+UPDATE inventory
+SET available_count = available_count - 1, version = version + 1
+WHERE room_id=? AND date=? AND available_count > 0 AND version=?;
+<span class="cm">-- 0 rows affected = concurrent update → return "room unavailable"</span>
+
+<span class="cm">-- Layer 3: DB unique constraint (final backstop)</span>
+<span class="cm">-- UNIQUE INDEX on Booking(room_id, check_in, check_out)</span>
+<span class="cm">-- Catches anything that slipped through layers 1 and 2</span></pre>
+        <div class="callout c-good"><strong>Production answer:</strong> Redis first (fast rejection), optimistic lock in DB (handles race), unique constraint (backstop). Three layers, each handles a different failure mode.</div>
+      </div>
+      <div class="block">
+        <div class="block-title">High-level architecture</div>
+<pre>Client → CDN → Load Balancer
+                    ↓
+              API Gateway (auth, rate limit, routing)
+                    ↓
+     ┌──────────────┼──────────────┐
+Search Service  Booking Service  User Service
+     ↓               ↓
+Elasticsearch   PostgreSQL (primary write)
+Redis (cache)   Redis (distributed lock)
+                Payment Service → External Gateway
+                Kafka → Notification Service → Email/SMS/Push</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="section ph2">
+    <div class="sec-hd" onclick="toggleSec(this)">
+      <div class="sec-icon">🔍</div>
+      <div class="sec-title">Design: hotel search system <span class="badge b-tag" style="font-size:10px;margin-left:4px">★ Company</span></div>
+      <span class="chev open">▼</span>
+    </div>
+    <div class="sec-body open">
+      <div class="block">
+        <div class="block-title">Why not just SQL?</div>
+        <div class="block-desc">Full-text search in SQL is slow. Geo-radius queries need specialized indexes. Faceted filtering ("show me count of results per star rating") is expensive. Multi-signal ranking doesn't fit relational model.</div>
+        <div class="callout c-info"><strong>Answer:</strong> Elasticsearch for search (text, geo, filtering, ranking) + Redis bitmap for real-time availability + PostgreSQL as source of truth for hotel data.</div>
+      </div>
+      <div class="block">
+        <div class="block-title">Search flow</div>
+<pre>User query → Search Service
+  (1) Elasticsearch: query hotel metadata, amenities, location
+      Returns: ranked list of hotel IDs
+  (2) Redis availability filter: for each hotel ID, check
+      available_count for requested dates
+      Returns: subset with available rooms
+  (3) Merge scores + availability, paginate
+  (4) Cache result in Redis (key=city:checkIn:checkOut:filters, TTL=5min)
+  → Return to user
+
+Elasticsearch index document:
+{
+  hotel_id, name, city, country,
+  location: { lat: 13.75, lon: 100.52 },  // geo_point type
+  star_rating: 4, review_score: 8.7, price_min: 80,
+  amenities: ["wifi", "pool", "gym", "parking"]  // keyword array
+}</pre>
+      </div>
+      <div class="block">
+        <div class="block-title">Keeping the index fresh</div>
+<pre>Hotel metadata updated → Kafka "hotel.updated"
+                              ↓
+                     Indexer Service (Kafka consumer)
+                              ↓
+                     Elasticsearch partial update (O(1))
+
+Availability changes → NOT indexed in Elasticsearch
+                    → Too frequent (every booking changes it)
+                    → Stored in Redis bitmaps per (room_id, date)
+                    → Applied as post-search filter step</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYMENT -->
+  <div class="section ph2">
+    <div class="sec-hd" onclick="toggleSec(this)">
+      <div class="sec-icon">💳</div>
+      <div class="sec-title">Design: payment & wallet system <span class="badge b-tag" style="font-size:10px;margin-left:4px">★ Company</span></div>
+      <span class="chev open">▼</span>
+    </div>
+    <div class="sec-body open">
+      <div class="block">
+        <div class="block-title">Core constraints</div>
+        <div class="callout c-tag">No double charges. No lost payments. Full audit trail. Cross-currency support. PCI DSS compliance. Exactly-once processing even on retries.</div>
+      </div>
+      <div class="block">
+        <div class="block-title">Data model</div>
+<pre>Wallet      (id, user_id, currency, balance, version)  // version = optimistic lock
+Transaction (id, wallet_id, type, amount, currency, status,
+             reference_id, idempotency_key, created_at)
+             type: CREDIT | DEBIT | REFUND | FEE
+             status: PENDING | COMPLETED | FAILED | REVERSED</pre>
+      </div>
+      <div class="block">
+        <div class="block-title">Outbox pattern — exactly-once event publishing</div>
+        <div class="block-desc">Problem: if you save payment to DB AND publish event to Kafka in two separate operations, one can succeed and the other fail → inconsistent state forever.</div>
+<pre><span class="cm">// Solution: outbox pattern — atomic write to DB + outbox table</span>
+BEGIN TRANSACTION;
+  UPDATE wallet SET balance = balance - amount WHERE id = ?;
+  INSERT INTO outbox (event_type, payload, created_at)
+         VALUES ('PAYMENT_PROCESSED', '{...}', NOW());
+COMMIT;
+<span class="cm">// Separate poller reads outbox → publishes to Kafka → deletes row
+// If publish fails → retry from outbox. Never lose an event.
+// Payment and event publishing are always consistent — same DB transaction.</span></pre>
+      </div>
+      <div class="block">
+        <div class="block-title">Refund flow</div>
+<pre>Refund = new CREDIT transaction (NOT a reversal).
+This preserves the full audit trail — you can always see the debit and credit.
+
+Request validated → create REFUND Transaction (PENDING)
+→ call payment gateway refund API
+→ success: mark COMPLETED, credit wallet
+→ failure: mark FAILED, push to manual review queue, alert on-call
+→ publish RefundCompleted event → Kafka → email notification</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATION -->
+  <div class="section ph3">
+    <div class="sec-hd" onclick="toggleSec(this)">
+      <div class="sec-icon">🔔</div>
+      <div class="sec-title">Design: notification system <span class="badge b-tag" style="font-size:10px;margin-left:4px">★ Company</span></div>
+      <span class="chev open">▼</span>
+    </div>
+    <div class="sec-body open">
+      <div class="block">
+        <div class="block-title">Key insight: never block booking on notification</div>
+        <div class="block-desc">A slow email provider should not make every booking slow. Decouple completely with a message queue. The booking service just publishes an event — it doesn't know or care who receives it.</div>
+<pre>Booking Service → Kafka topic "booking.events"
+                         ↓
+                Notification Service (Kafka consumer)
+                reads event → routes by channel preference
+                         ↓
+          ┌──────────────┼───────────────┐
+     Email (SendGrid)  SMS (Twilio)  Push (FCM/APNs)</pre>
+      </div>
+      <div class="block">
+        <div class="block-title">Reliability — what if a channel is down?</div>
+<pre>Kafka retains messages until consumer commits offset.
+Email service down → messages wait in Kafka partition.
+Service recovers → resumes from last committed offset.
+
+Retry with exponential backoff:
+  Attempt 1: wait 10s → attempt 2: 30s → attempt 3: 90s
+  After 3 failures → move to Dead Letter Queue (DLQ) topic
+  Alert on-call → manual review
+
+User preference table:
+NotificationPref(user_id, channel, event_type, enabled, quiet_hours_start)
+Before sending: check — user opted out of SMS? Skip. In quiet hours? Defer push.</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- RATE LIMITER -->
+  <div class="section ph3">
+    <div class="sec-hd" onclick="toggleSec(this)">
+      <div class="sec-icon">🚦</div>
+      <div class="sec-title">Design: rate limiter <span class="badge b-generic" style="font-size:10px;margin-left:4px">generic</span></div>
+      <span class="chev open">▼</span>
+    </div>
+    <div class="sec-body open">
+      <div class="block">
+        <div class="block-title">Four algorithms</div>
+<pre>Token Bucket:    Bucket holds max N tokens. Refill at R tokens/sec.
+                 Each request consumes 1 token. Empty → reject (429).
+                 Allows burst up to bucket size. Most common.
+
+Fixed Window:    Count requests in 1-minute window.
+                 Problem: burst at window boundary doubles allowed rate.
+
+Sliding Window:  More accurate. Use Redis sorted set with timestamps.
+                 ZADD user:reqs {now} {uuid}
+                 ZREMRANGEBYSCORE ... 0 {now - window}
+                 count = ZCARD → if &gt; limit → reject
+
+Leaking Bucket:  Queue of fixed size. Process at fixed rate.
+                 Smooth output. Good for strict throughput guarantees.</pre>
+      </div>
+      <div class="block">
+        <div class="block-title">Distributed rate limiter — Redis implementation</div>
+<pre><span class="cm">// Token bucket with Redis (atomic Lua script)</span>
+<span class="kw">local</span> tokens = redis.call(<span class="str">'GET'</span>, key) or MAX_TOKENS
+<span class="kw">if</span> tokens &gt; <span class="nu">0</span> <span class="kw">then</span>
+  redis.call(<span class="str">'DECR'</span>, key)
+  redis.call(<span class="str">'EXPIRE'</span>, key, WINDOW_SECONDS)
+  <span class="kw">return</span> <span class="nu">1</span>  <span class="cm">-- allowed</span>
+<span class="kw">else</span>
+  <span class="kw">return</span> <span class="nu">0</span>  <span class="cm">-- rejected → HTTP 429</span>
+<span class="kw">end</span>
+
+<span class="cm">// Rate limit keys: per userId, per IP, per API key, per endpoint
+// Response headers: X-RateLimit-Limit, X-RateLimit-Remaining, Retry-After</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- GENERIC DESIGNS -->
+  <div class="section ph3">
+    <div class="sec-hd" onclick="toggleSec(this)">
+      <div class="sec-icon">🌐</div>
+      <div class="sec-title">Generic designs — URL shortener, feed, chat <span class="badge b-generic" style="font-size:10px;margin-left:4px">generic</span></div>
+      <span class="chev open">▼</span>
+    </div>
+    <div class="sec-body open">
+      <div class="block">
+        <div class="block-title">URL shortener</div>
+<pre>Short code: 6 chars from [a-zA-Z0-9] = 62^6 = 56 billion combinations
+Generation: Base62(auto_increment_id) — no collisions, no randomness needed
+Storage:    (short_code, original_url, user_id, created_at, expires_at)
+Redirect:   HTTP 302 (not 301!) — 302 allows us to track analytics
+            301 = permanent, browser caches, we lose tracking ability
+Scale:      Read-heavy ~1000:1. Cache hot URLs in Redis (LRU, no TTL)
+Expiry:     Background job: DELETE WHERE expires_at &lt; NOW()</pre>
+      </div>
+      <div class="block">
+        <div class="block-title">News/activity feed</div>
+<pre>Fan-out on write (push): On post, immediately write to all followers' feeds.
+  Pros: O(1) read. Cons: O(followers) write. Bad for celebrities (10M followers).
+
+Fan-out on read (pull):  On load, fetch posts from all followees. Merge sort by time.
+  Pros: O(1) write. Cons: O(followees) read. Bad for users following many people.
+
+Hybrid (production choice):
+  Push for regular users (&lt;1M followers).
+  Pull for celebrity accounts at read time, merge with pushed feed.
+
+Storage: Redis sorted set per user — ZADD feed:{userId} {timestamp} {postId}
+         ZREVRANGE feed:{userId} 0 19 → latest 20 posts for feed page</pre>
+      </div>
+      <div class="block">
+        <div class="block-title">Chat system</div>
+<pre>WebSocket: persistent bidirectional connection. Server pushes on message.
+  HTTP polling: too many connections, too much latency.
+  Long polling: better but still wasteful. WebSocket is the answer.
+
+Delivery guarantee (like WhatsApp):
+  1. Client sends → server ACKs storage (single tick ✓)
+  2. Server delivers to recipient device → device ACKs (double tick ✓✓)
+  3. Recipient opens chat → read receipt (blue ticks ✓✓)
+
+Storage: Cassandra — write-heavy, time-series, no single point of failure
+  Row key: (conversation_id, created_at_bucket)
+  Efficient range queries for chat history
+
+Presence (online/offline): Redis with heartbeat TTL
+  SET user:online:{userId} 1 EX 30  ← user sends heartbeat every 20s
+  No heartbeat for 30s → key expires → user appears offline</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKLIST -->
+  <div class="section ph4">
+    <div class="sec-hd" onclick="toggleSec(this)">
+      <div class="sec-icon">✅</div>
+      <div class="sec-title">Readiness checklist</div>
+      <span class="chev open">▼</span>
+    </div>
+    <div class="sec-body open">
+      <div class="block">
+        <div class="block-title">Can you answer these without notes?</div>
+        <ul class="chk-list">
+          <li class="chk-item"><div class="chk" id="chk-s1" onclick="sdTgl('s1')"></div><div class="chk-text" id="txt-s1">CAP theorem — which side does a booking system pick and why</div></li>
+          <li class="chk-item"><div class="chk" id="chk-s2" onclick="sdTgl('s2')"></div><div class="chk-text" id="txt-s2">Hotel booking system end-to-end in under 10 minutes</div></li>
+          <li class="chk-item"><div class="chk" id="chk-s3" onclick="sdTgl('s3')"></div><div class="chk-text" id="txt-s3">Three approaches to prevent double booking and their trade-offs</div></li>
+          <li class="chk-item"><div class="chk" id="chk-s4" onclick="sdTgl('s4')"></div><div class="chk-text" id="txt-s4">Notification system step-by-step: what happens when booking is confirmed?</div></li>
+          <li class="chk-item"><div class="chk" id="chk-s5" onclick="sdTgl('s5')"></div><div class="chk-text" id="txt-s5">Idempotency key pattern — why needed, Redis NX implementation</div></li>
+          <li class="chk-item"><div class="chk" id="chk-s6" onclick="sdTgl('s6')"></div><div class="chk-text" id="txt-s6">Token bucket algorithm — explain and implement in Redis Lua</div></li>
+          <li class="chk-item"><div class="chk" id="chk-s7" onclick="sdTgl('s7')"></div><div class="chk-text" id="txt-s7">Kafka vs SQS vs RabbitMQ — concrete example for when to use each</div></li>
+          <li class="chk-item"><div class="chk" id="chk-s8" onclick="sdTgl('s8')"></div><div class="chk-text" id="txt-s8">Elasticsearch for hotel search — what you index vs what stays in Redis</div></li>
+          <li class="chk-item"><div class="chk" id="chk-s9" onclick="sdTgl('s9')"></div><div class="chk-text" id="txt-s9">Cache-aside vs write-through vs write-behind — examples for each</div></li>
+          <li class="chk-item"><div class="chk" id="chk-s10" onclick="sdTgl('s10')"></div><div class="chk-text" id="txt-s10">URL shortener — Base62 encoding, why 302 not 301, scale approach</div></li>
+          <li class="chk-item"><div class="chk" id="chk-s11" onclick="sdTgl('s11')"></div><div class="chk-text" id="txt-s11">When Cassandra over PostgreSQL? Give a specific scenario.</div></li>
+          <li class="chk-item"><div class="chk" id="chk-s12" onclick="sdTgl('s12')"></div><div class="chk-text" id="txt-s12">Outbox pattern — what problem it solves, exactly how it works</div></li>
+        </ul>
+      </div>
+      <div class="callout c-warn" style="margin:0 14px 14px"><strong>Practice format:</strong> Time yourself. HLD + data model + hardest part should take under 15 minutes. If it takes 30+ — more practice, not more reading. Draw it out on paper before you do it in an interview.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleSec(hd){const body=hd.nextElementSibling;const chev=hd.querySelector('.chev');body.classList.toggle('open');chev.classList.toggle('open')}
+
+const sdDone=new Set(JSON.parse(localStorage.getItem('sd-done')||'[]'));
+const TOTAL_SD=12;
+
+function updateSdStats(){
+  const n=sdDone.size;
+  document.getElementById('sd-done').textContent=n;
+  document.getElementById('sd-pct').textContent=`${n} / ${TOTAL_SD}`;
+  document.getElementById('sd-fill').style.width=Math.round(n/TOTAL_SD*100)+'%';
+}
+
+function sdTgl(id){
+  if(sdDone.has(id))sdDone.delete(id);else sdDone.add(id);
+  localStorage.setItem('sd-done',JSON.stringify([...sdDone]));
+  const chk=document.getElementById('chk-'+id);
+  const txt=document.getElementById('txt-'+id);
+  if(chk)chk.classList.toggle('done',sdDone.has(id));
+  if(txt)txt.classList.toggle('done',sdDone.has(id));
+  updateSdStats();
+}
+
+sdDone.forEach(id=>{
+  const chk=document.getElementById('chk-'+id);
+  const txt=document.getElementById('txt-'+id);
+  if(chk){chk.classList.add('done');if(txt)txt.classList.add('done');}
+});
+updateSdStats();
+
+function updateCd(){
+  const diff=new Date('2026-07-09T09:00:00')-new Date();
+  const el=document.getElementById('cd');
+  if(!el)return;
+  if(diff<=0){el.textContent='Interview day!';return;}
+  el.textContent=`${Math.floor(diff/864e5)}d ${Math.floor((diff%864e5)/36e5)}h left`;
+}
+</script>
+<script src="shared.js"></script>
+<script>buildNav('sys');</script>
+</body>
+</html>

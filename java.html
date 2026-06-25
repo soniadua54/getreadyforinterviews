@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PrepKit — Java</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav class="topnav" id="topnav"></nav>
+<div class="page">
+
+<div class="hero">
+  <div class="hero-row">
+    <div class="hero-icon" style="background:rgba(245,158,11,0.15)">☕</div>
+    <div><div class="hero-title">Java — Complete Reference</div><div class="hero-sub">From objects to concurrency to JVM internals</div></div>
+  </div>
+  <div class="hero-desc">Java is the primary language for backend engineering at most large tech companies. This guide covers everything from OOP fundamentals through JVM tuning, with real-world examples from WFM, booking, and payment systems. Filter by level to focus your study.</div>
+  <div class="level-pills">
+    <span class="level-pill lp-beg selected" onclick="setLevel('all',this)">All Levels</span>
+    <span class="level-pill lp-beg" onclick="setLevel('beginner',this)">🟢 Beginner</span>
+    <span class="level-pill lp-int" onclick="setLevel('intermediate',this)">🟣 Intermediate</span>
+    <span class="level-pill lp-adv" onclick="setLevel('advanced',this)">🟠 Advanced</span>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-n" style="color:var(--beg)">8</div><div class="stat-l">Beginner topics</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--int)">9</div><div class="stat-l">Intermediate</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--adv)">7</div><div class="stat-l">Advanced</div></div>
+  <div class="stat"><div class="stat-n" id="java-done" style="color:var(--green)">0</div><div class="stat-l">Checked off</div></div>
+</div>
+<div class="prog-wrap">
+  <div class="prog-label"><span>Progress</span><span id="java-pct">0 / 24</span></div>
+  <div class="prog-bar"><div class="prog-fill" id="java-fill" style="width:0%"></div></div>
+</div>
+
+<!-- ═══════════════════════════════════════ BEGINNER ═══════════════════════════════════════ -->
+
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">📦</div>
+    <div style="flex:1"><div class="sec-title">OOP — Four Pillars</div><div class="sec-sub">The foundation of every Java interview</div></div>
+    <span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="j-oop" id="tab-j-oop-why" onclick="switchTab('j-oop','why')">Why it matters</div>
+      <div class="tab" data-group="j-oop" id="tab-j-oop-concept" onclick="switchTab('j-oop','concept')">Concept</div>
+      <div class="tab" data-group="j-oop" id="tab-j-oop-code" onclick="switchTab('j-oop','code')">Code</div>
+      <div class="tab" data-group="j-oop" id="tab-j-oop-real" onclick="switchTab('j-oop','real')">Real-world</div>
+    </div>
+    <div class="tab-panel active" data-group="j-oop" id="panel-j-oop-why">
+      <div class="block">
+        <div class="block-title">Why interviewers always start here</div>
+        <div class="prose">OOP principles underpin every design pattern, every framework, and every architecture decision. When an interviewer asks "how would you design a payment system?" — your answer reveals whether you actually understand encapsulation and abstraction, or just memorised definitions.</div>
+        <div class="callout c-info"><strong>Encapsulation</strong> — hide internal state, expose only what's needed. Your WFM Forecasting service doesn't expose its internal calculation state to other services. It exposes a clean API.<br><br><strong>Inheritance</strong> — reuse behaviour via parent classes. A BookingException extends RuntimeException — it gets all exception behaviour for free.<br><br><strong>Polymorphism</strong> — same interface, different implementations. PaymentStrategy has multiple implementations (wallet, card, UPI) — the caller doesn't care which one.<br><br><strong>Abstraction</strong> — expose what, hide how. HotelRepository.findByCity() — callers don't know if it hits PostgreSQL, Redis, or Elasticsearch.</div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="j-oop" id="panel-j-oop-concept">
+      <div class="block">
+        <div class="block-title">The four pillars — precise definitions</div>
+        <table class="ctable">
+          <tr><th>Pillar</th><th>What it means</th><th>How violated</th></tr>
+          <tr><td><strong>Encapsulation</strong></td><td>Bundle data + methods. Private fields, public getters/setters only when needed.</td><td>Public fields that anyone can modify directly</td></tr>
+          <tr><td><strong>Inheritance</strong></td><td>Child class inherits parent's fields and methods. IS-A relationship.</td><td>Deep inheritance hierarchies (prefer composition)</td></tr>
+          <tr><td><strong>Polymorphism</strong></td><td>One interface, many forms. Method overriding (runtime) and overloading (compile-time).</td><td>Giant if-else / switch checking object types</td></tr>
+          <tr><td><strong>Abstraction</strong></td><td>Hide implementation details behind interfaces/abstract classes. Expose only behaviour.</td><td>Leaking implementation details into API signatures</td></tr>
+        </table>
+        <div class="callout c-warn"><strong>Composition over Inheritance</strong> — the most important principle in modern Java. Instead of class Dog extends Animal, prefer class Dog { private AnimalBehaviour behaviour; }. Composition is more flexible and avoids the fragile base class problem.</div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="j-oop" id="panel-j-oop-code">
+<pre><span class="cm">// Encapsulation — private state, controlled access</span>
+<span class="kw">public class</span> <span class="cl">BankAccount</span> {
+    <span class="kw">private double</span> balance; <span class="cm">// nobody can touch this directly</span>
+
+    <span class="kw">public void</span> <span class="fn">deposit</span>(<span class="kw">double</span> amount) {
+        <span class="kw">if</span> (amount <= <span class="nu">0</span>) <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="str">"Amount must be positive"</span>);
+        balance += amount; <span class="cm">// validation happens here, not in caller</span>
+    }
+    <span class="kw">public double</span> <span class="fn">getBalance</span>() { <span class="kw">return</span> balance; } <span class="cm">// read-only view</span>
+}
+
+<span class="cm">// Polymorphism — same method call, different behaviour at runtime</span>
+<span class="kw">interface</span> <span class="cl">Notification</span> { <span class="kw">void</span> <span class="fn">send</span>(String message); }
+
+<span class="kw">class</span> <span class="cl">EmailNotification</span> <span class="kw">implements</span> <span class="cl">Notification</span> {
+    <span class="kw">public void</span> <span class="fn">send</span>(String msg) { System.out.<span class="fn">println</span>(<span class="str">"Email: "</span> + msg); }
+}
+<span class="kw">class</span> <span class="cl">SMSNotification</span> <span class="kw">implements</span> <span class="cl">Notification</span> {
+    <span class="kw">public void</span> <span class="fn">send</span>(String msg) { System.out.<span class="fn">println</span>(<span class="str">"SMS: "</span> + msg); }
+}
+
+<span class="cm">// Caller doesn't know or care which implementation it gets</span>
+<span class="kw">void</span> <span class="fn">notifyUser</span>(<span class="cl">Notification</span> n) { n.<span class="fn">send</span>(<span class="str">"Booking confirmed"</span>); }
+<span class="cm">// notifyUser(new EmailNotification()) → "Email: Booking confirmed"
+// notifyUser(new SMSNotification())  → "SMS: Booking confirmed"</span>
+
+<span class="cm">// Abstraction — abstract class defines template, children fill in details</span>
+<span class="kw">abstract class</span> <span class="cl">ReportGenerator</span> {
+    <span class="kw">public final void</span> <span class="fn">generate</span>() { <span class="cm">// Template Method pattern</span>
+        <span class="fn">fetchData</span>();
+        <span class="fn">processData</span>();
+        <span class="fn">exportReport</span>(); <span class="cm">// each subclass implements differently</span>
+    }
+    <span class="kw">protected abstract void</span> <span class="fn">fetchData</span>();
+    <span class="kw">protected abstract void</span> <span class="fn">processData</span>();
+    <span class="kw">protected abstract void</span> <span class="fn">exportReport</span>();
+}</pre>
+    </div>
+    <div class="tab-panel" data-group="j-oop" id="panel-j-oop-real">
+      <div class="block">
+        <div class="block-title">From your UKG work</div>
+        <div class="prose">In the WFM Forecasting Platform:</div>
+        <div class="callout c-tag"><strong>Encapsulation:</strong> The forecasting engine's internal algorithm (number of historical weeks, smoothing factor, seasonal adjustments) is private. The public API is simply <code>forecast(tenantId, periodRange)</code>. If the algorithm changes, callers are unaffected.<br><br><strong>Polymorphism:</strong> TRex onboarding handles Staging, Prod-US, and Prod-EU environments. Each has its own <code>EnvironmentConfig implements TenantConfig</code>. The onboarding pipeline doesn't care which environment — it calls <code>config.getConnectionString()</code> and gets the right one.<br><br><strong>Abstraction:</strong> The MongoDB Cosmos DB layer is behind a <code>ForecastRepository</code> interface. Business logic never has database code in it. If Walmart IDC switches from Cosmos DB to Cassandra, only the repository implementation changes.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">🗂</div>
+    <div style="flex:1"><div class="sec-title">Collections Framework</div><div class="sec-sub">List, Set, Map, Queue — when to use which</div></div>
+    <span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="j-col" id="tab-j-col-guide" onclick="switchTab('j-col','guide')">Which to use</div>
+      <div class="tab" data-group="j-col" id="tab-j-col-complex" onclick="switchTab('j-col','complex')">Complexity</div>
+      <div class="tab" data-group="j-col" id="tab-j-col-code" onclick="switchTab('j-col','code')">Code patterns</div>
+    </div>
+    <div class="tab-panel active" data-group="j-col" id="panel-j-col-guide">
+      <div class="block">
+        <div class="block-title">Decision guide</div>
+        <table class="ctable">
+          <tr><th>Need</th><th>Use</th><th>Why not</th></tr>
+          <tr><td>Ordered, indexed access</td><td><code>ArrayList</code></td><td>LinkedList (slow get by index)</td></tr>
+          <tr><td>Frequent insert/delete at front</td><td><code>LinkedList / ArrayDeque</code></td><td>ArrayList (O(n) shifts)</td></tr>
+          <tr><td>No duplicates, fast lookup</td><td><code>HashSet</code></td><td>ArrayList (O(n) contains)</td></tr>
+          <tr><td>No duplicates, sorted order</td><td><code>TreeSet</code></td><td>HashSet (no ordering)</td></tr>
+          <tr><td>Key→value, fast lookup</td><td><code>HashMap</code></td><td>Linear search in list</td></tr>
+          <tr><td>Key→value, sorted by key</td><td><code>TreeMap</code></td><td>HashMap (no ordering)</td></tr>
+          <tr><td>Key→value, insertion order</td><td><code>LinkedHashMap</code></td><td>HashMap (unpredictable order)</td></tr>
+          <tr><td>Priority queue / min-heap</td><td><code>PriorityQueue</code></td><td>Sorting full list each time</td></tr>
+          <tr><td>Stack (LIFO)</td><td><code>ArrayDeque</code></td><td>Stack class (legacy, synchronized)</td></tr>
+          <tr><td>Queue (FIFO)</td><td><code>ArrayDeque / LinkedList</code></td><td>—</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="j-col" id="panel-j-col-complex">
+      <div class="block">
+        <table class="ctable">
+          <tr><th>Collection</th><th>get</th><th>add</th><th>remove</th><th>contains</th></tr>
+          <tr><td>ArrayList</td><td class="good">O(1)</td><td class="good">O(1)*</td><td class="bad">O(n)</td><td class="bad">O(n)</td></tr>
+          <tr><td>LinkedList</td><td class="bad">O(n)</td><td class="good">O(1)</td><td class="good">O(1)**</td><td class="bad">O(n)</td></tr>
+          <tr><td>HashMap</td><td class="good">O(1)</td><td class="good">O(1)</td><td class="good">O(1)</td><td class="good">O(1)</td></tr>
+          <tr><td>TreeMap</td><td class="ok">O(log n)</td><td class="ok">O(log n)</td><td class="ok">O(log n)</td><td class="ok">O(log n)</td></tr>
+          <tr><td>HashSet</td><td>—</td><td class="good">O(1)</td><td class="good">O(1)</td><td class="good">O(1)</td></tr>
+          <tr><td>TreeSet</td><td>—</td><td class="ok">O(log n)</td><td class="ok">O(log n)</td><td class="ok">O(log n)</td></tr>
+          <tr><td>PriorityQueue</td><td class="good">O(1) peek</td><td class="ok">O(log n)</td><td class="ok">O(log n)</td><td class="bad">O(n)</td></tr>
+          <tr><td>ArrayDeque</td><td>—</td><td class="good">O(1)</td><td class="good">O(1)</td><td class="bad">O(n)</td></tr>
+        </table>
+        <div class="prose" style="font-size:11px;color:var(--text3)">* amortized — occasional resize is O(n) &nbsp;&nbsp; ** given node reference</div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="j-col" id="panel-j-col-code">
+<pre><span class="cm">// Frequency counting — the most common HashMap pattern</span>
+Map&lt;String, Integer&gt; freq = <span class="kw">new</span> HashMap&lt;&gt;();
+<span class="kw">for</span> (String word : words)
+    freq.<span class="fn">put</span>(word, freq.<span class="fn">getOrDefault</span>(word, <span class="nu">0</span>) + <span class="nu">1</span>);
+
+<span class="cm">// Grouping — another common pattern</span>
+Map&lt;String, List&lt;Booking&gt;&gt; byHotel = bookings.<span class="fn">stream</span>()
+    .<span class="fn">collect</span>(<span class="fn">groupingBy</span>(Booking::getHotelId));
+
+<span class="cm">// Min-heap — keep track of K smallest</span>
+PriorityQueue&lt;Integer&gt; minHeap = <span class="kw">new</span> PriorityQueue&lt;&gt;();
+<span class="cm">// Max-heap</span>
+PriorityQueue&lt;Integer&gt; maxHeap = <span class="kw">new</span> PriorityQueue&lt;&gt;(Collections.<span class="fn">reverseOrder</span>());
+<span class="cm">// Custom comparator (sort by booking price descending)</span>
+PriorityQueue&lt;Booking&gt; pq = <span class="kw">new</span> PriorityQueue&lt;&gt;((a,b) -> b.<span class="fn">getPrice</span>().compareTo(a.<span class="fn">getPrice</span>()));
+
+<span class="cm">// LinkedHashMap as LRU Cache</span>
+Map&lt;String, Hotel&gt; cache = <span class="kw">new</span> LinkedHashMap&lt;&gt;(capacity, <span class="nu">0.75f</span>, <span class="kw">true</span>) {
+    <span class="kw">protected boolean</span> <span class="fn">removeEldestEntry</span>(Map.Entry e) { <span class="kw">return</span> size() > capacity; }
+};
+
+<span class="cm">// Stack operations with ArrayDeque</span>
+Deque&lt;Integer&gt; stack = <span class="kw">new</span> ArrayDeque&lt;&gt;();
+stack.<span class="fn">push</span>(<span class="nu">1</span>); stack.<span class="fn">push</span>(<span class="nu">2</span>);
+<span class="kw">int</span> top = stack.<span class="fn">peek</span>(); <span class="cm">// 2</span>
+<span class="kw">int</span> popped = stack.<span class="fn">pop</span>(); <span class="cm">// 2</span>
+
+<span class="cm">// Queue operations</span>
+Deque&lt;String&gt; queue = <span class="kw">new</span> ArrayDeque&lt;&gt;();
+queue.<span class="fn">offer</span>(<span class="str">"first"</span>); queue.<span class="fn">offer</span>(<span class="str">"second"</span>);
+String next = queue.<span class="fn">poll</span>(); <span class="cm">// "first"</span></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">🔤</div>
+    <div style="flex:1"><div class="sec-title">Strings — Immutability & StringBuilder</div><div class="sec-sub">Why string concatenation in a loop is a bug</div></div>
+    <span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="j-str" id="tab-j-str-concept" onclick="switchTab('j-str','concept')">Concept</div>
+      <div class="tab" data-group="j-str" id="tab-j-str-code" onclick="switchTab('j-str','code')">Code</div>
+    </div>
+    <div class="tab-panel active" data-group="j-str" id="panel-j-str-concept">
+      <div class="block">
+        <div class="block-title">Immutability</div>
+        <div class="prose">In Java, <code>String</code> objects are immutable — once created, they cannot be changed. When you do <code>s = s + "world"</code>, Java doesn't modify the original string. It creates a brand new String object and discards the old one. In a loop of 1000 iterations, that's 1000 objects created and garbage collected — O(n²) total work.</div>
+        <div class="two-col">
+          <div class="col-card"><h4>String (immutable)</h4><p>Thread-safe. Every operation creates new object. Use for short or static strings. String literals go in String Pool (memory efficient).</p></div>
+          <div class="col-card"><h4>StringBuilder (mutable)</h4><p>Not thread-safe. Operations modify same object. Use in single-threaded code for building strings dynamically. O(n) total instead of O(n²).</p></div>
+        </div>
+        <div class="callout c-info"><strong>StringBuffer</strong> is like StringBuilder but synchronized — thread-safe but slow. Almost never needed; prefer StringBuilder + explicit synchronization when needed.</div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="j-str" id="panel-j-str-code">
+<pre><span class="cm">// BAD — O(n²) — creates 1000 String objects</span>
+String result = <span class="str">""</span>;
+<span class="kw">for</span> (<span class="kw">int</span> i=<span class="nu">0</span>; i<<span class="nu">1000</span>; i++) result += i; <span class="cm">// new String every iteration</span>
+
+<span class="cm">// GOOD — O(n) — one StringBuilder object</span>
+StringBuilder sb = <span class="kw">new</span> StringBuilder();
+<span class="kw">for</span> (<span class="kw">int</span> i=<span class="nu">0</span>; i<<span class="nu">1000</span>; i++) sb.<span class="fn">append</span>(i);
+String result = sb.<span class="fn">toString</span>();
+
+<span class="cm">// String API you need cold</span>
+String s = <span class="str">"Hello World"</span>;
+s.<span class="fn">length</span>()           <span class="cm">// 11</span>
+s.<span class="fn">charAt</span>(<span class="nu">0</span>)          <span class="cm">// 'H'</span>
+s.<span class="fn">substring</span>(<span class="nu">0</span>,<span class="nu">5</span>)     <span class="cm">// "Hello"</span>
+s.<span class="fn">indexOf</span>(<span class="str">"World"</span>)   <span class="cm">// 6</span>
+s.<span class="fn">toLowerCase</span>()      <span class="cm">// "hello world"</span>
+s.<span class="fn">trim</span>()             <span class="cm">// remove leading/trailing whitespace</span>
+s.<span class="fn">split</span>(<span class="str">" "</span>)         <span class="cm">// ["Hello", "World"]</span>
+s.<span class="fn">toCharArray</span>()      <span class="cm">// ['H','e','l','l','o',' ','W','o','r','l','d']</span>
+s.<span class="fn">contains</span>(<span class="str">"World"</span>) <span class="cm">// true</span>
+s.<span class="fn">replace</span>(<span class="str">"World"</span>,<span class="str">"Java"</span>) <span class="cm">// "Hello Java"</span>
+String.<span class="fn">join</span>(<span class="str">"-"</span>, <span class="str">"a"</span>, <span class="str">"b"</span>, <span class="str">"c"</span>) <span class="cm">// "a-b-c"</span>
+
+<span class="cm">// Comparing strings — NEVER use == for content comparison</span>
+<span class="str">"hello"</span>.equals(<span class="str">"hello"</span>)         <span class="cm">// true — correct</span>
+<span class="str">"hello"</span> == <span class="str">"hello"</span>              <span class="cm">// true ONLY for string literals (pool)</span>
+<span class="kw">new</span> String(<span class="str">"hello"</span>) == <span class="str">"hello"</span> <span class="cm">// false — different objects!</span>
+
+<span class="cm">// StringBuilder API</span>
+StringBuilder sb = <span class="kw">new</span> StringBuilder(<span class="str">"hello"</span>);
+sb.<span class="fn">append</span>(<span class="str">" world"</span>);   <span class="cm">// "hello world"</span>
+sb.<span class="fn">insert</span>(<span class="nu">5</span>, <span class="str">","</span>);      <span class="cm">// "hello, world"</span>
+sb.<span class="fn">reverse</span>();           <span class="cm">// "dlrow ,olleh"</span>
+sb.<span class="fn">delete</span>(<span class="nu">0</span>, <span class="nu">5</span>);        <span class="cm">// " world" (deleted first 5)</span>
+sb.<span class="fn">deleteCharAt</span>(<span class="nu">0</span>);     <span class="cm">// "world"</span></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">⚠️</div>
+    <div style="flex:1"><div class="sec-title">Exception Handling</div><div class="sec-sub">Checked vs unchecked, try-with-resources, custom exceptions</div></div>
+    <span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="j-exc" id="tab-j-exc-concept" onclick="switchTab('j-exc','concept')">Concept</div>
+      <div class="tab" data-group="j-exc" id="tab-j-exc-code" onclick="switchTab('j-exc','code')">Code</div>
+    </div>
+    <div class="tab-panel active" data-group="j-exc" id="panel-j-exc-concept">
+      <div class="block">
+        <div class="block-title">Exception hierarchy</div>
+        <div class="arch">Throwable
+├── Error (don't catch — OutOfMemoryError, StackOverflowError)
+└── Exception
+    ├── Checked Exception  (must declare or catch — IOException, SQLException)
+    └── RuntimeException   (unchecked — NullPointerException, IllegalArgumentException)
+        ↑ Your custom business exceptions should extend this</div>
+        <div class="two-col">
+          <div class="col-card"><h4>Checked Exceptions</h4><p>Must be declared in method signature (throws IOException) or caught. Caller is forced to handle it. Use for recoverable external conditions: file not found, network failure.</p></div>
+          <div class="col-card"><h4>Unchecked (Runtime)</h4><p>Not required to declare or catch. Use for programming errors: null dereference, invalid arguments, out of bounds. Your custom business exceptions (BookingException) should be unchecked.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="j-exc" id="panel-j-exc-code">
+<pre><span class="cm">// Custom business exception — extends RuntimeException (unchecked)</span>
+<span class="kw">public class</span> <span class="cl">BookingException</span> <span class="kw">extends</span> <span class="cl">RuntimeException</span> {
+    <span class="kw">private final</span> String errorCode;
+
+    <span class="kw">public</span> <span class="cl">BookingException</span>(String message, String errorCode) {
+        <span class="kw">super</span>(message);
+        <span class="kw">this</span>.errorCode = errorCode;
+    }
+    <span class="kw">public</span> <span class="cl">BookingException</span>(String message, String errorCode, Throwable cause) {
+        <span class="kw">super</span>(message, cause); <span class="cm">// preserve original stack trace</span>
+        <span class="kw">this</span>.errorCode = errorCode;
+    }
+    <span class="kw">public</span> String <span class="fn">getErrorCode</span>() { <span class="kw">return</span> errorCode; }
+}
+
+<span class="cm">// try-with-resources — ALWAYS use for resources (auto-closes)</span>
+<span class="kw">try</span> (<span class="cl">Connection</span> conn = dataSource.<span class="fn">getConnection</span>();
+     <span class="cl">PreparedStatement</span> ps = conn.<span class="fn">prepareStatement</span>(sql)) {
+    <span class="cm">// conn and ps auto-closed even if exception thrown</span>
+    ps.<span class="fn">executeQuery</span>();
+} <span class="kw">catch</span> (<span class="cl">SQLException</span> e) {
+    <span class="cm">// handle specific exception</span>
+    log.<span class="fn">error</span>(<span class="str">"DB error: {}"</span>, e.<span class="fn">getMessage</span>(), e);
+    <span class="kw">throw new</span> <span class="cl">BookingException</span>(<span class="str">"Failed to load booking"</span>, <span class="str">"DB_ERROR"</span>, e);
+}
+
+<span class="cm">// Multi-catch (Java 7+)</span>
+<span class="kw">try</span> { <span class="fn">riskyOperation</span>(); }
+<span class="kw">catch</span> (<span class="cl">IOException</span> | <span class="cl">TimeoutException</span> e) {
+    <span class="cm">// handle both with same logic</span>
+}
+
+<span class="cm">// NEVER do this — swallows exception silently</span>
+<span class="kw">try</span> { <span class="fn">riskyOperation</span>(); } <span class="kw">catch</span> (<span class="cl">Exception</span> e) { } <span class="cm">// BAD!</span>
+
+<span class="cm">// NEVER do this — too broad, hides bugs</span>
+<span class="kw">try</span> { <span class="fn">riskyOperation</span>(); } <span class="kw">catch</span> (<span class="cl">Exception</span> e) { e.<span class="fn">printStackTrace</span>(); } <span class="cm">// BAD!</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ INTERMEDIATE ═══════════════════════════════════════ -->
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">🌊</div>
+    <div style="flex:1"><div class="sec-title">Java 8 — Streams & Lambdas</div><div class="sec-sub">Functional programming in Java — used daily in production</div></div>
+    <span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="j-str8" id="tab-j-str8-concept" onclick="switchTab('j-str8','concept')">Concept</div>
+      <div class="tab" data-group="j-str8" id="tab-j-str8-code" onclick="switchTab('j-str8','code')">Code patterns</div>
+      <div class="tab" data-group="j-str8" id="tab-j-str8-real" onclick="switchTab('j-str8','real')">Real-world</div>
+    </div>
+    <div class="tab-panel active" data-group="j-str8" id="panel-j-str8-concept">
+      <div class="block">
+        <div class="block-title">Stream pipeline structure</div>
+        <div class="flow">
+          <div class="flow-row">
+            <div class="flow-box accent">Source</div><div class="flow-arrow">→</div>
+            <div class="flow-box">Intermediate ops</div><div class="flow-arrow">→</div>
+            <div class="flow-box green">Terminal op</div>
+          </div>
+        </div>
+        <div class="prose">Streams are <strong>lazy</strong> — intermediate operations (filter, map, sorted) don't execute until a terminal operation (collect, forEach, findFirst) is called. This allows the JVM to optimize the entire pipeline at once.</div>
+        <table class="ctable" style="margin-top:10px">
+          <tr><th>Operation</th><th>Type</th><th>What it does</th></tr>
+          <tr><td>filter(predicate)</td><td>Intermediate</td><td>Keep elements matching condition</td></tr>
+          <tr><td>map(function)</td><td>Intermediate</td><td>Transform each element</td></tr>
+          <tr><td>flatMap(function)</td><td>Intermediate</td><td>Transform + flatten nested streams</td></tr>
+          <tr><td>sorted(comparator)</td><td>Intermediate</td><td>Sort elements</td></tr>
+          <tr><td>distinct()</td><td>Intermediate</td><td>Remove duplicates</td></tr>
+          <tr><td>limit(n) / skip(n)</td><td>Intermediate</td><td>Pagination</td></tr>
+          <tr><td>collect(collector)</td><td>Terminal</td><td>Accumulate into list/map/set</td></tr>
+          <tr><td>forEach(consumer)</td><td>Terminal</td><td>Apply action to each element</td></tr>
+          <tr><td>findFirst() / anyMatch()</td><td>Terminal</td><td>Short-circuit evaluation</td></tr>
+          <tr><td>reduce(identity, accumulator)</td><td>Terminal</td><td>Fold elements into single value</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="j-str8" id="panel-j-str8-code">
+<pre><span class="cm">// Filter, map, collect — most common pipeline</span>
+List&lt;String&gt; premiumHotelNames = hotels.<span class="fn">stream</span>()
+    .<span class="fn">filter</span>(h -> h.<span class="fn">getStarRating</span>() >= <span class="nu">4</span>)
+    .<span class="fn">filter</span>(h -> h.<span class="fn">isAvailable</span>())
+    .<span class="fn">sorted</span>((a,b) -> b.<span class="fn">getReviewScore</span>().<span class="fn">compareTo</span>(a.<span class="fn">getReviewScore</span>()))
+    .<span class="fn">limit</span>(<span class="nu">10</span>)
+    .<span class="fn">map</span>(Hotel::getName)
+    .<span class="fn">collect</span>(<span class="fn">toList</span>());
+
+<span class="cm">// groupingBy — group bookings by hotel</span>
+Map&lt;String, List&lt;Booking&gt;&gt; byHotel = bookings.<span class="fn">stream</span>()
+    .<span class="fn">collect</span>(<span class="fn">groupingBy</span>(Booking::getHotelId));
+
+<span class="cm">// groupingBy with downstream collector — count per hotel</span>
+Map&lt;String, Long&gt; bookingCount = bookings.<span class="fn">stream</span>()
+    .<span class="fn">collect</span>(<span class="fn">groupingBy</span>(Booking::getHotelId, <span class="fn">counting</span>()));
+
+<span class="cm">// toMap — convert to Map</span>
+Map&lt;Long, Hotel&gt; hotelById = hotels.<span class="fn">stream</span>()
+    .<span class="fn">collect</span>(<span class="fn">toMap</span>(Hotel::getId, h -> h));
+
+<span class="cm">// reduce — sum prices</span>
+<span class="kw">double</span> totalRevenue = bookings.<span class="fn">stream</span>()
+    .<span class="fn">mapToDouble</span>(Booking::getPrice)
+    .<span class="fn">sum</span>(); <span class="cm">// or .reduce(0.0, Double::sum)</span>
+
+<span class="cm">// flatMap — flatten nested lists</span>
+List&lt;Room&gt; allRooms = hotels.<span class="fn">stream</span>()
+    .<span class="fn">flatMap</span>(h -> h.<span class="fn">getRooms</span>().<span class="fn">stream</span>())
+    .<span class="fn">collect</span>(<span class="fn">toList</span>());
+
+<span class="cm">// Optional — avoid null checks</span>
+Optional&lt;Hotel&gt; found = hotels.<span class="fn">stream</span>()
+    .<span class="fn">filter</span>(h -> h.<span class="fn">getId</span>().<span class="fn">equals</span>(targetId))
+    .<span class="fn">findFirst</span>();
+found.<span class="fn">ifPresent</span>(h -> log.<span class="fn">info</span>(<span class="str">"Found: {}"</span>, h.<span class="fn">getName</span>()));
+String name = found.<span class="fn">map</span>(Hotel::getName).<span class="fn">orElse</span>(<span class="str">"Unknown"</span>);
+
+<span class="cm">// Method references — cleaner than lambdas</span>
+hotels.<span class="fn">stream</span>().<span class="fn">map</span>(Hotel::getName)     <span class="cm">// instance method ref</span>
+hotels.<span class="fn">stream</span>().<span class="fn">forEach</span>(System.out::println) <span class="cm">// static method ref</span>
+hotels.<span class="fn">stream</span>().<span class="fn">map</span>(Hotel::new)         <span class="cm">// constructor ref</span></pre>
+    </div>
+    <div class="tab-panel" data-group="j-str8" id="panel-j-str8-real">
+      <div class="block">
+        <div class="block-title">Your UKG forecasting platform</div>
+        <div class="callout c-tag"><strong>WFM Forecasting:</strong> When computing forecast aggregates across tenants, streams let you write: <code>tenants.stream().filter(t -> t.isActive()).map(this::computeForecast).collect(groupingBy(Forecast::getRegion))</code> — readable, parallel-capable, and no mutable intermediate variables.<br><br><strong>People Fabric CDC pipeline:</strong> The PostgreSQL to AlloyDB migration pipeline uses streams to transform entity records: filter changed records, map to new schema format, batch collect for bulk insert.<br><br><strong>TRex onboarding:</strong> Environment validation uses <code>environments.stream().allMatch(env -> env.isHealthy())</code> before proceeding with onboarding.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">🧵</div>
+    <div style="flex:1"><div class="sec-title">Generics</div><div class="sec-sub">Type-safe code without casting — wildcards, bounds, type erasure</div></div>
+    <span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="j-gen" id="tab-j-gen-concept" onclick="switchTab('j-gen','concept')">Concept</div>
+      <div class="tab" data-group="j-gen" id="tab-j-gen-code" onclick="switchTab('j-gen','code')">Code</div>
+    </div>
+    <div class="tab-panel active" data-group="j-gen" id="panel-j-gen-concept">
+      <div class="block">
+        <div class="block-title">Why generics exist</div>
+        <div class="prose">Before generics, collections stored <code>Object</code>. You could add a String and an Integer to the same list — the bug only appeared at runtime when you tried to cast. Generics move these errors to compile time.</div>
+        <div class="two-col">
+          <div class="col-card"><h4>&lt;T extends Foo&gt;</h4><p>Upper bound. T must be Foo or a subclass. You can READ from it — T is at least a Foo. Use for producers: methods that give you T values.</p></div>
+          <div class="col-card"><h4>&lt;T super Foo&gt;</h4><p>Lower bound. T must be Foo or a superclass. You can WRITE to it. Use for consumers: methods that accept T values.</p></div>
+        </div>
+        <div class="callout c-info"><strong>PECS rule:</strong> Producer Extends, Consumer Super. If you're reading (producing) from a collection → use <code>? extends T</code>. If you're writing (consuming) to a collection → use <code>? super T</code>.</div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="j-gen" id="panel-j-gen-code">
+<pre><span class="cm">// Generic class</span>
+<span class="kw">public class</span> <span class="cl">ApiResponse</span>&lt;<span class="ty">T</span>&gt; {
+    <span class="kw">private</span> <span class="ty">T</span> data;
+    <span class="kw">private</span> String status;
+    <span class="kw">private</span> String message;
+
+    <span class="kw">public static</span> &lt;<span class="ty">T</span>&gt; <span class="cl">ApiResponse</span>&lt;<span class="ty">T</span>&gt; <span class="fn">success</span>(<span class="ty">T</span> data) {
+        <span class="kw">return new</span> <span class="cl">ApiResponse</span>&lt;&gt;(data, <span class="str">"SUCCESS"</span>, <span class="kw">null</span>);
+    }
+    <span class="kw">public static</span> &lt;<span class="ty">T</span>&gt; <span class="cl">ApiResponse</span>&lt;<span class="ty">T</span>&gt; <span class="fn">error</span>(String message) {
+        <span class="kw">return new</span> <span class="cl">ApiResponse</span>&lt;&gt;(<span class="kw">null</span>, <span class="str">"ERROR"</span>, message);
+    }
+}
+<span class="cm">// Usage: ApiResponse&lt;List&lt;Hotel&gt;&gt; response = ApiResponse.success(hotels);</span>
+
+<span class="cm">// Generic method</span>
+<span class="kw">public static</span> &lt;<span class="ty">T extends</span> <span class="cl">Comparable</span>&lt;<span class="ty">T</span>&gt;&gt; <span class="ty">T</span> <span class="fn">max</span>(List&lt;<span class="ty">T</span>&gt; list) {
+    <span class="kw">return</span> list.<span class="fn">stream</span>().<span class="fn">max</span>(Comparator.<span class="fn">naturalOrder</span>()).<span class="fn">orElseThrow</span>();
+}
+
+<span class="cm">// Wildcards — PECS rule</span>
+<span class="cm">// Producer (reading from list) — ? extends</span>
+<span class="kw">public double</span> <span class="fn">totalPrice</span>(List&lt;? <span class="kw">extends</span> <span class="cl">Booking</span>&gt; bookings) {
+    <span class="kw">return</span> bookings.<span class="fn">stream</span>().<span class="fn">mapToDouble</span>(Booking::getPrice).<span class="fn">sum</span>();
+}
+<span class="cm">// Consumer (writing to list) — ? super</span>
+<span class="kw">public void</span> <span class="fn">addBookings</span>(List&lt;? <span class="kw">super</span> <span class="cl">Booking</span>&gt; dest, List&lt;<span class="cl">Booking</span>&gt; src) {
+    dest.<span class="fn">addAll</span>(src);
+}</pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">🔒</div>
+    <div style="flex:1"><div class="sec-title">Concurrency — Thread Safety</div><div class="sec-sub">Race conditions, locks, atomic operations</div></div>
+    <span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="j-conc" id="tab-j-conc-concept" onclick="switchTab('j-conc','concept')">Concept</div>
+      <div class="tab" data-group="j-conc" id="tab-j-conc-code" onclick="switchTab('j-conc','code')">Code</div>
+      <div class="tab" data-group="j-conc" id="tab-j-conc-real" onclick="switchTab('j-conc','real')">Real-world</div>
+    </div>
+    <div class="tab-panel active" data-group="j-conc" id="panel-j-conc-concept">
+      <div class="block">
+        <div class="block-title">The threading problem</div>
+        <div class="prose">A race condition occurs when two or more threads access shared state concurrently and at least one modifies it, without proper synchronization. The result is unpredictable — depends on thread scheduling, which varies every run.</div>
+        <table class="ctable">
+          <tr><th>Tool</th><th>Guarantees</th><th>Cost</th><th>Use when</th></tr>
+          <tr><td>volatile</td><td>Visibility only</td><td>Minimal</td><td>Single writer, multiple readers. Flags.</td></tr>
+          <tr><td>synchronized</td><td>Mutual exclusion + visibility</td><td>Lock overhead</td><td>Compound operations on shared state</td></tr>
+          <tr><td>AtomicInteger</td><td>Lock-free atomic ops</td><td>CAS retries</td><td>Counters, statistics</td></tr>
+          <tr><td>ReentrantLock</td><td>Mutex + conditions</td><td>Lock overhead</td><td>Complex locking (tryLock timeout)</td></tr>
+          <tr><td>ConcurrentHashMap</td><td>Thread-safe map</td><td>Segment lock</td><td>Shared caches, registries</td></tr>
+          <tr><td>BlockingQueue</td><td>Thread-safe FIFO</td><td>Condition wait</td><td>Producer-consumer pipelines</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="j-conc" id="panel-j-conc-code">
+<pre><span class="cm">// volatile — visibility only, NOT atomicity</span>
+<span class="kw">private volatile boolean</span> isRunning = <span class="kw">true</span>;
+<span class="cm">// Thread A: isRunning = false → Thread B sees it immediately
+// But: isRunning++ is NOT safe with volatile (3 operations: read, inc, write)</span>
+
+<span class="cm">// AtomicInteger — lock-free atomic operations via CAS</span>
+<span class="kw">private</span> <span class="cl">AtomicInteger</span> bookingCount = <span class="kw">new</span> <span class="cl">AtomicInteger</span>(<span class="nu">0</span>);
+bookingCount.<span class="fn">incrementAndGet</span>();             <span class="cm">// atomic ++</span>
+bookingCount.<span class="fn">addAndGet</span>(<span class="nu">5</span>);                 <span class="cm">// atomic += 5</span>
+bookingCount.<span class="fn">compareAndSet</span>(<span class="nu">10</span>, <span class="nu">0</span>);        <span class="cm">// set to 0 only if currently 10</span>
+
+<span class="cm">// synchronized — one thread at a time</span>
+<span class="kw">private final</span> Object lock = <span class="kw">new</span> Object();
+<span class="kw">public void</span> <span class="fn">transferFunds</span>(<span class="kw">double</span> amount) {
+    <span class="kw">synchronized</span> (lock) { <span class="cm">// block-level lock</span>
+        balance -= amount;
+        processedCount++;
+    }
+}
+
+<span class="cm">// ReentrantLock — explicit lock with timeout</span>
+<span class="kw">private final</span> <span class="cl">ReentrantLock</span> lock = <span class="kw">new</span> <span class="cl">ReentrantLock</span>();
+<span class="kw">public boolean</span> <span class="fn">tryTransfer</span>(<span class="kw">double</span> amount) {
+    <span class="kw">if</span> (lock.<span class="fn">tryLock</span>(<span class="nu">100</span>, TimeUnit.MILLISECONDS)) {
+        <span class="kw">try</span> { balance -= amount; <span class="kw">return true</span>; }
+        <span class="kw">finally</span> { lock.<span class="fn">unlock</span>(); } <span class="cm">// ALWAYS unlock in finally</span>
+    }
+    <span class="kw">return false</span>; <span class="cm">// couldn't acquire lock in time</span>
+}
+
+<span class="cm">// ConcurrentHashMap — thread-safe without locking whole map</span>
+Map&lt;String, Integer&gt; cache = <span class="kw">new</span> ConcurrentHashMap&lt;&gt;();
+cache.<span class="fn">putIfAbsent</span>(<span class="str">"key"</span>, <span class="nu">0</span>);     <span class="cm">// atomic check-then-put</span>
+cache.<span class="fn">computeIfAbsent</span>(<span class="str">"key"</span>, k -> <span class="fn">expensiveLoad</span>(k)); <span class="cm">// compute once</span>
+cache.<span class="fn">merge</span>(<span class="str">"key"</span>, <span class="nu">1</span>, Integer::sum); <span class="cm">// atomic increment</span></pre>
+    </div>
+    <div class="tab-panel" data-group="j-conc" id="panel-j-conc-real">
+      <div class="block">
+        <div class="callout c-tag"><strong>TRex multi-tenant onboarding:</strong> When onboarding multiple tenants concurrently to Staging/Prod-US/Prod-EU, a ConcurrentHashMap tracks onboarding state per tenant. AtomicInteger counts successfully onboarded tenants. If one tenant fails, others continue — no shared mutable state between tenant onboarding tasks.<br><br><strong>WFM Forecasting:</strong> The forecasting service processes multiple tenants in parallel using a thread pool (ExecutorService). Each tenant's forecast is independent (no shared state), so no synchronization needed. Results are collected using CompletableFuture.allOf().<br><br><strong>People Fabric CDC:</strong> The pipeline processes CDC events from PostgreSQL in order per entity but can process different entities in parallel. BlockingQueue separates the reader thread (reads CDC events) from writer threads (insert to AlloyDB).</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">⚡</div>
+    <div style="flex:1"><div class="sec-title">CompletableFuture — Async Java</div><div class="sec-sub">Non-blocking async operations — the modern way</div></div>
+    <span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="j-cf" id="tab-j-cf-concept" onclick="switchTab('j-cf','concept')">Concept</div>
+      <div class="tab" data-group="j-cf" id="tab-j-cf-code" onclick="switchTab('j-cf','code')">Code</div>
+    </div>
+    <div class="tab-panel active" data-group="j-cf" id="panel-j-cf-concept">
+      <div class="block">
+        <div class="block-title">Why async matters for booking systems</div>
+        <div class="prose">A hotel search needs: hotel data + room availability + current pricing + user's past bookings. If done sequentially: 4 × 50ms = 200ms. If done in parallel: ~50ms (limited by slowest). CompletableFuture enables this without blocking threads.</div>
+        <div class="arch">Sequential:       [hotel] → [availability] → [pricing] → [history]  = 200ms
+Async parallel:   [hotel    ]
+                  [availability]  ← all start at same time
+                  [pricing      ]
+                  [history ]      = ~50ms (slowest task)</div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="j-cf" id="panel-j-cf-code">
+<pre><span class="cm">// Run multiple async operations and combine</span>
+CompletableFuture&lt;Hotel&gt; hotelFuture =
+    CompletableFuture.<span class="fn">supplyAsync</span>(() -> hotelService.<span class="fn">findById</span>(hotelId));
+
+CompletableFuture&lt;List&lt;Room&gt;&gt; roomsFuture =
+    CompletableFuture.<span class="fn">supplyAsync</span>(() -> roomService.<span class="fn">findAvailable</span>(hotelId, dates));
+
+CompletableFuture&lt;Double&gt; priceFuture =
+    CompletableFuture.<span class="fn">supplyAsync</span>(() -> pricingService.<span class="fn">getCurrentPrice</span>(hotelId));
+
+<span class="cm">// Wait for all, then combine</span>
+CompletableFuture&lt;HotelSearchResult&gt; result =
+    CompletableFuture.<span class="fn">allOf</span>(hotelFuture, roomsFuture, priceFuture)
+        .<span class="fn">thenApply</span>(v -> <span class="kw">new</span> <span class="cl">HotelSearchResult</span>(
+            hotelFuture.<span class="fn">join</span>(),
+            roomsFuture.<span class="fn">join</span>(),
+            priceFuture.<span class="fn">join</span>()
+        ));
+
+<span class="cm">// Chain operations</span>
+CompletableFuture&lt;String&gt; pipeline =
+    CompletableFuture.<span class="fn">supplyAsync</span>(() -> <span class="fn">fetchUserData</span>(userId))    <span class="cm">// async</span>
+        .<span class="fn">thenApply</span>(user -> user.<span class="fn">getPremiumStatus</span>())               <span class="cm">// transform (still async)</span>
+        .<span class="fn">thenApplyAsync</span>(status -> <span class="fn">loadPremiumDeals</span>(status))       <span class="cm">// on different thread</span>
+        .<span class="fn">exceptionally</span>(ex -> <span class="str">"standard-deals"</span>);                   <span class="cm">// fallback on error</span>
+
+<span class="cm">// With timeout (Java 9+)</span>
+CompletableFuture&lt;Hotel&gt; withTimeout =
+    hotelFuture.<span class="fn">orTimeout</span>(<span class="nu">2</span>, TimeUnit.SECONDS);
+
+<span class="cm">// Race — take whichever resolves first</span>
+CompletableFuture&lt;String&gt; fastest =
+    CompletableFuture.<span class="fn">anyOf</span>(primaryCache, secondaryCache, dbFallback)
+        .<span class="fn">thenApply</span>(result -> (String) result);</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ ADVANCED ═══════════════════════════════════════ -->
+
+<div class="section" data-level="advanced">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">🔬</div>
+    <div style="flex:1"><div class="sec-title">JVM Internals — Memory & GC</div><div class="sec-sub">Heap, stack, metaspace, garbage collectors</div></div>
+    <span class="sec-lv lv-adv">Advanced</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="j-jvm" id="tab-j-jvm-mem" onclick="switchTab('j-jvm','mem')">Memory model</div>
+      <div class="tab" data-group="j-jvm" id="tab-j-jvm-gc" onclick="switchTab('j-jvm','gc')">Garbage collectors</div>
+      <div class="tab" data-group="j-jvm" id="tab-j-jvm-tune" onclick="switchTab('j-jvm','tune')">Tuning</div>
+    </div>
+    <div class="tab-panel active" data-group="j-jvm" id="panel-j-jvm-mem">
+      <div class="block">
+        <div class="block-title">JVM memory areas</div>
+        <div class="arch">JVM Memory
+├── Heap (GC-managed)
+│   ├── Young Generation
+│   │   ├── Eden Space        ← new objects allocated here
+│   │   └── Survivor (S0,S1) ← survived objects move here
+│   └── Old Generation        ← long-lived objects promoted here
+├── Metaspace (off-heap)      ← class metadata (replaced PermGen in Java 8)
+├── Stack (per thread)        ← local variables, method call frames
+├── Native Memory             ← NIO buffers, JIT compiled code
+└── Code Cache                ← JIT compiled native code</div>
+        <div class="callout c-info"><strong>Young vs Old gen:</strong> Most objects die young (short-lived request-scoped objects). Minor GC collects Young Gen — fast (milliseconds). Major/Full GC collects Old Gen — slow (can cause stop-the-world pauses of hundreds of ms). Tune heap ratio to minimize Full GC.</div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="j-jvm" id="panel-j-jvm-gc">
+      <div class="block">
+        <table class="ctable">
+          <tr><th>GC</th><th>Use case</th><th>Pause</th><th>Throughput</th></tr>
+          <tr><td>Serial GC</td><td>Single-threaded, small heaps</td><td>High</td><td class="bad">Low</td></tr>
+          <tr><td>Parallel GC</td><td>Throughput-first, batch jobs</td><td>Medium</td><td class="good">High</td></tr>
+          <tr><td>G1 GC (default Java 9+)</td><td>Balanced, &lt;10GB heap</td><td class="ok">Low-medium</td><td class="ok">Good</td></tr>
+          <tr><td>ZGC (Java 15+)</td><td>Ultra-low latency, any heap</td><td class="good">&lt;1ms</td><td class="ok">Good</td></tr>
+          <tr><td>Shenandoah</td><td>Low pause, concurrent</td><td class="good">&lt;10ms</td><td class="ok">Good</td></tr>
+        </table>
+        <div class="callout c-adv"><strong>For booking/payment services:</strong> G1GC is the right default. ZGC is worth considering if you're seeing GC pauses &gt;100ms affecting P99 latency. Set <code>-XX:MaxGCPauseMillis=200</code> to give G1 a target.</div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="j-jvm" id="panel-j-jvm-tune">
+<pre><span class="cm"># Common JVM flags for production services</span>
+<span class="cm"># Heap size — start with 50% of available RAM</span>
+-Xms2g -Xmx2g          <span class="cm"># set min = max to avoid resize pauses</span>
+
+<span class="cm"># GC selection</span>
+-XX:+UseG1GC            <span class="cm"># G1 (default Java 9+, good for most services)</span>
+-XX:+UseZGC             <span class="cm"># ZGC (Java 15+, ultra-low latency)</span>
+-XX:MaxGCPauseMillis=200 <span class="cm"># G1 pause target</span>
+
+<span class="cm"># GC logging (essential for diagnosing pauses)</span>
+-Xlog:gc*:file=/var/log/gc.log:time,uptime,level
+
+<span class="cm"># OOM heap dump (invaluable for debugging memory leaks)</span>
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:HeapDumpPath=/tmp/heap.hprof
+
+<span class="cm"># Metaspace — default is unlimited, set a ceiling</span>
+-XX:MaxMetaspaceSize=256m
+
+<span class="cm"># String deduplication (G1 only — saves 10-30% heap if many duplicate strings)</span>
+-XX:+UseStringDeduplication
+
+<span class="cm"># Common memory leak pattern — check with jmap</span>
+<span class="cm"># jmap -histo:live &lt;pid&gt; | head -30  ← top 30 object types by count</span>
+<span class="cm"># jmap -dump:live,format=b,file=heap.hprof &lt;pid&gt;  ← full heap dump</span></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="advanced">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">🏗</div>
+    <div style="flex:1"><div class="sec-title">Design Patterns in Java</div><div class="sec-sub">Singleton, Factory, Builder, Observer, Strategy — with real examples</div></div>
+    <span class="sec-lv lv-adv">Advanced</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="j-dp" id="tab-j-dp-creational" onclick="switchTab('j-dp','creational')">Creational</div>
+      <div class="tab" data-group="j-dp" id="tab-j-dp-structural" onclick="switchTab('j-dp','structural')">Structural</div>
+      <div class="tab" data-group="j-dp" id="tab-j-dp-behavioral" onclick="switchTab('j-dp','behavioral')">Behavioral</div>
+    </div>
+    <div class="tab-panel active" data-group="j-dp" id="panel-j-dp-creational">
+<pre><span class="cm">// Singleton — thread-safe with double-checked locking</span>
+<span class="kw">public class</span> <span class="cl">ConfigService</span> {
+    <span class="kw">private volatile static</span> <span class="cl">ConfigService</span> instance;
+
+    <span class="kw">public static</span> <span class="cl">ConfigService</span> <span class="fn">getInstance</span>() {
+        <span class="kw">if</span> (instance == <span class="kw">null</span>) {
+            <span class="kw">synchronized</span> (<span class="cl">ConfigService</span>.<span class="kw">class</span>) {
+                <span class="kw">if</span> (instance == <span class="kw">null</span>) instance = <span class="kw">new</span> <span class="cl">ConfigService</span>();
+            }
+        }
+        <span class="kw">return</span> instance;
+    }
+}
+<span class="cm">// Better: use enum singleton or Spring @Bean (Spring manages lifecycle)</span>
+
+<span class="cm">// Builder — for complex objects with many optional fields</span>
+<span class="kw">public class</span> <span class="cl">Booking</span> {
+    <span class="kw">private final</span> String userId;     <span class="kw">private final</span> String roomId;
+    <span class="kw">private final</span> LocalDate checkIn; <span class="kw">private final</span> LocalDate checkOut;
+    <span class="kw">private final</span> String couponCode; <span class="cm">// optional</span>
+    <span class="kw">private final</span> String notes;       <span class="cm">// optional</span>
+
+    <span class="kw">private</span> <span class="cl">Booking</span>(<span class="cl">Builder</span> b) { <span class="cm">/* assign from builder */</span> }
+
+    <span class="kw">public static class</span> <span class="cl">Builder</span> {
+        <span class="kw">private</span> String userId, roomId, couponCode, notes;
+        <span class="kw">private</span> LocalDate checkIn, checkOut;
+
+        <span class="kw">public</span> <span class="cl">Builder</span> <span class="fn">userId</span>(String v) { userId=v; <span class="kw">return this</span>; }
+        <span class="kw">public</span> <span class="cl">Builder</span> <span class="fn">roomId</span>(String v) { roomId=v; <span class="kw">return this</span>; }
+        <span class="kw">public</span> <span class="cl">Builder</span> <span class="fn">checkIn</span>(LocalDate v) { checkIn=v; <span class="kw">return this</span>; }
+        <span class="kw">public</span> <span class="cl">Builder</span> <span class="fn">coupon</span>(String v) { couponCode=v; <span class="kw">return this</span>; }
+        <span class="kw">public</span> <span class="cl">Booking</span> <span class="fn">build</span>() {
+            Objects.<span class="fn">requireNonNull</span>(userId, <span class="str">"userId required"</span>);
+            <span class="kw">return new</span> <span class="cl">Booking</span>(<span class="kw">this</span>);
+        }
+    }
+}
+<span class="cm">// Usage: new Booking.Builder().userId("u1").roomId("r1").checkIn(date).build()</span>
+<span class="cm">// Lombok: @Builder does all this automatically</span>
+
+<span class="cm">// Factory — create objects without exposing creation logic</span>
+<span class="kw">public class</span> <span class="cl">NotificationFactory</span> {
+    <span class="kw">public static</span> <span class="cl">Notification</span> <span class="fn">create</span>(String type) {
+        <span class="kw">return switch</span> (type) {
+            <span class="kw">case</span> <span class="str">"email"</span> -> <span class="kw">new</span> <span class="cl">EmailNotification</span>();
+            <span class="kw">case</span> <span class="str">"sms"</span>   -> <span class="kw">new</span> <span class="cl">SMSNotification</span>();
+            <span class="kw">case</span> <span class="str">"push"</span>  -> <span class="kw">new</span> <span class="cl">PushNotification</span>();
+            <span class="kw">default</span> -> <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="str">"Unknown type: "</span> + type);
+        };
+    }
+}</pre>
+    </div>
+    <div class="tab-panel" data-group="j-dp" id="panel-j-dp-structural">
+<pre><span class="cm">// Decorator — add behaviour without modifying original</span>
+<span class="kw">interface</span> <span class="cl">HotelService</span> { Hotel <span class="fn">findById</span>(String id); }
+
+<span class="kw">class</span> <span class="cl">HotelServiceImpl</span> <span class="kw">implements</span> <span class="cl">HotelService</span> {
+    <span class="kw">public</span> Hotel <span class="fn">findById</span>(String id) { <span class="kw">return</span> db.<span class="fn">find</span>(id); }
+}
+
+<span class="cm">// Cache decorator — wraps original without changing it</span>
+<span class="kw">class</span> <span class="cl">CachedHotelService</span> <span class="kw">implements</span> <span class="cl">HotelService</span> {
+    <span class="kw">private final</span> <span class="cl">HotelService</span> delegate;
+    <span class="kw">private final</span> Map&lt;String, Hotel&gt; cache = <span class="kw">new</span> ConcurrentHashMap&lt;&gt;();
+
+    <span class="kw">public</span> Hotel <span class="fn">findById</span>(String id) {
+        <span class="kw">return</span> cache.<span class="fn">computeIfAbsent</span>(id, delegate::findById);
+    }
+}
+<span class="cm">// Logging decorator — add logging without touching business logic</span>
+<span class="kw">class</span> <span class="cl">LoggingHotelService</span> <span class="kw">implements</span> <span class="cl">HotelService</span> {
+    <span class="kw">private final</span> <span class="cl">HotelService</span> delegate;
+    <span class="kw">public</span> Hotel <span class="fn">findById</span>(String id) {
+        log.<span class="fn">info</span>(<span class="str">"Finding hotel: {}"</span>, id);
+        Hotel h = delegate.<span class="fn">findById</span>(id);
+        log.<span class="fn">info</span>(<span class="str">"Found: {}"</span>, h.<span class="fn">getName</span>());
+        <span class="kw">return</span> h;
+    }
+}
+<span class="cm">// Stack decorators: new LoggingHotelService(new CachedHotelService(new HotelServiceImpl()))</span></pre>
+    </div>
+    <div class="tab-panel" data-group="j-dp" id="panel-j-dp-behavioral">
+<pre><span class="cm">// Strategy — swap algorithm at runtime</span>
+<span class="kw">interface</span> <span class="cl">PricingStrategy</span> { <span class="kw">double</span> <span class="fn">calculate</span>(<span class="kw">double</span> basePrice, <span class="cl">BookingContext</span> ctx); }
+
+<span class="kw">class</span> <span class="cl">SeasonalPricing</span> <span class="kw">implements</span> <span class="cl">PricingStrategy</span> {
+    <span class="kw">public double</span> <span class="fn">calculate</span>(<span class="kw">double</span> base, <span class="cl">BookingContext</span> ctx) {
+        <span class="kw">return</span> ctx.<span class="fn">isPeakSeason</span>() ? base * <span class="nu">1.3</span> : base;
+    }
+}
+
+<span class="cm">// Observer — react to events without coupling</span>
+<span class="kw">interface</span> <span class="cl">BookingEventListener</span> { <span class="kw">void</span> <span class="fn">onBookingCreated</span>(<span class="cl">BookingEvent</span> event); }
+
+<span class="kw">class</span> <span class="cl">BookingEventPublisher</span> {
+    <span class="kw">private</span> List&lt;<span class="cl">BookingEventListener</span>&gt; listeners = <span class="kw">new</span> ArrayList&lt;&gt;();
+    <span class="kw">public void</span> <span class="fn">subscribe</span>(<span class="cl">BookingEventListener</span> l) { listeners.<span class="fn">add</span>(l); }
+    <span class="kw">public void</span> <span class="fn">publish</span>(<span class="cl">BookingEvent</span> event) {
+        listeners.<span class="fn">parallelStream</span>().<span class="fn">forEach</span>(l -> l.<span class="fn">onBookingCreated</span>(event));
+    }
+}
+
+<span class="cm">// Template Method — define skeleton, let subclasses fill details</span>
+<span class="kw">abstract class</span> <span class="cl">BookingProcessor</span> {
+    <span class="kw">public final</span> <span class="cl">BookingResult</span> <span class="fn">process</span>(<span class="cl">BookingRequest</span> req) {
+        <span class="fn">validateRequest</span>(req);
+        <span class="cl">Inventory</span> inv = <span class="fn">checkInventory</span>(req);
+        <span class="cl">Payment</span> payment = <span class="fn">processPayment</span>(req);
+        <span class="kw">return</span> <span class="fn">createBookingRecord</span>(req, inv, payment);
+    }
+    <span class="kw">protected abstract void</span> <span class="fn">validateRequest</span>(<span class="cl">BookingRequest</span> req);
+    <span class="kw">protected abstract</span> <span class="cl">Inventory</span> <span class="fn">checkInventory</span>(<span class="cl">BookingRequest</span> req);
+    <span class="kw">protected abstract</span> <span class="cl">Payment</span> <span class="fn">processPayment</span>(<span class="cl">BookingRequest</span> req);
+    <span class="kw">protected abstract</span> <span class="cl">BookingResult</span> <span class="fn">createBookingRecord</span>(<span class="cl">BookingRequest</span> req, <span class="cl">Inventory</span> inv, <span class="cl">Payment</span> p);
+}</pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="advanced">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">📊</div>
+    <div style="flex:1"><div class="sec-title">Java Performance & Profiling</div><div class="sec-sub">Finding and fixing bottlenecks in production</div></div>
+    <span class="sec-lv lv-adv">Advanced</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="j-perf" id="tab-j-perf-tools" onclick="switchTab('j-perf','tools')">Tools</div>
+      <div class="tab" data-group="j-perf" id="tab-j-perf-patterns" onclick="switchTab('j-perf','patterns')">Anti-patterns</div>
+    </div>
+    <div class="tab-panel active" data-group="j-perf" id="panel-j-perf-tools">
+      <div class="block">
+        <table class="ctable">
+          <tr><th>Tool</th><th>What it shows</th><th>When to use</th></tr>
+          <tr><td>jstack</td><td>Thread dump — all thread states</td><td>Application hung or high CPU</td></tr>
+          <tr><td>jmap</td><td>Heap histogram, heap dump</td><td>OOM error, memory leak</td></tr>
+          <tr><td>jstat</td><td>GC statistics live</td><td>Suspected GC pressure</td></tr>
+          <tr><td>async-profiler</td><td>CPU flame graph, allocation profile</td><td>Hot paths, GC pressure</td></tr>
+          <tr><td>JFR (Java Flight Recorder)</td><td>Low-overhead continuous recording</td><td>Production profiling</td></tr>
+          <tr><td>Micrometer + Prometheus</td><td>JVM metrics in Grafana</td><td>Ongoing monitoring</td></tr>
+        </table>
+<pre><span class="cm"># Thread dump — see what all threads are doing</span>
+jstack &lt;pid&gt;
+
+<span class="cm"># Heap histogram — top object types by count</span>
+jmap -histo:live &lt;pid&gt; | head -30
+
+<span class="cm"># GC stats every 1 second</span>
+jstat -gcutil &lt;pid&gt; 1000
+
+<span class="cm"># Micrometer metrics for Spring Boot (auto-configured)</span>
+<span class="cm"># Expose via /actuator/prometheus</span>
+<span class="cm"># Key metrics: jvm_gc_pause_seconds, jvm_memory_used_bytes, jvm_threads_live</span></pre>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="j-perf" id="panel-j-perf-patterns">
+<pre><span class="cm">// 1. String concatenation in loops — creates O(n²) objects</span>
+<span class="cm">// BAD:</span>
+String sql = <span class="str">""</span>;
+<span class="kw">for</span> (String col : columns) sql += col + <span class="str">","</span>; <span class="cm">// O(n²)</span>
+<span class="cm">// GOOD:</span>
+String sql = String.<span class="fn">join</span>(<span class="str">","</span>, columns); <span class="cm">// O(n)</span>
+
+<span class="cm">// 2. Autoboxing in hot paths — creates Integer objects for each int</span>
+<span class="cm">// BAD (in a tight loop):</span>
+Integer sum = <span class="nu">0</span>;
+<span class="kw">for</span> (<span class="kw">int</span> i : largeList) sum += i; <span class="cm">// autoboxes int to Integer each time</span>
+<span class="cm">// GOOD:</span>
+<span class="kw">int</span> sum = <span class="nu">0</span>;
+<span class="kw">for</span> (<span class="kw">int</span> i : largeList) sum += i;
+
+<span class="cm">// 3. Eagerly loading large collections — load only what you need</span>
+<span class="cm">// BAD:</span>
+List&lt;Hotel&gt; all = hotelRepo.<span class="fn">findAll</span>(); <span class="cm">// loads ALL hotels into memory</span>
+<span class="cm">// GOOD:</span>
+Page&lt;Hotel&gt; page = hotelRepo.<span class="fn">findAll</span>(PageRequest.<span class="fn">of</span>(<span class="nu">0</span>, <span class="nu">20</span>));
+
+<span class="cm">// 4. N+1 queries (ORM anti-pattern)</span>
+<span class="cm">// BAD: fetching rooms for each hotel in a loop</span>
+<span class="kw">for</span> (Hotel h : hotels) h.<span class="fn">getRooms</span>().<span class="fn">size</span>(); <span class="cm">// N queries!</span>
+<span class="cm">// GOOD: @EntityGraph or JOIN FETCH or @BatchSize</span>
+<span class="an">@Query</span>(<span class="str">"SELECT h FROM Hotel h JOIN FETCH h.rooms WHERE h.city = :city"</span>)
+List&lt;Hotel&gt; <span class="fn">findByCityWithRooms</span>(String city);
+
+<span class="cm">// 5. Using Stream.collect() when a simple loop suffices</span>
+<span class="cm">// For side effects, forEach is fine. Collect is for producing new collections.</span>
+hotels.<span class="fn">forEach</span>(h -> cache.<span class="fn">put</span>(h.<span class="fn">getId</span>(), h)); <span class="cm">// cleaner</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- Checklist -->
+<div class="section" data-level="advanced">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">✅</div>
+    <div style="flex:1"><div class="sec-title">Java readiness checklist</div><div class="sec-sub">Can you answer these without notes?</div></div>
+    <span class="sec-lv lv-adv">All levels</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="j-chk" id="tab-j-chk-beg" onclick="switchTab('j-chk','beg')">🟢 Beginner</div>
+      <div class="tab" data-group="j-chk" id="tab-j-chk-int" onclick="switchTab('j-chk','int')">🟣 Intermediate</div>
+      <div class="tab" data-group="j-chk" id="tab-j-chk-adv" onclick="switchTab('j-chk','adv')">🟠 Advanced</div>
+    </div>
+    <div class="tab-panel active" data-group="j-chk" id="panel-j-chk-beg">
+      <ul class="chk-list" style="padding:14px">
+        <li class="chk-item"><div class="chkbox" id="chk-j1" onclick="jToggle('j1')"></div><div class="chk-text" id="txt-j1">Explain all 4 OOP pillars with a booking domain example for each</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j2" onclick="jToggle('j2')"></div><div class="chk-text" id="txt-j2">Why is String concatenation in a loop O(n²)? How to fix?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j3" onclick="jToggle('j3')"></div><div class="chk-text" id="txt-j3">HashMap vs TreeMap vs LinkedHashMap — when to use each</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j4" onclick="jToggle('j4')"></div><div class="chk-text" id="txt-j4">Checked vs unchecked exceptions — when to use each, with examples</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j5" onclick="jToggle('j5')"></div><div class="chk-text" id="txt-j5">Why use try-with-resources? What happens without it?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j6" onclick="jToggle('j6')"></div><div class="chk-text" id="txt-j6">Implement a frequency counter for a String using HashMap</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j7" onclick="jToggle('j7')"></div><div class="chk-text" id="txt-j7">Why NEVER use == to compare Strings? Show a broken example</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j8" onclick="jToggle('j8')"></div><div class="chk-text" id="txt-j8">Composition vs Inheritance — give a real example of why composition wins</div></li>
+      </ul>
+    </div>
+    <div class="tab-panel" data-group="j-chk" id="panel-j-chk-int">
+      <ul class="chk-list" style="padding:14px">
+        <li class="chk-item"><div class="chkbox" id="chk-j9" onclick="jToggle('j9')"></div><div class="chk-text" id="txt-j9">Write a Stream pipeline: filter hotels by star rating, sort by price, take top 10, return names</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j10" onclick="jToggle('j10')"></div><div class="chk-text" id="txt-j10">volatile vs synchronized vs AtomicInteger — exact use case for each</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j11" onclick="jToggle('j11')"></div><div class="chk-text" id="txt-j11">HashMap is not thread-safe — what happens under concurrent access?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j12" onclick="jToggle('j12')"></div><div class="chk-text" id="txt-j12">CompletableFuture.allOf() — explain with a hotel search parallel fetch example</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j13" onclick="jToggle('j13')"></div><div class="chk-text" id="txt-j13">PECS rule — explain with a wildcard example (? extends vs ? super)</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j14" onclick="jToggle('j14')"></div><div class="chk-text" id="txt-j14">groupingBy collector — group bookings by hotel ID and count per hotel</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j15" onclick="jToggle('j15')"></div><div class="chk-text" id="txt-j15">@Transactional REQUIRED vs REQUIRES_NEW — give a real scenario</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j16" onclick="jToggle('j16')"></div><div class="chk-text" id="txt-j16">What is autoboxing and when does it hurt performance?</div></li>
+      </ul>
+    </div>
+    <div class="tab-panel" data-group="j-chk" id="panel-j-chk-adv">
+      <ul class="chk-list" style="padding:14px">
+        <li class="chk-item"><div class="chkbox" id="chk-j17" onclick="jToggle('j17')"></div><div class="chk-text" id="txt-j17">Explain JVM memory areas: heap (Young/Old), Metaspace, Stack, Code Cache</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j18" onclick="jToggle('j18')"></div><div class="chk-text" id="txt-j18">G1 GC vs ZGC — when would you choose ZGC for a booking service?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j19" onclick="jToggle('j19')"></div><div class="chk-text" id="txt-j19">How would you diagnose a production OOM error? What tools, what steps?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j20" onclick="jToggle('j20')"></div><div class="chk-text" id="txt-j20">Builder pattern — implement for a Booking object with required and optional fields</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j21" onclick="jToggle('j21')"></div><div class="chk-text" id="txt-j21">Decorator pattern — add caching and logging to HotelService without modifying it</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j22" onclick="jToggle('j22')"></div><div class="chk-text" id="txt-j22">double-checked locking for Singleton — why is volatile needed?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j23" onclick="jToggle('j23')"></div><div class="chk-text" id="txt-j23">What is type erasure? Why can't you do new T() in a generic method?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-j24" onclick="jToggle('j24')"></div><div class="chk-text" id="txt-j24">N+1 query problem in JPA — detect it, explain it, fix with JOIN FETCH</div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .page -->
+
+<script src="shared.js"></script>
+<script>
+buildNav('java');
+const jDone = initChecks('java-done', 24, 'java-done', 'java-pct', 'java-fill');
+function jToggle(id){ toggleCheck(id, jDone, 'java-done', 24, 'java-done', 'java-pct', 'java-fill'); }
+</script>
+</body>
+</html>

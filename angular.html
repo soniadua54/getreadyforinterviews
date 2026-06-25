@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>PrepKit — Angular</title><link rel="stylesheet" href="shared.css"></head>
+<body><nav class="topnav" id="topnav"></nav><div class="page">
+<div class="hero"><div class="hero-row"><div class="hero-icon" style="background:rgba(239,68,68,0.12)">🔺</div><div><div class="hero-title">Angular — Reference Guide</div><div class="hero-sub">Components · Services · RxJS · Routing · State · Forms</div></div></div>
+<div class="hero-desc">From your Biz2Credit work: Angular 4/6 for the HSBC lending platform. From Walmart IDC: front-end integration for Virtual Try-On. Angular is your frontend stack — know the architecture, RxJS observables, and component communication cold. Interviewers from fintech companies (Adyen, Klarna) may ask about frontend state management and RxJS specifically.</div>
+<div class="level-pills"><span class="level-pill lp-all selected" onclick="setLevel('all',this)">All</span><span class="level-pill lp-beg" onclick="setLevel('beginner',this)">🟢 Beginner</span><span class="level-pill lp-int" onclick="setLevel('intermediate',this)">🟣 Intermediate</span><span class="level-pill lp-adv" onclick="setLevel('advanced',this)">🟠 Advanced</span></div></div>
+<div class="stats"><div class="stat"><div class="stat-n" id="ng-done" style="color:var(--green)">0</div><div class="stat-l">Done</div></div><div class="stat"><div class="stat-n" style="color:var(--beg)">14</div><div class="stat-l">Checklist items</div></div></div>
+<div class="prog-wrap"><div class="prog-label"><span>Progress</span><span id="ng-pct">0 / 14</span></div><div class="prog-bar"><div class="prog-fill" id="ng-fill" style="width:0%"></div></div></div>
+
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--beg-bg)">🏗</div><div style="flex:1"><div class="sec-title">Angular Architecture — Components, Modules, Services</div></div><span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span></div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="ng-arch" id="tab-ng-arch-comp" onclick="switchTab('ng-arch','comp')">Components</div>
+      <div class="tab" data-group="ng-arch" id="tab-ng-arch-svc" onclick="switchTab('ng-arch','svc')">Services & DI</div>
+      <div class="tab" data-group="ng-arch" id="tab-ng-arch-comm" onclick="switchTab('ng-arch','comm')">Component communication</div>
+    </div>
+    <div class="tab-panel active" data-group="ng-arch" id="panel-ng-arch-comp">
+<pre><span class="cm">// Angular component — the building block of every UI</span>
+<span class="kw">import</span> { Component, OnInit, OnDestroy } <span class="kw">from</span> <span class="str">'@angular/core'</span>;
+<span class="kw">import</span> { ActivatedRoute } <span class="kw">from</span> <span class="str">'@angular/router'</span>;
+
+<span class="an">@Component</span>({
+  selector: <span class="str">'app-hotel-details'</span>,         <span class="cm">// &lt;app-hotel-details&gt; in templates</span>
+  templateUrl: <span class="str">'./hotel-details.component.html'</span>,
+  styleUrls: [<span class="str">'./hotel-details.component.scss'</span>],
+  changeDetection: ChangeDetectionStrategy.OnPush  <span class="cm">// perf optimization</span>
+})
+<span class="kw">export class</span> HotelDetailsComponent <span class="kw">implements</span> OnInit, OnDestroy {
+  hotel: Hotel | <span class="kw">null</span> = <span class="kw">null</span>;
+  loading = <span class="kw">false</span>;
+  <span class="kw">private</span> destroy$ = <span class="kw">new</span> Subject&lt;<span class="kw">void</span>&gt;();
+
+  <span class="cm">// Dependency injection via constructor</span>
+  <span class="kw">constructor</span>(
+    <span class="kw">private</span> hotelService: HotelService,
+    <span class="kw">private</span> route: ActivatedRoute,
+    <span class="kw">private</span> router: Router
+  ) {}
+
+  ngOnInit(): <span class="kw">void</span> {
+    <span class="cm">// takeUntil(destroy$) — auto-unsubscribe on component destroy</span>
+    this.route.params.pipe(
+      <span class="fn">switchMap</span>(params => {
+        this.loading = <span class="kw">true</span>;
+        <span class="kw">return</span> this.hotelService.<span class="fn">getById</span>(params[<span class="str">'id'</span>]);
+      }),
+      <span class="fn">takeUntil</span>(this.destroy$)
+    ).<span class="fn">subscribe</span>({
+      next: hotel => { this.hotel = hotel; this.loading = <span class="kw">false</span>; },
+      error: err => { console.error(err); this.loading = <span class="kw">false</span>; }
+    });
+  }
+
+  ngOnDestroy(): <span class="kw">void</span> {
+    this.destroy$.next();    <span class="cm">// emit signal</span>
+    this.destroy$.complete(); <span class="cm">// complete the subject</span>
+    <span class="cm">// All subscriptions with takeUntil(destroy$) auto-unsubscribe</span>
+  }
+}</pre>
+    </div>
+    <div class="tab-panel" data-group="ng-arch" id="panel-ng-arch-svc">
+<pre><span class="cm">// Service — shared business logic and HTTP calls</span>
+<span class="an">@Injectable</span>({ providedIn: <span class="str">'root'</span> })  <span class="cm">// singleton, available everywhere</span>
+<span class="kw">export class</span> HotelService {
+  <span class="kw">private</span> apiUrl = <span class="str">'/api/v1/hotels'</span>;
+
+  <span class="kw">constructor</span>(<span class="kw">private</span> http: HttpClient) {}
+
+  getById(id: string): Observable&lt;Hotel&gt; {
+    <span class="kw">return</span> this.http.<span class="fn">get</span>&lt;Hotel&gt;(<span class="str">`${this.apiUrl}/${id}`</span>).pipe(
+      <span class="fn">retry</span>({ count: 2, delay: 1000 }),         <span class="cm">// retry twice on error</span>
+      <span class="fn">catchError</span>(err => {
+        <span class="kw">if</span> (err.status === <span class="nu">404</span>) <span class="kw">return throwError</span>(() => <span class="kw">new</span> Error(<span class="str">'Not found'</span>));
+        <span class="kw">return throwError</span>(() => err);
+      })
+    );
+  }
+
+  search(params: SearchParams): Observable&lt;Hotel[]&gt; {
+    <span class="kw">return</span> this.http.<span class="fn">get</span>&lt;Hotel[]&gt;(this.apiUrl, { params: { ...params } });
+  }
+}</pre>
+    </div>
+    <div class="tab-panel" data-group="ng-arch" id="panel-ng-arch-comm">
+<pre><span class="cm">// Parent → Child: @Input()</span>
+<span class="kw">export class</span> HotelCardComponent {
+  <span class="an">@Input</span>() hotel!: Hotel;          <span class="cm">// received from parent template</span>
+  <span class="an">@Input</span>() showPrice = <span class="kw">true</span>;
+}
+<span class="cm">// In parent template: &lt;app-hotel-card [hotel]="selectedHotel" [showPrice]="false"&gt;</span>
+
+<span class="cm">// Child → Parent: @Output() + EventEmitter</span>
+<span class="kw">export class</span> HotelCardComponent {
+  <span class="an">@Output</span>() bookingRequested = <span class="kw">new</span> EventEmitter&lt;string&gt;();
+
+  onBookClick() {
+    this.bookingRequested.<span class="fn">emit</span>(this.hotel.id);
+  }
+}
+<span class="cm">// In parent: &lt;app-hotel-card (bookingRequested)="handleBooking($event)"&gt;</span>
+
+<span class="cm">// Sibling components: shared service with Subject</span>
+<span class="an">@Injectable</span>({ providedIn: <span class="str">'root'</span> })
+<span class="kw">export class</span> SearchStateService {
+  <span class="kw">private</span> searchQuery$ = <span class="kw">new</span> BehaviorSubject&lt;string&gt;(<span class="str">''</span>);
+  query$ = this.searchQuery$.asObservable();  <span class="cm">// public read-only</span>
+
+  setQuery(query: string) { this.searchQuery$.next(query); }
+}
+
+<span class="cm">// Component A sets query:</span>
+<span class="cm">// this.searchState.setQuery('Bangkok hotels')</span>
+<span class="cm">// Component B subscribes to changes:</span>
+<span class="cm">// this.searchState.query$.subscribe(q => this.filter(q))</span></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--int-bg)">🌊</div><div style="flex:1"><div class="sec-title">RxJS — Observables, Operators, Common Patterns</div><div class="sec-sub">The most important Angular concept for backend engineers to understand</div></div><span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span></div>
+  <div class="sec-body open">
+<pre><span class="cm">// RxJS key operators — you WILL be asked about these</span>
+
+<span class="cm">// map — transform each value</span>
+this.hotelService.<span class="fn">getAll</span>().pipe(
+  <span class="fn">map</span>(hotels => hotels.<span class="fn">filter</span>(h => h.starRating >= <span class="nu">4</span>))
+);
+
+<span class="cm">// switchMap — cancel previous HTTP call on new search input</span>
+<span class="cm">// Perfect for search-as-you-type (autocomplete)</span>
+this.searchControl.valueChanges.pipe(
+  <span class="fn">debounceTime</span>(<span class="nu">300</span>),           <span class="cm">// wait 300ms after user stops typing</span>
+  <span class="fn">distinctUntilChanged</span>(),        <span class="cm">// don't search if same value</span>
+  <span class="fn">switchMap</span>(query =>             <span class="cm">// cancel prev request, start new one</span>
+    this.hotelService.<span class="fn">search</span>(query)
+  ),
+  <span class="fn">takeUntil</span>(this.destroy$)
+).<span class="fn">subscribe</span>(results => this.hotels = results);
+
+<span class="cm">// mergeMap — run all inner observables concurrently</span>
+<span class="cm">// Use when order doesn't matter, all should run in parallel</span>
+hotelIds$.pipe(
+  <span class="fn">mergeMap</span>(id => this.hotelService.<span class="fn">getById</span>(id))
+);
+
+<span class="cm">// concatMap — run inner observables in ORDER</span>
+<span class="cm">// Use when operations must be sequential</span>
+bookingIds$.pipe(
+  <span class="fn">concatMap</span>(id => this.bookingService.<span class="fn">confirm</span>(id))
+);
+
+<span class="cm">// forkJoin — like Promise.all — wait for ALL to complete</span>
+forkJoin({
+  hotel: this.hotelService.<span class="fn">getById</span>(id),
+  rooms: this.roomService.<span class="fn">getByHotel</span>(id),
+  reviews: this.reviewService.<span class="fn">getByHotel</span>(id)
+}).<span class="fn">subscribe</span>(({ hotel, rooms, reviews }) => {
+  this.hotelData = { hotel, rooms, reviews };
+});
+
+<span class="cm">// Subject types</span>
+<span class="cm">// Subject       — multicast, no initial value, no replay</span>
+<span class="cm">// BehaviorSubject — has initial value, new subscribers get LAST emitted value</span>
+<span class="cm">// ReplaySubject — replays last N values to new subscribers</span>
+<span class="cm">// AsyncSubject  — emits only last value when completed</span>
+
+<span class="cm">// BehaviorSubject — most common for state</span>
+<span class="kw">private</span> userState = <span class="kw">new</span> BehaviorSubject&lt;User | null&gt;(<span class="kw">null</span>);
+currentUser$ = this.userState.asObservable();</pre>
+  </div>
+</div>
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--int-bg)">🛣️</div><div style="flex:1"><div class="sec-title">Routing — Lazy Loading & Route Guards</div><div class="sec-sub">Reduce initial bundle size with lazy-loaded feature modules</div></div><span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span></div>
+  <div class="sec-body open">
+<pre><span class="cm">// app-routing.module.ts — lazy loading feature modules</span>
+<span class="kw">const</span> routes: Routes = [
+  {
+    path: <span class="str">'hotels'</span>,
+    <span class="cm">// loadChildren: loaded ONLY when user navigates to /hotels</span>
+    <span class="cm">// This splits HotelModule into a separate JS chunk</span>
+    <span class="cm">// Result: smaller initial bundle, faster app startup</span>
+    loadChildren: () =>
+      import(<span class="str">'./hotels/hotel.module'</span>).then(m => m.HotelModule)
+  },
+  {
+    path: <span class="str">'admin'</span>,
+    loadChildren: () =>
+      import(<span class="str">'./admin/admin.module'</span>).then(m => m.AdminModule),
+    canActivate: [AuthGuard]       <span class="cm">// protect admin routes</span>
+  },
+  { path: <span class="str">''</span>, redirectTo: <span class="str">'/hotels'</span>, pathMatch: <span class="str">'full'</span> },
+  { path: <span class="str">'**'</span>, component: NotFoundComponent }  <span class="cm">// 404 fallback</span>
+];
+
+<span class="cm">// Route Guard — prevent unauthorized access</span>
+<span class="an">@Injectable</span>({ providedIn: <span class="str">'root'</span> })
+<span class="kw">export class</span> AuthGuard <span class="kw">implements</span> CanActivate {
+  <span class="kw">constructor</span>(<span class="kw">private</span> auth: AuthService, <span class="kw">private</span> router: Router) {}
+
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+    <span class="kw">if</span> (this.auth.isAuthenticated()) {
+      <span class="kw">return true</span>;
+    }
+    this.router.navigate([<span class="str">'/login'</span>], { queryParams: { returnUrl: state.url } });
+    <span class="kw">return false</span>;
+  }
+}</pre>
+    <div class="callout c-info"><strong>Why lazy loading?</strong> Without it, Angular bundles your entire app into one JS file. With lazy loading, each feature module is a separate chunk. The initial load only downloads the home page code; admin code is fetched only when someone navigates to /admin. This matters at Agoda scale — every KB saved = faster load for users on mobile networks in SEA.</div>
+  </div>
+</div>
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--int-bg)">🔗</div><div style="flex:1"><div class="sec-title">HTTP Interceptors — Auth Token, Error Handling, Loading</div><div class="sec-sub">Middleware for all HTTP requests — add auth token, handle 401, show loading state</div></div><span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span></div>
+  <div class="sec-body open">
+<pre><span class="cm">// AuthInterceptor — adds JWT to every outbound request</span>
+<span class="an">@Injectable</span>()
+<span class="kw">export class</span> AuthInterceptor <span class="kw">implements</span> HttpInterceptor {
+  <span class="kw">constructor</span>(<span class="kw">private</span> auth: AuthService, <span class="kw">private</span> router: Router) {}
+
+  intercept(req: HttpRequest&lt;any&gt;, next: HttpHandler): Observable&lt;HttpEvent&lt;any&gt;&gt; {
+    <span class="kw">const</span> token = this.auth.getToken();
+
+    <span class="cm">// Clone the request (HttpRequest is immutable)</span>
+    <span class="kw">const</span> authReq = token
+      ? req.clone({ headers: req.headers.set(<span class="str">'Authorization'</span>, <span class="str">`Bearer ${token}`</span>) })
+      : req;
+
+    <span class="kw">return</span> next.<span class="fn">handle</span>(authReq).pipe(
+      <span class="fn">catchError</span>((err: HttpErrorResponse) => {
+        <span class="kw">if</span> (err.status === <span class="nu">401</span>) {
+          <span class="cm">// Token expired — redirect to login</span>
+          this.auth.<span class="fn">logout</span>();
+          this.router.<span class="fn">navigate</span>([<span class="str">'/login'</span>]);
+        }
+        <span class="kw">if</span> (err.status === <span class="nu">403</span>) {
+          this.router.<span class="fn">navigate</span>([<span class="str">'/unauthorized'</span>]);
+        }
+        <span class="kw">return throwError</span>(() => err);
+      })
+    );
+  }
+}
+
+<span class="cm">// Register in AppModule providers:</span>
+providers: [
+  { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: <span class="kw">true</span> }
+]
+<span class="cm">// multi: true — allows multiple interceptors (they form a chain)</span></pre>
+    <div class="tip-box">
+      <div class="tip-label">💡 Interview answer</div>
+      HTTP interceptors are Angular's equivalent of middleware. At Biz2Credit (HSBC lending), we used interceptors for: (1) adding the Auth0 JWT to every API call, (2) handling global 401 redirects to re-login, and (3) showing/hiding a global loading spinner. Without interceptors, you'd have to add auth headers in every single service method — interceptors make it DRY.
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="advanced">
+  <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--adv-bg)">⚡</div><div style="flex:1"><div class="sec-title">OnPush Change Detection & Reactive Forms</div><div class="sec-sub">Performance optimization + form validation patterns</div></div><span class="sec-lv lv-adv">Advanced</span><span class="chev open">▼</span></div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="ng-adv" id="tab-ng-adv-cd" onclick="switchTab('ng-adv','cd')">OnPush Change Detection</div>
+      <div class="tab" data-group="ng-adv" id="tab-ng-adv-rf" onclick="switchTab('ng-adv','rf')">Reactive Forms</div>
+    </div>
+    <div class="tab-panel active" data-group="ng-adv" id="panel-ng-adv-cd">
+<pre><span class="cm">// Default change detection: Angular checks ALL components on any event/async op
+// OnPush: only checks component when:
+//   1. @Input() reference changes (not mutation)
+//   2. An Observable emits (with async pipe)
+//   3. You manually call markForCheck()
+
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush  // ← performance optimization
+})
+export class HotelListComponent {
+  // Use async pipe — automatically handles subscription AND OnPush detection
+  hotels$ = this.hotelService.getAll();  // Observable<Hotel[]>
+}</span>
+
+<span class="cm">// Template: async pipe + OnPush = no manual subscriptions</span>
+<span class="cm">// &lt;ng-container *ngIf="hotels$ | async as hotels"&gt;
+//   &lt;app-hotel-card *ngFor="let h of hotels" [hotel]="h"&gt;&lt;/app-hotel-card&gt;
+// &lt;/ng-container&gt;</span>
+
+<span class="cm">// Key rule: with OnPush, mutating an object WON'T trigger re-render
+// WRONG (mutation — OnPush won't detect):</span>
+this.hotel.price = 200;            <span class="cm">// same object reference, no change detected</span>
+
+<span class="cm">// CORRECT (new reference — OnPush detects input change):</span>
+this.hotel = { ...this.hotel, price: 200 };  <span class="cm">// spread = new object = new reference</span></pre>
+    </div>
+    <div class="tab-panel" data-group="ng-adv" id="panel-ng-adv-rf">
+<pre><span class="cm">// Reactive Forms — programmatic control vs template-driven (simpler but less powerful)</span>
+<span class="kw">import</span> { FormBuilder, Validators, AbstractControl } <span class="kw">from</span> <span class="str">'@angular/forms'</span>;
+
+<span class="an">@Component</span>({ ... })
+<span class="kw">export class</span> BookingFormComponent {
+  bookingForm = this.fb.group({
+    guestName:  [<span class="str">''</span>, [Validators.required, Validators.minLength(2)]],
+    email:      [<span class="str">''</span>, [Validators.required, Validators.email]],
+    checkIn:    [<span class="kw">null</span>, Validators.required],
+    checkOut:   [<span class="kw">null</span>, Validators.required],
+    guestCount: [1,    [Validators.min(1), Validators.max(10)]]
+  }, { validators: this.<span class="fn">dateRangeValidator</span> });  <span class="cm">// cross-field validator</span>
+
+  <span class="kw">constructor</span>(<span class="kw">private</span> fb: FormBuilder) {}
+
+  <span class="cm">// Custom cross-field validator (check-out must be after check-in)</span>
+  <span class="kw">private</span> dateRangeValidator(form: AbstractControl) {
+    <span class="kw">const</span> checkIn = form.<span class="fn">get</span>(<span class="str">'checkIn'</span>)?.value;
+    <span class="kw">const</span> checkOut = form.<span class="fn">get</span>(<span class="str">'checkOut'</span>)?.value;
+    <span class="kw">if</span> (checkIn && checkOut && checkOut <= checkIn) {
+      <span class="kw">return</span> { invalidDateRange: <span class="kw">true</span> };  <span class="cm">// error object</span>
+    }
+    <span class="kw">return null</span>;                              <span class="cm">// null = valid</span>
+  }
+
+  onSubmit() {
+    <span class="kw">if</span> (this.bookingForm.valid) {
+      <span class="cm">// bookingForm.value is typed — no casting needed</span>
+      this.bookingService.<span class="fn">create</span>(this.bookingForm.value).subscribe();
+    } <span class="kw">else</span> {
+      this.bookingForm.markAllAsTouched();  <span class="cm">// show all validation errors</span>
+    }
+  }
+}
+<span class="cm">// Template access: bookingForm.get('email')?.errors?.['email']</span></pre>
+    </div>
+  </div>
+</div>
+
+
+  <div class="sec-body open">
+    <ul class="chk-list" style="padding:14px">
+      <li class="chk-item"><div class="chkbox" id="chk-ng1" onclick="ngToggle('ng1')"></div><div class="chk-text" id="txt-ng1">Component lifecycle: ngOnInit vs constructor — what goes where?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-ng2" onclick="ngToggle('ng2')"></div><div class="chk-text" id="txt-ng2">@Input vs @Output vs shared service — when to use each for component communication?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-ng3" onclick="ngToggle('ng3')"></div><div class="chk-text" id="txt-ng3">Memory leak from subscriptions — how to prevent with takeUntil(destroy$)?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-ng4" onclick="ngToggle('ng4')"></div><div class="chk-text" id="txt-ng4">switchMap vs mergeMap vs concatMap — concrete example for each</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-ng5" onclick="ngToggle('ng5')"></div><div class="chk-text" id="txt-ng5">BehaviorSubject vs Subject — what's the difference?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-ng6" onclick="ngToggle('ng6')"></div><div class="chk-text" id="txt-ng6">OnPush change detection — what is it and when to use it?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-ng7" onclick="ngToggle('ng7')"></div><div class="chk-text" id="txt-ng7">Angular routing — lazy loading modules to reduce bundle size</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-ng8" onclick="ngToggle('ng8')"></div><div class="chk-text" id="txt-ng8">HTTP interceptors — how to add auth token to every request</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-ng9" onclick="ngToggle('ng9')"></div><div class="chk-text" id="txt-ng9">Reactive forms vs template-driven forms — trade-offs</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-ng10" onclick="ngToggle('ng10')"></div><div class="chk-text" id="txt-ng10">From your Biz2Credit work: what specific Angular features did you use?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-ng11" onclick="ngToggle('ng11')"></div><div class="chk-text" id="txt-ng11">Lazy loading — how does it reduce initial bundle size? What's loadChildren?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-ng12" onclick="ngToggle('ng12')"></div><div class="chk-text" id="txt-ng12">HTTP interceptors — what can you do in them? (auth, error handling, loading spinner)</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-ng13" onclick="ngToggle('ng13')"></div><div class="chk-text" id="txt-ng13">OnPush — why does mutating an object NOT trigger re-render? Spread operator fix.</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-ng14" onclick="ngToggle('ng14')"></div><div class="chk-text" id="txt-ng14">Reactive forms — what is FormBuilder? Custom validator returning null vs error object?</div></li>
+    </ul>
+    <div style="padding:0 14px 14px"><a class="ref-link" href="https://angular.io/guide/architecture" target="_blank">↗ Angular Architecture Guide</a><a class="ref-link" href="https://rxjs.dev/guide/operators" target="_blank">↗ RxJS Operators</a><a class="ref-link" href="https://angular.io/guide/lazy-loading-ngmodules" target="_blank">↗ Lazy Loading</a><a class="ref-link" href="https://angular.io/guide/http-intercept-requests-and-responses" target="_blank">↗ HTTP Interceptors</a></div>
+  </div>
+</div>
+</div>
+<script src="shared.js"></script>
+<script>
+buildNav('angular');
+const ngDone = initChecks('angular-done', 14, 'ng-done', 'ng-pct', 'ng-fill');
+function ngToggle(id){ toggleCheck(id, ngDone, 'angular-done', 14, 'ng-done', 'ng-pct', 'ng-fill'); }
+</script>
+</body></html>

@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PrepKit — Spring Boot</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav class="topnav" id="topnav"></nav>
+<div class="page">
+
+<div class="hero">
+  <div class="hero-row">
+    <div class="hero-icon" style="background:rgba(34,197,94,0.15)">🍃</div>
+    <div><div class="hero-title">Spring Boot — Complete Reference</div><div class="hero-sub">From REST APIs to security, caching, and production patterns</div></div>
+  </div>
+  <div class="hero-desc">Spring Boot is the most widely used Java backend framework. This guide covers everything from building your first REST API through advanced topics like reactive programming, security, and production configuration. Every concept connects to real booking/payment system scenarios.</div>
+  <div class="level-pills">
+    <span class="level-pill lp-beg selected" onclick="setLevel('all',this)">All Levels</span>
+    <span class="level-pill lp-beg" onclick="setLevel('beginner',this)">🟢 Beginner</span>
+    <span class="level-pill lp-int" onclick="setLevel('intermediate',this)">🟣 Intermediate</span>
+    <span class="level-pill lp-adv" onclick="setLevel('advanced',this)">🟠 Advanced</span>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-n" style="color:var(--beg)">5</div><div class="stat-l">Beginner topics</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--int)">6</div><div class="stat-l">Intermediate</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--adv)">5</div><div class="stat-l">Advanced</div></div>
+  <div class="stat"><div class="stat-n" id="spring-done" style="color:var(--green)">0</div><div class="stat-l">Checked off</div></div>
+</div>
+<div class="prog-wrap">
+  <div class="prog-label"><span>Progress</span><span id="spring-pct">0 / 20</span></div>
+  <div class="prog-bar"><div class="prog-fill" id="spring-fill" style="width:0%"></div></div>
+</div>
+
+<!-- ════════════ BEGINNER ════════════ -->
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">🚀</div>
+    <div style="flex:1"><div class="sec-title">Spring Boot Auto-configuration & IoC</div><div class="sec-sub">How Spring creates and wires objects for you</div></div>
+    <span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="sb-ioc" id="tab-sb-ioc-concept" onclick="switchTab('sb-ioc','concept')">Concept</div>
+      <div class="tab" data-group="sb-ioc" id="tab-sb-ioc-code" onclick="switchTab('sb-ioc','code')">Code</div>
+      <div class="tab" data-group="sb-ioc" id="tab-sb-ioc-arch" onclick="switchTab('sb-ioc','arch')">Architecture</div>
+    </div>
+    <div class="tab-panel active" data-group="sb-ioc" id="panel-sb-ioc-concept">
+      <div class="block">
+        <div class="block-title">Inversion of Control (IoC)</div>
+        <div class="prose">Normally you create your own objects: <code>HotelService service = new HotelService(new HotelRepository(dataSource))</code>. This couples your code to concrete implementations and makes testing hard. With IoC, Spring creates and wires objects for you — you just declare dependencies.</div>
+        <div class="callout c-info"><strong>Dependency Injection (DI)</strong> — Spring's implementation of IoC. Instead of creating dependencies, you declare them as constructor parameters. Spring's ApplicationContext (IoC Container) creates all beans at startup and injects them where needed.<br><br><strong>Auto-configuration</strong> — @SpringBootApplication triggers class-path scanning. If spring-boot-starter-web is on classpath → configures embedded Tomcat and DispatcherServlet. If spring-boot-starter-data-jpa → configures EntityManager and transaction manager. Zero XML required.</div>
+        <div class="two-col">
+          <div class="col-card"><h4>@Component / @Service / @Repository</h4><p>Mark class as a Spring-managed bean. @Service = business logic. @Repository = data access (adds exception translation). All three are semantically equivalent to Spring DI — they differ in purpose/tooling support.</p></div>
+          <div class="col-card"><h4>Constructor injection (preferred)</h4><p>Inject via constructor parameters. Allows final fields. Makes dependencies explicit. Easier to test — just call constructor with mocks. Avoids circular dependencies at startup.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="sb-ioc" id="panel-sb-ioc-code">
+<pre><span class="cm">// Declaring beans — Spring creates and manages these</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">HotelService</span> {
+    <span class="kw">private final</span> <span class="cl">HotelRepository</span> hotelRepo;
+    <span class="kw">private final</span> <span class="cl">PricingService</span> pricingService;
+    <span class="kw">private final</span> <span class="cl">CacheManager</span> cacheManager;
+
+    <span class="cm">// Constructor injection — preferred over @Autowired on field</span>
+    <span class="kw">public</span> <span class="cl">HotelService</span>(<span class="cl">HotelRepository</span> hotelRepo, <span class="cl">PricingService</span> pricingService,
+                       <span class="cl">CacheManager</span> cacheManager) {
+        <span class="kw">this</span>.hotelRepo = hotelRepo;
+        <span class="kw">this</span>.pricingService = pricingService;
+        <span class="kw">this</span>.cacheManager = cacheManager;
+    }
+}
+
+<span class="cm">// Manual bean definition — for third-party classes you can't annotate</span>
+<span class="an">@Configuration</span>
+<span class="kw">public class</span> <span class="cl">AppConfig</span> {
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cl">ObjectMapper</span> <span class="fn">objectMapper</span>() {
+        <span class="kw">return new</span> ObjectMapper()
+            .<span class="fn">registerModule</span>(<span class="kw">new</span> JavaTimeModule())
+            .<span class="fn">disable</span>(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    }
+
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> <span class="cl">RestTemplate</span> <span class="fn">restTemplate</span>() {
+        <span class="kw">return new</span> RestTemplateBuilder()
+            .<span class="fn">setConnectTimeout</span>(Duration.<span class="fn">ofSeconds</span>(<span class="nu">2</span>))
+            .<span class="fn">setReadTimeout</span>(Duration.<span class="fn">ofSeconds</span>(<span class="nu">5</span>))
+            .<span class="fn">build</span>();
+    }
+}
+
+<span class="cm">// Profiles — different beans for different environments</span>
+<span class="an">@Bean</span>
+<span class="an">@Profile</span>(<span class="str">"dev"</span>)
+<span class="kw">public</span> <span class="cl">EmailService</span> <span class="fn">devEmailService</span>() { <span class="kw">return new</span> <span class="cl">MockEmailService</span>(); }
+
+<span class="an">@Bean</span>
+<span class="an">@Profile</span>(<span class="str">"prod"</span>)
+<span class="kw">public</span> <span class="cl">EmailService</span> <span class="fn">prodEmailService</span>() { <span class="kw">return new</span> <span class="cl">SendGridEmailService</span>(); }</pre>
+    </div>
+    <div class="tab-panel" data-group="sb-ioc" id="panel-sb-ioc-arch">
+      <div class="arch-title">Spring Boot Request Flow</div>
+      <div class="arch">HTTP Request
+      ↓
+[Embedded Tomcat]
+      ↓
+[DispatcherServlet]           ← Front controller
+      ↓
+[Filter Chain]                ← Security, CORS, logging
+      ↓
+[HandlerMapping]              ← finds @RestController method
+      ↓
+[Interceptors] (PreHandle)
+      ↓
+[@RestController method]      ← your code runs here
+      ↓
+[HttpMessageConverter]        ← Java object → JSON
+      ↓
+[Interceptors] (PostHandle)
+      ↓
+HTTP Response (JSON)</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">🌐</div>
+    <div style="flex:1"><div class="sec-title">Building REST APIs</div><div class="sec-sub">Controllers, request mapping, validation, response bodies</div></div>
+    <span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="sb-rest" id="tab-sb-rest-code" onclick="switchTab('sb-rest','code')">Complete controller</div>
+      <div class="tab" data-group="sb-rest" id="tab-sb-rest-validation" onclick="switchTab('sb-rest','validation')">Validation</div>
+      <div class="tab" data-group="sb-rest" id="tab-sb-rest-error" onclick="switchTab('sb-rest','error')">Error handling</div>
+    </div>
+    <div class="tab-panel active" data-group="sb-rest" id="panel-sb-rest-code">
+<pre><span class="an">@RestController</span>          <span class="cm">// = @Controller + @ResponseBody</span>
+<span class="an">@RequestMapping</span>(<span class="str">"/api/v1/hotels"</span>)
+<span class="kw">public class</span> <span class="cl">HotelController</span> {
+    <span class="kw">private final</span> <span class="cl">HotelService</span> hotelService;
+
+    <span class="kw">public</span> <span class="cl">HotelController</span>(<span class="cl">HotelService</span> service) { <span class="kw">this</span>.hotelService = service; }
+
+    <span class="an">@GetMapping</span>(<span class="str">"/{id}"</span>)
+    <span class="kw">public</span> ResponseEntity&lt;<span class="cl">HotelDto</span>&gt; <span class="fn">getHotel</span>(<span class="an">@PathVariable</span> Long id) {
+        <span class="kw">return</span> hotelService.<span class="fn">findById</span>(id)
+            .<span class="fn">map</span>(ResponseEntity::ok)
+            .<span class="fn">orElse</span>(ResponseEntity.notFound().<span class="fn">build</span>());
+    }
+
+    <span class="an">@GetMapping</span>
+    <span class="kw">public</span> Page&lt;<span class="cl">HotelDto</span>&gt; <span class="fn">searchHotels</span>(
+            <span class="an">@RequestParam</span> String city,
+            <span class="an">@RequestParam</span>(required=<span class="kw">false</span>, defaultValue=<span class="str">"0"</span>) Integer minStars,
+            <span class="an">@RequestParam</span>(defaultValue=<span class="str">"0"</span>) <span class="kw">int</span> page,
+            <span class="an">@RequestParam</span>(defaultValue=<span class="str">"20"</span>) <span class="kw">int</span> size) {
+        <span class="kw">return</span> hotelService.<span class="fn">search</span>(city, minStars, PageRequest.<span class="fn">of</span>(page, size));
+    }
+
+    <span class="an">@PostMapping</span>
+    <span class="an">@ResponseStatus</span>(HttpStatus.CREATED)
+    <span class="kw">public</span> <span class="cl">HotelDto</span> <span class="fn">createHotel</span>(<span class="an">@RequestBody</span> <span class="an">@Valid</span> <span class="cl">CreateHotelRequest</span> req) {
+        <span class="kw">return</span> hotelService.<span class="fn">create</span>(req);
+    }
+
+    <span class="an">@PutMapping</span>(<span class="str">"/{id}"</span>)
+    <span class="kw">public</span> <span class="cl">HotelDto</span> <span class="fn">updateHotel</span>(<span class="an">@PathVariable</span> Long id,
+                                <span class="an">@RequestBody</span> <span class="an">@Valid</span> <span class="cl">UpdateHotelRequest</span> req) {
+        <span class="kw">return</span> hotelService.<span class="fn">update</span>(id, req);
+    }
+
+    <span class="an">@DeleteMapping</span>(<span class="str">"/{id}"</span>)
+    <span class="an">@ResponseStatus</span>(HttpStatus.NO_CONTENT)
+    <span class="kw">public void</span> <span class="fn">deleteHotel</span>(<span class="an">@PathVariable</span> Long id) {
+        hotelService.<span class="fn">delete</span>(id);
+    }
+}</pre>
+    </div>
+    <div class="tab-panel" data-group="sb-rest" id="panel-sb-rest-validation">
+<pre><span class="cm">// Request DTO with validation annotations</span>
+<span class="kw">public class</span> <span class="cl">CreateBookingRequest</span> {
+    <span class="an">@NotNull</span>(message = <span class="str">"userId is required"</span>)
+    <span class="kw">private</span> Long userId;
+
+    <span class="an">@NotBlank</span>(message = <span class="str">"roomId cannot be blank"</span>)
+    <span class="kw">private</span> String roomId;
+
+    <span class="an">@NotNull</span> <span class="an">@FutureOrPresent</span>(message = <span class="str">"Check-in must be today or future"</span>)
+    <span class="kw">private</span> LocalDate checkIn;
+
+    <span class="an">@NotNull</span>
+    <span class="kw">private</span> LocalDate checkOut;
+
+    <span class="an">@Min</span>(value=<span class="nu">1</span>, message = <span class="str">"At least 1 guest required"</span>)
+    <span class="an">@Max</span>(value=<span class="nu">10</span>, message = <span class="str">"Max 10 guests"</span>)
+    <span class="kw">private int</span> guestCount;
+
+    <span class="an">@Email</span>(message = <span class="str">"Valid email required"</span>)
+    <span class="an">@NotBlank</span>
+    <span class="kw">private</span> String contactEmail;
+
+    <span class="an">@Size</span>(max=<span class="nu">500</span>, message = <span class="str">"Notes too long"</span>)
+    <span class="kw">private</span> String notes; <span class="cm">// optional</span>
+}
+
+<span class="cm">// Custom validator for cross-field validation</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cl">BookingDateValidator</span> <span class="kw">implements</span> Validator {
+    <span class="kw">public void</span> <span class="fn">validate</span>(Object obj, Errors errors) {
+        <span class="cl">CreateBookingRequest</span> req = (<span class="cl">CreateBookingRequest</span>) obj;
+        <span class="kw">if</span> (req.<span class="fn">getCheckOut</span>().<span class="fn">isBefore</span>(req.<span class="fn">getCheckIn</span>()))
+            errors.<span class="fn">rejectValue</span>(<span class="str">"checkOut"</span>, <span class="str">"INVALID_DATE"</span>, <span class="str">"Check-out must be after check-in"</span>);
+    }
+}
+
+<span class="cm">// Enable validation in controller</span>
+<span class="an">@PostMapping</span>(<span class="str">"/bookings"</span>)
+<span class="kw">public</span> <span class="cl">BookingDto</span> <span class="fn">create</span>(<span class="an">@RequestBody</span> <span class="an">@Valid</span> <span class="cl">CreateBookingRequest</span> req,
+                         BindingResult errors) {
+    <span class="kw">if</span> (errors.<span class="fn">hasErrors</span>()) <span class="kw">throw new</span> <span class="cl">ValidationException</span>(errors);
+    <span class="kw">return</span> bookingService.<span class="fn">create</span>(req);
+}</pre>
+    </div>
+    <div class="tab-panel" data-group="sb-rest" id="panel-sb-rest-error">
+<pre><span class="cm">// Global exception handler — handles exceptions across ALL controllers</span>
+<span class="an">@RestControllerAdvice</span>
+<span class="kw">public class</span> <span class="cl">GlobalExceptionHandler</span> {
+
+    <span class="an">@ExceptionHandler</span>(<span class="cl">BookingNotFoundException</span>.<span class="kw">class</span>)
+    <span class="an">@ResponseStatus</span>(HttpStatus.NOT_FOUND)
+    <span class="kw">public</span> <span class="cl">ErrorResponse</span> <span class="fn">handleNotFound</span>(<span class="cl">BookingNotFoundException</span> ex) {
+        <span class="kw">return new</span> <span class="cl">ErrorResponse</span>(<span class="str">"NOT_FOUND"</span>, ex.<span class="fn">getMessage</span>());
+    }
+
+    <span class="an">@ExceptionHandler</span>(MethodArgumentNotValidException.<span class="kw">class</span>)
+    <span class="an">@ResponseStatus</span>(HttpStatus.BAD_REQUEST)
+    <span class="kw">public</span> <span class="cl">ErrorResponse</span> <span class="fn">handleValidation</span>(<span class="cl">MethodArgumentNotValidException</span> ex) {
+        List&lt;String&gt; errors = ex.<span class="fn">getBindingResult</span>().<span class="fn">getFieldErrors</span>().<span class="fn">stream</span>()
+            .<span class="fn">map</span>(e -> e.<span class="fn">getField</span>() + <span class="str">": "</span> + e.<span class="fn">getDefaultMessage</span>())
+            .<span class="fn">collect</span>(<span class="fn">toList</span>());
+        <span class="kw">return new</span> <span class="cl">ErrorResponse</span>(<span class="str">"VALIDATION_ERROR"</span>, <span class="str">"Validation failed"</span>, errors);
+    }
+
+    <span class="an">@ExceptionHandler</span>(Exception.<span class="kw">class</span>)
+    <span class="an">@ResponseStatus</span>(HttpStatus.INTERNAL_SERVER_ERROR)
+    <span class="kw">public</span> <span class="cl">ErrorResponse</span> <span class="fn">handleGeneral</span>(Exception ex) {
+        log.<span class="fn">error</span>(<span class="str">"Unhandled exception"</span>, ex);
+        <span class="kw">return new</span> <span class="cl">ErrorResponse</span>(<span class="str">"INTERNAL_ERROR"</span>, <span class="str">"An unexpected error occurred"</span>);
+    }
+}
+
+<span class="cm">// Standard error response body</span>
+<span class="kw">public record</span> <span class="cl">ErrorResponse</span>(String code, String message, List&lt;String&gt; details) {
+    <span class="kw">public</span> <span class="cl">ErrorResponse</span>(String code, String message) { <span class="kw">this</span>(code, message, List.<span class="fn">of</span>()); }
+}</pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">🗃</div>
+    <div style="flex:1"><div class="sec-title">Spring Data JPA — Database Access</div><div class="sec-sub">Entities, repositories, queries, transactions</div></div>
+    <span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="sb-jpa" id="tab-sb-jpa-entity" onclick="switchTab('sb-jpa','entity')">Entity mapping</div>
+      <div class="tab" data-group="sb-jpa" id="tab-sb-jpa-repo" onclick="switchTab('sb-jpa','repo')">Repository</div>
+      <div class="tab" data-group="sb-jpa" id="tab-sb-jpa-tx" onclick="switchTab('sb-jpa','tx')">Transactions</div>
+    </div>
+    <div class="tab-panel active" data-group="sb-jpa" id="panel-sb-jpa-entity">
+<pre><span class="an">@Entity</span>
+<span class="an">@Table</span>(name = <span class="str">"bookings"</span>)
+<span class="kw">public class</span> <span class="cl">Booking</span> {
+    <span class="an">@Id</span>
+    <span class="an">@GeneratedValue</span>(strategy = GenerationType.IDENTITY)
+    <span class="kw">private</span> Long id;
+
+    <span class="an">@Column</span>(nullable = <span class="kw">false</span>)
+    <span class="kw">private</span> Long userId;
+
+    <span class="an">@Column</span>(nullable = <span class="kw">false</span>)
+    <span class="kw">private</span> String roomId;
+
+    <span class="an">@Enumerated</span>(EnumType.STRING) <span class="cm">// store as "CONFIRMED" not 0</span>
+    <span class="kw">private</span> BookingStatus status;
+
+    <span class="an">@Column</span>(precision = <span class="nu">10</span>, scale = <span class="nu">2</span>)
+    <span class="kw">private</span> BigDecimal totalPrice;
+
+    <span class="an">@CreatedDate</span>                <span class="cm">// auto-set by Spring Data</span>
+    <span class="kw">private</span> LocalDateTime createdAt;
+
+    <span class="an">@LastModifiedDate</span>
+    <span class="kw">private</span> LocalDateTime updatedAt;
+
+    <span class="an">@Version</span>                    <span class="cm">// optimistic locking — auto-increments on update</span>
+    <span class="kw">private</span> Long version;
+
+    <span class="cm">// Relationship — lazy load rooms (don't eager load by default!)</span>
+    <span class="an">@ManyToOne</span>(fetch = FetchType.LAZY)
+    <span class="an">@JoinColumn</span>(name = <span class="str">"hotel_id"</span>)
+    <span class="kw">private</span> Hotel hotel;
+
+    <span class="an">@OneToMany</span>(mappedBy = <span class="str">"booking"</span>, cascade = CascadeType.ALL, orphanRemoval = <span class="kw">true</span>)
+    <span class="kw">private</span> List&lt;Payment&gt; payments = <span class="kw">new</span> ArrayList&lt;&gt;();
+}</pre>
+    </div>
+    <div class="tab-panel" data-group="sb-jpa" id="panel-sb-jpa-repo">
+<pre><span class="cm">// Spring Data generates queries from method names</span>
+<span class="kw">public interface</span> <span class="cl">BookingRepository</span> <span class="kw">extends</span> JpaRepository&lt;Booking, Long&gt; {
+
+    <span class="cm">// Generated: SELECT * FROM bookings WHERE user_id = ? ORDER BY created_at DESC</span>
+    List&lt;Booking&gt; <span class="fn">findByUserIdOrderByCreatedAtDesc</span>(Long userId);
+
+    <span class="cm">// Pagination built-in</span>
+    Page&lt;Booking&gt; <span class="fn">findByStatus</span>(BookingStatus status, Pageable pageable);
+
+    <span class="cm">// Custom JPQL query</span>
+    <span class="an">@Query</span>(<span class="str">"SELECT b FROM Booking b WHERE b.hotel.city = :city AND b.checkIn >= :date"</span>)
+    List&lt;Booking&gt; <span class="fn">findByCityAndDate</span>(<span class="an">@Param</span>(<span class="str">"city"</span>) String city, <span class="an">@Param</span>(<span class="str">"date"</span>) LocalDate date);
+
+    <span class="cm">// JOIN FETCH — solves N+1 by loading association in one query</span>
+    <span class="an">@Query</span>(<span class="str">"SELECT b FROM Booking b JOIN FETCH b.hotel WHERE b.userId = :userId"</span>)
+    List&lt;Booking&gt; <span class="fn">findWithHotelByUserId</span>(<span class="an">@Param</span>(<span class="str">"userId"</span>) Long userId);
+
+    <span class="cm">// Native SQL for complex queries</span>
+    <span class="an">@Query</span>(value = <span class="str">"SELECT * FROM bookings WHERE check_in BETWEEN ?1 AND ?2"</span>,
+           nativeQuery = <span class="kw">true</span>)
+    List&lt;Booking&gt; <span class="fn">findByCheckInBetween</span>(LocalDate from, LocalDate to);
+
+    <span class="cm">// Modifying query (UPDATE/DELETE)</span>
+    <span class="an">@Modifying</span>
+    <span class="an">@Query</span>(<span class="str">"UPDATE Booking b SET b.status = :status WHERE b.id = :id"</span>)
+    <span class="kw">int</span> <span class="fn">updateStatus</span>(<span class="an">@Param</span>(<span class="str">"id"</span>) Long id, <span class="an">@Param</span>(<span class="str">"status"</span>) BookingStatus status);
+
+    <span class="cm">// Exists check (more efficient than findById() != null)</span>
+    <span class="kw">boolean</span> <span class="fn">existsByUserIdAndRoomId</span>(Long userId, String roomId);
+
+    <span class="cm">// Count</span>
+    <span class="kw">long</span> <span class="fn">countByStatus</span>(BookingStatus status);
+}</pre>
+    </div>
+    <div class="tab-panel" data-group="sb-jpa" id="panel-sb-jpa-tx">
+<pre><span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">BookingService</span> {
+
+    <span class="cm">// Default: REQUIRED — joins existing tx or creates new</span>
+    <span class="an">@Transactional</span>
+    <span class="kw">public</span> Booking <span class="fn">createBooking</span>(CreateBookingRequest req) {
+        Booking booking = <span class="kw">new</span> Booking(req);
+        booking = bookingRepo.<span class="fn">save</span>(booking);
+        paymentService.<span class="fn">charge</span>(booking); <span class="cm">// same transaction</span>
+        <span class="kw">return</span> booking;
+    }
+
+    <span class="cm">// REQUIRES_NEW — new transaction regardless of outer tx</span>
+    <span class="cm">// Use for: audit logging (must commit even if outer tx rolls back)</span>
+    <span class="an">@Transactional</span>(propagation = Propagation.REQUIRES_NEW)
+    <span class="kw">public void</span> <span class="fn">logAuditEvent</span>(AuditEvent event) {
+        auditRepo.<span class="fn">save</span>(event);
+    }
+
+    <span class="cm">// readOnly — optimizes for reads (no dirty checking, can use read replicas)</span>
+    <span class="an">@Transactional</span>(readOnly = <span class="kw">true</span>)
+    <span class="kw">public</span> Page&lt;BookingDto&gt; <span class="fn">findBookings</span>(Long userId, Pageable p) {
+        <span class="kw">return</span> bookingRepo.<span class="fn">findByUserId</span>(userId, p).<span class="fn">map</span>(bookingMapper::toDto);
+    }
+
+    <span class="cm">// rollbackFor — explicitly roll back on checked exceptions too</span>
+    <span class="an">@Transactional</span>(rollbackFor = Exception.<span class="kw">class</span>)
+    <span class="kw">public void</span> <span class="fn">processRefund</span>(Long bookingId) <span class="kw">throws</span> RefundException {
+        <span class="cm">// if RefundException (checked) is thrown, rolls back</span>
+    }
+}
+
+<span class="cm">// COMMON TRAP: calling @Transactional method from same class bypasses proxy!
+// Internal calls don't go through Spring's AOP proxy.
+// Fix: inject self, or use ApplicationContext.getBean(), or restructure</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">BookingService</span> {
+    <span class="an">@Autowired</span> <span class="kw">private</span> <span class="cl">BookingService</span> self; <span class="cm">// inject self — ugly but works</span>
+    <span class="kw">public void</span> <span class="fn">outer</span>() { self.<span class="fn">inner</span>(); } <span class="cm">// goes through proxy</span>
+    <span class="an">@Transactional</span> <span class="kw">public void</span> <span class="fn">inner</span>() { }
+}</pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">⚙️</div>
+    <div style="flex:1"><div class="sec-title">Configuration & Properties</div><div class="sec-sub">application.yml, profiles, @ConfigurationProperties</div></div>
+    <span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="sb-conf" id="tab-sb-conf-yml" onclick="switchTab('sb-conf','yml')">YAML config</div>
+      <div class="tab" data-group="sb-conf" id="tab-sb-conf-props" onclick="switchTab('sb-conf','props')">@ConfigurationProperties</div>
+    </div>
+    <div class="tab-panel active" data-group="sb-conf" id="panel-sb-conf-yml">
+<pre><span class="cm"># application.yml — main configuration</span>
+spring:
+  application:
+    name: hotel-booking-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hoteldb
+    username: ${DB_USER}          <span class="cm"># read from environment variable</span>
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 20       <span class="cm"># connection pool size</span>
+      minimum-idle: 5
+      connection-timeout: 30000
+  jpa:
+    hibernate:
+      ddl-auto: validate          <span class="cm"># never use 'create' or 'drop' in prod</span>
+    show-sql: false               <span class="cm"># true only for debugging</span>
+    properties:
+      hibernate.default_batch_fetch_size: 50  <span class="cm"># batch N+1 fix</span>
+  redis:
+    host: ${REDIS_HOST:localhost}  <span class="cm"># default to localhost if not set</span>
+    port: 6379
+    timeout: 2000ms
+  cache:
+    type: redis
+    redis:
+      time-to-live: 300000        <span class="cm"># 5 minutes TTL</span>
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: when_authorized
+
+logging:
+  level:
+    com.yourcompany: INFO
+    org.hibernate.SQL: DEBUG      <span class="cm"># show SQL queries (dev only)</span>
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+<span class="cm"># Custom properties</span>
+booking:
+  max-rooms-per-booking: 5
+  cancellation-window-hours: 24
+  payment:
+    timeout-seconds: 30
+    retry-attempts: 3</pre>
+    </div>
+    <div class="tab-panel" data-group="sb-conf" id="panel-sb-conf-props">
+<pre><span class="cm">// Type-safe configuration — bind YAML to a Java class</span>
+<span class="an">@ConfigurationProperties</span>(prefix = <span class="str">"booking"</span>)
+<span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cl">BookingProperties</span> {
+    <span class="kw">private int</span> maxRoomsPerBooking = <span class="nu">5</span>; <span class="cm">// default</span>
+    <span class="kw">private int</span> cancellationWindowHours = <span class="nu">24</span>;
+    <span class="kw">private</span> Payment payment = <span class="kw">new</span> Payment();
+
+    <span class="kw">public static class</span> Payment {
+        <span class="kw">private int</span> timeoutSeconds = <span class="nu">30</span>;
+        <span class="kw">private int</span> retryAttempts = <span class="nu">3</span>;
+        <span class="cm">// getters/setters</span>
+    }
+    <span class="cm">// getters/setters</span>
+}
+
+<span class="cm">// Use in service</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">BookingService</span> {
+    <span class="kw">private final</span> <span class="cl">BookingProperties</span> props;
+
+    <span class="kw">public</span> <span class="cl">Booking</span> <span class="fn">create</span>(<span class="cl">CreateBookingRequest</span> req) {
+        <span class="kw">if</span> (req.<span class="fn">getRoomCount</span>() > props.<span class="fn">getMaxRoomsPerBooking</span>())
+            <span class="kw">throw new</span> <span class="cl">BookingException</span>(<span class="str">"Exceeds max rooms per booking"</span>);
+        <span class="cm">// ...</span>
+    }
+}
+
+<span class="cm">// Per-environment overrides with profiles</span>
+<span class="cm"># application-dev.yml</span>
+spring.datasource.url: jdbc:postgresql://localhost:5432/hoteldb_dev
+logging.level.com.yourcompany: DEBUG
+
+<span class="cm"># application-prod.yml</span>
+spring.datasource.url: jdbc:postgresql://${PROD_DB_HOST}:5432/hoteldb
+logging.level.com.yourcompany: WARN
+
+<span class="cm"># Activate: java -jar app.jar --spring.profiles.active=prod
+# Or env var: SPRING_PROFILES_ACTIVE=prod</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ INTERMEDIATE ════════════ -->
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">⚡</div>
+    <div style="flex:1"><div class="sec-title">Caching with Redis</div><div class="sec-sub">@Cacheable, cache-aside, TTL strategy, eviction</div></div>
+    <span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="sb-cache" id="tab-sb-cache-concept" onclick="switchTab('sb-cache','concept')">Concept</div>
+      <div class="tab" data-group="sb-cache" id="tab-sb-cache-code" onclick="switchTab('sb-cache','code')">Code</div>
+    </div>
+    <div class="tab-panel active" data-group="sb-cache" id="panel-sb-cache-concept">
+      <div class="block">
+        <div class="block-title">Cache strategy for a hotel booking system</div>
+        <table class="ctable">
+          <tr><th>Data</th><th>TTL</th><th>Eviction trigger</th><th>Key pattern</th></tr>
+          <tr><td>Hotel details</td><td>24h</td><td>Hotel updated</td><td>hotel:{id}</td></tr>
+          <tr><td>Search results</td><td>5 min</td><td>Time-based only</td><td>search:{city}:{dates}:{filters}</td></tr>
+          <tr><td>Room availability</td><td>1 min</td><td>Booking created/cancelled</td><td>avail:{roomId}:{date}</td></tr>
+          <tr><td>User session</td><td>30 min (sliding)</td><td>Logout</td><td>session:{token}</td></tr>
+          <tr><td>Exchange rates</td><td>1h</td><td>Time-based</td><td>fx:{from}:{to}</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="sb-cache" id="panel-sb-cache-code">
+<pre><span class="cm">// Enable caching in your application</span>
+<span class="an">@SpringBootApplication</span>
+<span class="an">@EnableCaching</span>
+<span class="kw">public class</span> <span class="cl">Application</span> { <span class="kw">public static void</span> <span class="fn">main</span>(String[] a) { SpringApplication.<span class="fn">run</span>(<span class="cl">Application</span>.<span class="kw">class</span>, a); } }
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">HotelService</span> {
+
+    <span class="cm">// @Cacheable: cache result, skip method on cache hit</span>
+    <span class="an">@Cacheable</span>(value = <span class="str">"hotels"</span>, key = <span class="str">"#id"</span>,
+               unless = <span class="str">"#result == null"</span>)  <span class="cm">// don't cache nulls</span>
+    <span class="kw">public</span> Hotel <span class="fn">findById</span>(Long id) {
+        <span class="kw">return</span> hotelRepo.<span class="fn">findById</span>(id).<span class="fn">orElse</span>(<span class="kw">null</span>);
+    }
+
+    <span class="cm">// @CachePut: always run method AND update cache (for updates)</span>
+    <span class="an">@CachePut</span>(value = <span class="str">"hotels"</span>, key = <span class="str">"#result.id"</span>)
+    <span class="kw">public</span> Hotel <span class="fn">updateHotel</span>(Long id, UpdateHotelRequest req) {
+        Hotel hotel = hotelRepo.<span class="fn">findById</span>(id).<span class="fn">orElseThrow</span>();
+        hotel.<span class="fn">update</span>(req);
+        <span class="kw">return</span> hotelRepo.<span class="fn">save</span>(hotel);
+    }
+
+    <span class="cm">// @CacheEvict: remove from cache on delete</span>
+    <span class="an">@CacheEvict</span>(value = <span class="str">"hotels"</span>, key = <span class="str">"#id"</span>)
+    <span class="kw">public void</span> <span class="fn">deleteHotel</span>(Long id) { hotelRepo.<span class="fn">deleteById</span>(id); }
+
+    <span class="cm">// Evict all entries in a cache (e.g., after bulk update)</span>
+    <span class="an">@CacheEvict</span>(value = <span class="str">"hotels"</span>, allEntries = <span class="kw">true</span>)
+    <span class="kw">public void</span> <span class="fn">refreshAllHotels</span>() { <span class="cm">/* trigger refresh */</span> }
+
+    <span class="cm">// Complex key expression with SpEL</span>
+    <span class="an">@Cacheable</span>(value = <span class="str">"search"</span>, key = <span class="str">"#city + ':' + #checkIn + ':' + #checkOut"</span>)
+    <span class="kw">public</span> List&lt;Hotel&gt; <span class="fn">search</span>(String city, LocalDate checkIn, LocalDate checkOut) {
+        <span class="kw">return</span> hotelRepo.<span class="fn">search</span>(city, checkIn, checkOut);
+    }
+}
+
+<span class="cm">// Programmatic cache access (when annotation isn't flexible enough)</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">AvailabilityService</span> {
+    <span class="kw">private final</span> <span class="cl">RedisTemplate</span>&lt;String, Integer&gt; redisTemplate;
+
+    <span class="kw">public</span> Optional&lt;Integer&gt; <span class="fn">getCachedAvailability</span>(String roomId, LocalDate date) {
+        String key = <span class="str">"avail:"</span> + roomId + <span class="str">":"</span> + date;
+        Integer count = redisTemplate.<span class="fn">opsForValue</span>().<span class="fn">get</span>(key);
+        <span class="kw">return</span> Optional.<span class="fn">ofNullable</span>(count);
+    }
+
+    <span class="kw">public void</span> <span class="fn">setAvailability</span>(String roomId, LocalDate date, <span class="kw">int</span> count) {
+        String key = <span class="str">"avail:"</span> + roomId + <span class="str">":"</span> + date;
+        redisTemplate.<span class="fn">opsForValue</span>().<span class="fn">set</span>(key, count, Duration.<span class="fn">ofMinutes</span>(<span class="nu">1</span>));
+    }
+}</pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">🔐</div>
+    <div style="flex:1"><div class="sec-title">Spring Security & JWT</div><div class="sec-sub">Authentication, authorization, JWT tokens, filters</div></div>
+    <span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="sb-sec" id="tab-sb-sec-arch" onclick="switchTab('sb-sec','arch')">Security flow</div>
+      <div class="tab" data-group="sb-sec" id="tab-sb-sec-code" onclick="switchTab('sb-sec','code')">JWT implementation</div>
+    </div>
+    <div class="tab-panel active" data-group="sb-sec" id="panel-sb-sec-arch">
+      <div class="arch-title">Spring Security Filter Chain with JWT</div>
+      <div class="arch">HTTP Request
+      ↓
+[JwtAuthenticationFilter]  ← extracts + validates JWT from Authorization header
+      ↓
+[SecurityContextHolder]    ← stores authenticated user for this request
+      ↓
+[AuthorizationFilter]      ← checks @PreAuthorize / hasRole() / hasAuthority()
+      ↓
+[Controller method]        ← only reached if authorized
+      
+JWT Token Structure:
+Header.Payload.Signature
+{alg:HS256}.{userId,role,exp}.{HMAC(header+payload, secret)}
+
+Claims you typically store:
+  sub: userId
+  email: user@example.com
+  roles: ["ROLE_USER", "ROLE_ADMIN"]
+  exp: 1719910800 (expiry timestamp)</div>
+    </div>
+    <div class="tab-panel" data-group="sb-sec" id="panel-sb-sec-code">
+<pre><span class="an">@Configuration</span>
+<span class="an">@EnableWebSecurity</span>
+<span class="an">@EnableMethodSecurity</span>
+<span class="kw">public class</span> <span class="cl">SecurityConfig</span> {
+
+    <span class="an">@Bean</span>
+    <span class="kw">public</span> SecurityFilterChain <span class="fn">filterChain</span>(HttpSecurity http) <span class="kw">throws</span> Exception {
+        <span class="kw">return</span> http
+            .<span class="fn">csrf</span>(csrf -> csrf.<span class="fn">disable</span>())       <span class="cm">// stateless API — no CSRF</span>
+            .<span class="fn">sessionManagement</span>(s -> s.<span class="fn">sessionCreationPolicy</span>(STATELESS))
+            .<span class="fn">authorizeHttpRequests</span>(auth -> auth
+                .<span class="fn">requestMatchers</span>(<span class="str">"/api/v1/auth/**"</span>).<span class="fn">permitAll</span>()
+                .<span class="fn">requestMatchers</span>(<span class="str">"/api/v1/hotels/**"</span>).<span class="fn">permitAll</span>()        <span class="cm">// public</span>
+                .<span class="fn">requestMatchers</span>(<span class="str">"/api/v1/bookings/**"</span>).<span class="fn">authenticated</span>()
+                .<span class="fn">requestMatchers</span>(<span class="str">"/api/v1/admin/**"</span>).<span class="fn">hasRole</span>(<span class="str">"ADMIN"</span>)
+                .<span class="fn">anyRequest</span>().<span class="fn">authenticated</span>()
+            )
+            .<span class="fn">addFilterBefore</span>(jwtFilter, UsernamePasswordAuthenticationFilter.<span class="kw">class</span>)
+            .<span class="fn">build</span>();
+    }
+}
+
+<span class="cm">// JWT filter — validates token on every request</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cl">JwtAuthenticationFilter</span> <span class="kw">extends</span> <span class="cl">OncePerRequestFilter</span> {
+    <span class="kw">private final</span> <span class="cl">JwtService</span> jwtService;
+
+    <span class="an">@Override</span>
+    <span class="kw">protected void</span> <span class="fn">doFilterInternal</span>(HttpServletRequest req, HttpServletResponse res,
+                                      FilterChain chain) <span class="kw">throws</span> Exception {
+        String header = req.<span class="fn">getHeader</span>(<span class="str">"Authorization"</span>);
+        <span class="kw">if</span> (header == <span class="kw">null</span> || !header.<span class="fn">startsWith</span>(<span class="str">"Bearer "</span>)) {
+            chain.<span class="fn">doFilter</span>(req, res); <span class="kw">return</span>;
+        }
+        String token = header.<span class="fn">substring</span>(<span class="nu">7</span>);
+        <span class="kw">if</span> (jwtService.<span class="fn">isValid</span>(token)) {
+            String userId = jwtService.<span class="fn">extractUserId</span>(token);
+            List&lt;<span class="cl">GrantedAuthority</span>&gt; authorities = jwtService.<span class="fn">extractRoles</span>(token);
+            <span class="cl">UsernamePasswordAuthenticationToken</span> auth =
+                <span class="kw">new</span> UsernamePasswordAuthenticationToken(userId, <span class="kw">null</span>, authorities);
+            SecurityContextHolder.<span class="fn">getContext</span>().<span class="fn">setAuthentication</span>(auth);
+        }
+        chain.<span class="fn">doFilter</span>(req, res);
+    }
+}
+
+<span class="cm">// Method-level security</span>
+<span class="an">@GetMapping</span>(<span class="str">"/{id}"</span>)
+<span class="an">@PreAuthorize</span>(<span class="str">"#userId == authentication.principal or hasRole('ADMIN')"</span>)
+<span class="kw">public</span> Booking <span class="fn">getBooking</span>(<span class="an">@PathVariable</span> Long id, <span class="an">@RequestParam</span> Long userId) {
+    <span class="kw">return</span> bookingService.<span class="fn">findById</span>(id);
+}
+
+<span class="cm">// Get current user anywhere in the code</span>
+String currentUserId = (<span class="cl">String</span>) SecurityContextHolder.<span class="fn">getContext</span>()
+    .<span class="fn">getAuthentication</span>().<span class="fn">getPrincipal</span>();</pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">📨</div>
+    <div style="flex:1"><div class="sec-title">Kafka Integration with Spring</div><div class="sec-sub">Producer, consumer, error handling, retry</div></div>
+    <span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="sb-kafka" id="tab-sb-kafka-arch" onclick="switchTab('sb-kafka','arch')">Architecture</div>
+      <div class="tab" data-group="sb-kafka" id="tab-sb-kafka-code" onclick="switchTab('sb-kafka','code')">Code</div>
+    </div>
+    <div class="tab-panel active" data-group="sb-kafka" id="panel-sb-kafka-arch">
+      <div class="arch-title">Kafka event flow in booking system</div>
+      <div class="arch">Booking Service                    Notification Service
+      │                                        │
+   @Transactional createBooking()              │
+      │                                        │
+   1. Save booking to DB                       │
+   2. KafkaTemplate.send("booking.events")     │
+      │  ──────────────────────────────────►  │
+      │                                    @KafkaListener
+      │                              3. Process event
+      │                              4. Send email/SMS/push
+      │                              5. Commit offset
+      
+Topics:
+  booking.events  → partitioned by userId (ordered per user)
+  payment.events  → partitioned by bookingId
+  hotel.updates   → partitioned by hotelId (for search index sync)
+
+Dead Letter Topic:
+  booking.events.DLT  ← failed after 3 retries, alert on-call</div>
+    </div>
+    <div class="tab-panel" data-group="sb-kafka" id="panel-sb-kafka-code">
+<pre><span class="cm">// Producer</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">BookingEventProducer</span> {
+    <span class="kw">private final</span> KafkaTemplate&lt;String, BookingEvent&gt; kafkaTemplate;
+
+    <span class="kw">public void</span> <span class="fn">publishBookingCreated</span>(Booking booking) {
+        <span class="kw">var</span> event = <span class="kw">new</span> BookingEvent(booking.<span class="fn">getId</span>(), <span class="str">"CREATED"</span>, Instant.<span class="fn">now</span>());
+        <span class="kw">var</span> record = <span class="kw">new</span> ProducerRecord&lt;&gt;(
+            <span class="str">"booking.events"</span>,
+            booking.<span class="fn">getUserId</span>().<span class="fn">toString</span>(), <span class="cm">// partition key → same user in order</span>
+            event
+        );
+        kafkaTemplate.<span class="fn">send</span>(record)
+            .<span class="fn">whenComplete</span>((result, ex) -> {
+                <span class="kw">if</span> (ex != <span class="kw">null</span>) log.<span class="fn">error</span>(<span class="str">"Failed to publish event"</span>, ex);
+                <span class="kw">else</span> log.<span class="fn">info</span>(<span class="str">"Event sent: offset={}"</span>, result.<span class="fn">getRecordMetadata</span>().<span class="fn">offset</span>());
+            });
+    }
+}
+
+<span class="cm">// Consumer with error handling and retry</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cl">BookingEventConsumer</span> {
+
+    <span class="an">@KafkaListener</span>(topics = <span class="str">"booking.events"</span>, groupId = <span class="str">"notification-service"</span>,
+                   containerFactory = <span class="str">"kafkaListenerContainerFactory"</span>)
+    <span class="kw">public void</span> <span class="fn">handleBookingEvent</span>(<span class="cl">BookingEvent</span> event,
+                                    <span class="an">@Header</span>(KafkaHeaders.RECEIVED_PARTITION) <span class="kw">int</span> partition,
+                                    <span class="an">@Header</span>(KafkaHeaders.OFFSET) <span class="kw">long</span> offset) {
+        log.<span class="fn">info</span>(<span class="str">"Processing event bookingId={} partition={} offset={}"</span>,
+                 event.<span class="fn">getBookingId</span>(), partition, offset);
+        notificationService.<span class="fn">sendBookingConfirmation</span>(event);
+        <span class="cm">// offset committed automatically after method returns without exception</span>
+    }
+}
+
+<span class="cm">// Error handling config — retry 3 times, then DLT</span>
+<span class="an">@Bean</span>
+<span class="kw">public</span> DefaultErrorHandler <span class="fn">errorHandler</span>(KafkaTemplate&lt;?, ?&gt; kafkaTemplate) {
+    DeadLetterPublishingRecoverer recoverer = <span class="kw">new</span> DeadLetterPublishingRecoverer(kafkaTemplate);
+    ExponentialBackOff backOff = <span class="kw">new</span> ExponentialBackOff(<span class="nu">1000L</span>, <span class="nu">2.0</span>);
+    backOff.<span class="fn">setMaxAttempts</span>(<span class="nu">3</span>);
+    <span class="kw">return new</span> DefaultErrorHandler(recoverer, backOff);
+    <span class="cm">// Retry: 1s → 2s → 4s → DLT (booking.events.DLT)</span>
+}</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ ADVANCED ════════════ -->
+<div class="section" data-level="advanced">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">🏗</div>
+    <div style="flex:1"><div class="sec-title">Spring Boot Architecture Patterns</div><div class="sec-sub">Microservices, service mesh, circuit breaker, API gateway</div></div>
+    <span class="sec-lv lv-adv">Advanced</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="sb-arch" id="tab-sb-arch-micro" onclick="switchTab('sb-arch','micro')">Microservices</div>
+      <div class="tab" data-group="sb-arch" id="tab-sb-arch-resilience" onclick="switchTab('sb-arch','resilience')">Resilience4j</div>
+    </div>
+    <div class="tab-panel active" data-group="sb-arch" id="panel-sb-arch-micro">
+      <div class="arch-title">Hotel booking microservices architecture</div>
+      <div class="arch">Mobile/Web Client
+           ↓
+    [API Gateway]  ← rate limiting, auth, routing, load balancing
+    (Spring Cloud Gateway / Kong)
+           ↓
+┌──────────────────────────────────────────────────┐
+│                 Internal Network                  │
+│                                                   │
+│  [Hotel Service]    [Booking Service]             │
+│       ↓                  ↓      ↓                 │
+│  [PostgreSQL]      [PostgreSQL] [Redis]           │
+│                          ↓                        │
+│               [Payment Service]                   │
+│                    ↓                              │
+│            [External Gateway]                     │
+│                                                   │
+│  [Notification Service] ← Kafka ← Booking Svc    │
+│       ↓                                           │
+│  Email/SMS/Push                                   │
+│                                                   │
+│  [Search Service] ← Elasticsearch                 │
+│  [Config Server]  ← centralized config            │
+│  [Service Registry] (Eureka) ← service discovery  │
+└──────────────────────────────────────────────────┘</div>
+    </div>
+    <div class="tab-panel" data-group="sb-arch" id="panel-sb-arch-resilience">
+<pre><span class="cm">// Add to build.gradle: spring-cloud-starter-circuitbreaker-resilience4j</span>
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">HotelService</span> {
+
+    <span class="cm">// Circuit breaker — stops calling payment if it's failing</span>
+    <span class="an">@CircuitBreaker</span>(name = <span class="str">"payment"</span>, fallbackMethod = <span class="str">"paymentFallback"</span>)
+    <span class="kw">public</span> PaymentResult <span class="fn">processPayment</span>(PaymentRequest req) {
+        <span class="kw">return</span> paymentClient.<span class="fn">charge</span>(req);
+    }
+
+    <span class="kw">public</span> PaymentResult <span class="fn">paymentFallback</span>(PaymentRequest req, Exception ex) {
+        log.<span class="fn">warn</span>(<span class="str">"Payment service unavailable, using fallback"</span>, ex);
+        <span class="kw">return</span> PaymentResult.<span class="fn">pending</span>(<span class="str">"Will retry when service recovers"</span>);
+    }
+
+    <span class="cm">// Retry — retry on transient failures (not on 4xx)</span>
+    <span class="an">@Retry</span>(name = <span class="str">"hotelSearch"</span>, fallbackMethod = <span class="str">"searchFallback"</span>)
+    <span class="kw">public</span> List&lt;Hotel&gt; <span class="fn">searchHotels</span>(SearchRequest req) {
+        <span class="kw">return</span> elasticsearchClient.<span class="fn">search</span>(req);
+    }
+
+    <span class="cm">// Rate limiter — limit to 50 requests/second</span>
+    <span class="an">@RateLimiter</span>(name = <span class="str">"hotelApi"</span>)
+    <span class="kw">public</span> Hotel <span class="fn">getHotel</span>(String id) { <span class="kw">return</span> hotelRepo.<span class="fn">findById</span>(id); }
+
+    <span class="cm">// Bulkhead — limit concurrent calls to avoid thread exhaustion</span>
+    <span class="an">@Bulkhead</span>(name = <span class="str">"payment"</span>, type = Bulkhead.Type.THREADPOOL)
+    <span class="kw">public</span> CompletableFuture&lt;PaymentResult&gt; <span class="fn">chargeAsync</span>(PaymentRequest req) {
+        <span class="kw">return</span> CompletableFuture.<span class="fn">supplyAsync</span>(() -> paymentClient.<span class="fn">charge</span>(req));
+    }
+}
+
+<span class="cm"># application.yml — Resilience4j config</span>
+resilience4j:
+  circuitbreaker:
+    instances:
+      payment:
+        failureRateThreshold: 50          <span class="cm"># open if 50% fail</span>
+        waitDurationInOpenState: 30s      <span class="cm"># wait 30s before trying again</span>
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10
+  retry:
+    instances:
+      hotelSearch:
+        maxAttempts: 3
+        waitDuration: 500ms
+        retryExceptions:
+          - java.io.IOException
+          - java.util.concurrent.TimeoutException</pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="advanced">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">📊</div>
+    <div style="flex:1"><div class="sec-title">Actuator, Metrics & Observability</div><div class="sec-sub">Health checks, Prometheus metrics, distributed tracing</div></div>
+    <span class="sec-lv lv-adv">Advanced</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="sb-obs" id="tab-sb-obs-actuator" onclick="switchTab('sb-obs','actuator')">Actuator</div>
+      <div class="tab" data-group="sb-obs" id="tab-sb-obs-metrics" onclick="switchTab('sb-obs','metrics')">Custom metrics</div>
+    </div>
+    <div class="tab-panel active" data-group="sb-obs" id="panel-sb-obs-actuator">
+<pre><span class="cm"># application.yml — expose endpoints</span>
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics,loggers,env
+  endpoint:
+    health:
+      show-details: when_authorized
+      probes:
+        enabled: true       <span class="cm"># /actuator/health/liveness and /readiness</span>
+
+<span class="cm">// Custom health indicator — checks external dependencies</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cl">PaymentGatewayHealthIndicator</span> <span class="kw">implements</span> HealthIndicator {
+    <span class="an">@Override</span>
+    <span class="kw">public</span> Health <span class="fn">health</span>() {
+        <span class="kw">try</span> {
+            <span class="kw">boolean</span> ok = paymentClient.<span class="fn">ping</span>();
+            <span class="kw">return</span> ok ? Health.<span class="fn">up</span>().<span class="fn">withDetail</span>(<span class="str">"gateway"</span>, <span class="str">"reachable"</span>).<span class="fn">build</span>()
+                       : Health.<span class="fn">down</span>().<span class="fn">withDetail</span>(<span class="str">"gateway"</span>, <span class="str">"unreachable"</span>).<span class="fn">build</span>();
+        } <span class="kw">catch</span> (Exception e) {
+            <span class="kw">return</span> Health.<span class="fn">down</span>(e).<span class="fn">build</span>();
+        }
+    }
+}
+
+<span class="cm">// Useful endpoints:
+// GET /actuator/health           → {"status":"UP","components":...}
+// GET /actuator/health/liveness  → Kubernetes liveness probe
+// GET /actuator/health/readiness → Kubernetes readiness probe
+// GET /actuator/prometheus       → Prometheus scrape endpoint
+// GET /actuator/metrics          → available metric names
+// GET /actuator/metrics/jvm.gc.pause → specific metric with tags</span></pre>
+    </div>
+    <div class="tab-panel" data-group="sb-obs" id="panel-sb-obs-metrics">
+<pre><span class="cm">// Custom metrics with Micrometer (auto-configured with Spring Boot)</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">BookingService</span> {
+    <span class="kw">private final</span> Counter bookingsCreated;
+    <span class="kw">private final</span> Timer bookingDuration;
+    <span class="kw">private final</span> DistributionSummary bookingValue;
+
+    <span class="kw">public</span> <span class="cl">BookingService</span>(MeterRegistry registry) {
+        bookingsCreated = Counter.<span class="fn">builder</span>(<span class="str">"bookings.created"</span>)
+            .<span class="fn">description</span>(<span class="str">"Total bookings created"</span>)
+            .<span class="fn">tag</span>(<span class="str">"service"</span>, <span class="str">"hotel-booking"</span>)
+            .<span class="fn">register</span>(registry);
+
+        bookingDuration = Timer.<span class="fn">builder</span>(<span class="str">"booking.creation.duration"</span>)
+            .<span class="fn">description</span>(<span class="str">"Time to create a booking"</span>)
+            .<span class="fn">percentiles</span>(<span class="nu">0.5</span>, <span class="nu">0.95</span>, <span class="nu">0.99</span>) <span class="cm">// p50, p95, p99 latency</span>
+            .<span class="fn">register</span>(registry);
+
+        bookingValue = DistributionSummary.<span class="fn">builder</span>(<span class="str">"booking.value"</span>)
+            .<span class="fn">description</span>(<span class="str">"Booking price distribution"</span>)
+            .<span class="fn">baseUnit</span>(<span class="str">"USD"</span>)
+            .<span class="fn">register</span>(registry);
+    }
+
+    <span class="kw">public</span> Booking <span class="fn">createBooking</span>(CreateBookingRequest req) {
+        <span class="kw">return</span> bookingDuration.<span class="fn">record</span>(() -> {
+            Booking booking = <span class="fn">doCreateBooking</span>(req);
+            bookingsCreated.<span class="fn">increment</span>();
+            bookingValue.<span class="fn">record</span>(booking.<span class="fn">getTotalPrice</span>().<span class="fn">doubleValue</span>());
+            <span class="kw">return</span> booking;
+        });
+    }
+}
+<span class="cm">// Grafana dashboard: track bookings/min, p99 latency, booking value percentiles</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- Checklist -->
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon">✅</div>
+    <div style="flex:1"><div class="sec-title">Spring Boot readiness checklist</div><div class="sec-sub">Can you answer these without notes?</div></div>
+    <span class="sec-lv lv-beg">All levels</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="sb-chk" id="tab-sb-chk-beg" onclick="switchTab('sb-chk','beg')">🟢 Beginner</div>
+      <div class="tab" data-group="sb-chk" id="tab-sb-chk-int" onclick="switchTab('sb-chk','int')">🟣 Intermediate</div>
+      <div class="tab" data-group="sb-chk" id="tab-sb-chk-adv" onclick="switchTab('sb-chk','adv')">🟠 Advanced</div>
+    </div>
+    <div class="tab-panel active" data-group="sb-chk" id="panel-sb-chk-beg">
+      <ul class="chk-list" style="padding:14px">
+        <li class="chk-item"><div class="chkbox" id="chk-s1" onclick="sToggle('s1')"></div><div class="chk-text" id="txt-s1">Explain IoC and DI — why constructor injection over field injection?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s2" onclick="sToggle('s2')"></div><div class="chk-text" id="txt-s2">@Component vs @Service vs @Repository — what's the difference?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s3" onclick="sToggle('s3')"></div><div class="chk-text" id="txt-s3">Write a complete REST controller for hotel CRUD with proper HTTP status codes</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s4" onclick="sToggle('s4')"></div><div class="chk-text" id="txt-s4">@Transactional REQUIRED vs REQUIRES_NEW — give a real audit log example</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s5" onclick="sToggle('s5')"></div><div class="chk-text" id="txt-s5">Spring profiles — how to have different DB config for dev and prod</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s6" onclick="sToggle('s6')"></div><div class="chk-text" id="txt-s6">The @Transactional self-invocation trap — what is it and how to fix it</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s7" onclick="sToggle('s7')"></div><div class="chk-text" id="txt-s7">JOIN FETCH in JPQL — what problem does it solve? Show before/after</div></li>
+      </ul>
+    </div>
+    <div class="tab-panel" data-group="sb-chk" id="panel-sb-chk-int">
+      <ul class="chk-list" style="padding:14px">
+        <li class="chk-item"><div class="chkbox" id="chk-s8" onclick="sToggle('s8')"></div><div class="chk-text" id="txt-s8">@Cacheable vs @CachePut vs @CacheEvict — when to use each</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s9" onclick="sToggle('s9')"></div><div class="chk-text" id="txt-s9">JWT authentication filter — write the OncePerRequestFilter from scratch</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s10" onclick="sToggle('s10')"></div><div class="chk-text" id="txt-s10">Kafka producer + consumer in Spring — explain DLT and retry config</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s11" onclick="sToggle('s11')"></div><div class="chk-text" id="txt-s11">@RestControllerAdvice — implement global exception handler with proper HTTP codes</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s12" onclick="sToggle('s12')"></div><div class="chk-text" id="txt-s12">@Version annotation — how does it prevent concurrent booking of same room?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s13" onclick="sToggle('s13')"></div><div class="chk-text" id="txt-s13">@ConfigurationProperties — why is it better than @Value for grouped config?</div></li>
+      </ul>
+    </div>
+    <div class="tab-panel" data-group="sb-chk" id="panel-sb-chk-adv">
+      <ul class="chk-list" style="padding:14px">
+        <li class="chk-item"><div class="chkbox" id="chk-s14" onclick="sToggle('s14')"></div><div class="chk-text" id="txt-s14">Circuit breaker — three states, Resilience4j config, fallback method</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s15" onclick="sToggle('s15')"></div><div class="chk-text" id="txt-s15">Custom health indicator — implement one that checks payment gateway</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s16" onclick="sToggle('s16')"></div><div class="chk-text" id="txt-s16">Custom Micrometer metrics — Counter, Timer, DistributionSummary use cases</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s17" onclick="sToggle('s17')"></div><div class="chk-text" id="txt-s17">Spring Security filter chain order — where does JWT filter go and why?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s18" onclick="sToggle('s18')"></div><div class="chk-text" id="txt-s18">Actuator liveness vs readiness probe — what's the difference for Kubernetes?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s19" onclick="sToggle('s19')"></div><div class="chk-text" id="txt-s19">Hikari connection pool — what happens if pool is exhausted? How to configure?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s20" onclick="sToggle('s20')"></div><div class="chk-text" id="txt-s20">Outbox pattern implementation in Spring — how to guarantee exactly-once Kafka publish</div></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</div>
+<script src="shared.js"></script>
+<script>
+buildNav('spring');
+const sDone = initChecks('spring-done', 20, 'spring-done', 'spring-pct', 'spring-fill');
+function sToggle(id){ toggleCheck(id, sDone, 'spring-done', 20, 'spring-done', 'spring-pct', 'spring-fill'); }
+</script>
+</body>
+</html>

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PrepKit — Go</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav class="topnav" id="topnav"></nav>
+<div class="page">
+
+<div class="hero">
+  <div class="hero-row">
+    <div class="hero-icon" style="background:rgba(56,189,248,0.15)">🔵</div>
+    <div><div class="hero-title">Go — From Awareness to Fluency</div><div class="hero-sub">Goroutines · Channels · Context · Error handling · REST APIs</div></div>
+  </div>
+  <div class="hero-desc">Go is on your resume at UKG (WFM Forecasting). The honest baseline: currently "also aware of." This page takes you from awareness to being able to speak confidently about Go in interviews — goroutines, channels, context propagation, idiomatic error handling, and how you'd build a REST service. These are exactly the topics that come up when Go is on your resume.</div>
+  <div class="callout c-gap" style="margin-top:10px"><strong>Gap to close:</strong> If Go is on your resume, interviewers WILL ask about goroutines and channels. "I used it at work" without being able to explain the concurrency model is a red flag. You need goroutines + channels cold.</div>
+  <div class="level-pills" style="margin-top:10px">
+    <span class="level-pill lp-all selected" onclick="setLevel('all',this)">All</span>
+    <span class="level-pill lp-beg" onclick="setLevel('beginner',this)">🟢 Beginner</span>
+    <span class="level-pill lp-int" onclick="setLevel('intermediate',this)">🟣 Intermediate</span>
+    <span class="level-pill lp-adv" onclick="setLevel('advanced',this)">🟠 Advanced</span>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-n" style="color:var(--beg)">3</div><div class="stat-l">Beginner</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--int)">3</div><div class="stat-l">Intermediate</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--adv)">2</div><div class="stat-l">Advanced</div></div>
+  <div class="stat"><div class="stat-n" id="go-done" style="color:var(--green)">0</div><div class="stat-l">Done</div></div>
+</div>
+<div class="prog-wrap">
+  <div class="prog-label"><span>Progress</span><span id="go-pct">0 / 14</span></div>
+  <div class="prog-bar"><div class="prog-fill" id="go-fill" style="width:0%"></div></div>
+</div>
+
+<!-- BEGINNER -->
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--beg-bg)">📖</div>
+    <div style="flex:1"><div class="sec-title">Go vs Java — Key Differences</div><div class="sec-sub">What makes Go different and why companies choose it</div></div>
+    <span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="g-vs" id="tab-g-vs-diff" onclick="switchTab('g-vs','diff')">Go vs Java</div>
+      <div class="tab" data-group="g-vs" id="tab-g-vs-basics" onclick="switchTab('g-vs','basics')">Go basics</div>
+    </div>
+    <div class="tab-panel active" data-group="g-vs" id="panel-g-vs-diff">
+      <table class="ctable">
+        <tr><th>Aspect</th><th>Go</th><th>Java</th></tr>
+        <tr><td>Compilation</td><td class="good">Compiles to native binary (~seconds)</td><td class="ok">Compiles to JVM bytecode + JIT</td></tr>
+        <tr><td>Startup time</td><td class="good">Milliseconds</td><td class="ok">Seconds (JVM warmup)</td></tr>
+        <tr><td>Memory</td><td class="good">Very low (no JVM overhead)</td><td class="ok">Higher (JVM heap)</td></tr>
+        <tr><td>Concurrency model</td><td class="good">Goroutines (lightweight, ~2KB stack)</td><td class="ok">Threads (~1MB stack per thread)</td></tr>
+        <tr><td>Error handling</td><td class="ok">Explicit return values (if err != nil)</td><td class="ok">Exceptions (try/catch)</td></tr>
+        <tr><td>OOP</td><td>No classes, no inheritance, interfaces only</td><td>Full OOP with classes</td></tr>
+        <tr><td>Generics</td><td class="ok">Added in Go 1.18</td><td class="good">Full generics since Java 5</td></tr>
+        <tr><td>Deployment</td><td class="good">Single static binary</td><td class="ok">JAR + JRE</td></tr>
+        <tr><td>Best for</td><td>CLI tools, microservices, infra tooling, high-concurrency servers</td><td>Enterprise apps, rich ecosystem</td></tr>
+      </table>
+      <div class="callout c-tag"><strong>Why UKG uses Go alongside Java:</strong> Go excels at lightweight services that need low memory and fast startup — perfect for scripts, CLI tools, and lightweight microservices like the forecasting data pipeline scripts. Java is used for the heavy business logic service (Spring Boot). Mixed stack is very common at large companies.</div>
+    </div>
+    <div class="tab-panel" data-group="g-vs" id="panel-g-vs-basics">
+<pre><span class="cm">// Go basics — the syntax you need to know</span>
+
+<span class="cm">// No classes — use structs + methods</span>
+<span class="kw">type</span> Hotel <span class="kw">struct</span> {
+    ID        string
+    Name      string
+    City      string
+    StarRating <span class="kw">int</span>
+}
+
+<span class="cm">// Method on struct (Go's version of a class method)</span>
+<span class="kw">func</span> (h Hotel) <span class="fn">DisplayName</span>() string {
+    <span class="kw">return</span> fmt.<span class="fn">Sprintf</span>(<span class="str">"%s (%d stars)"</span>, h.Name, h.StarRating)
+}
+
+<span class="cm">// Interfaces — implicit implementation (no 'implements' keyword)</span>
+<span class="kw">type</span> Repository <span class="kw">interface</span> {
+    <span class="fn">FindByID</span>(id string) (*Hotel, error)
+    <span class="fn">Save</span>(hotel *Hotel) error
+}
+<span class="cm">// Any struct with FindByID and Save methods automatically implements Repository</span>
+
+<span class="cm">// Error handling — explicit, not exceptions</span>
+<span class="kw">func</span> <span class="fn">GetHotel</span>(id string) (*Hotel, error) {
+    hotel, err := db.<span class="fn">Query</span>(<span class="str">"SELECT * FROM hotels WHERE id = ?"</span>, id)
+    <span class="kw">if</span> err != <span class="kw">nil</span> {
+        <span class="kw">return nil</span>, fmt.<span class="fn">Errorf</span>(<span class="str">"fetching hotel %s: %w"</span>, id, err)  <span class="cm">// %w wraps error</span>
+    }
+    <span class="kw">if</span> hotel == <span class="kw">nil</span> {
+        <span class="kw">return nil</span>, ErrNotFound
+    }
+    <span class="kw">return</span> hotel, <span class="kw">nil</span>
+}
+
+<span class="cm">// Custom errors</span>
+<span class="kw">var</span> ErrNotFound = errors.<span class="fn">New</span>(<span class="str">"hotel not found"</span>)
+
+<span class="cm">// Sentinel error check</span>
+hotel, err := <span class="fn">GetHotel</span>(<span class="str">"123"</span>)
+<span class="kw">if</span> errors.<span class="fn">Is</span>(err, ErrNotFound) {
+    <span class="cm">// handle not found specifically</span>
+}
+
+<span class="cm">// Slices (like Java ArrayList)</span>
+hotels := []Hotel{}
+hotels = <span class="fn">append</span>(hotels, Hotel{ID: <span class="str">"1"</span>, Name: <span class="str">"Grand"</span>})
+
+<span class="cm">// Maps (like Java HashMap)</span>
+byID := <span class="kw">map</span>[string]Hotel{<span class="str">"1"</span>: {ID: <span class="str">"1"</span>, Name: <span class="str">"Grand"</span>}}
+hotel, ok := byID[<span class="str">"1"</span>]  <span class="cm">// ok = false if key doesn't exist</span>
+<span class="kw">if</span> !ok { <span class="cm">/* not found */</span> }</pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--beg-bg)">🚀</div>
+    <div style="flex:1"><div class="sec-title">Goroutines & Channels — Go's Concurrency Model</div><div class="sec-sub">The most important Go concept. Must know this cold.</div></div>
+    <span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="g-conc" id="tab-g-conc-goroutine" onclick="switchTab('g-conc','goroutine')">Goroutines</div>
+      <div class="tab" data-group="g-conc" id="tab-g-conc-channel" onclick="switchTab('g-conc','channel')">Channels</div>
+      <div class="tab" data-group="g-conc" id="tab-g-conc-patterns" onclick="switchTab('g-conc','patterns')">Patterns</div>
+    </div>
+    <div class="tab-panel active" data-group="g-conc" id="panel-g-conc-goroutine">
+      <div class="block">
+        <div class="block-title">What is a goroutine?</div>
+        <div class="prose">A goroutine is a lightweight thread managed by the Go runtime. Unlike OS threads (~1MB stack, expensive context switch), goroutines start with a ~2KB stack that grows as needed. You can run <strong>millions of goroutines</strong> on a single machine. The Go runtime schedules them onto OS threads (M:N threading).</div>
+<pre><span class="cm">// Start a goroutine with 'go' keyword</span>
+<span class="kw">func</span> <span class="fn">main</span>() {
+    <span class="cm">// This runs in a NEW goroutine (concurrent)</span>
+    <span class="kw">go</span> <span class="fn">sendEmail</span>(<span class="str">"user@example.com"</span>)
+    <span class="cm">// main() continues immediately — doesn't wait for email</span>
+
+    <span class="cm">// Anonymous goroutine</span>
+    <span class="kw">go func</span>() {
+        fmt.<span class="fn">Println</span>(<span class="str">"running in background"</span>)
+    }()
+
+    <span class="cm">// PROBLEM: main exits → all goroutines killed</span>
+    <span class="cm">// Solution: use sync.WaitGroup or channels to wait</span>
+}
+
+<span class="cm">// WaitGroup — wait for multiple goroutines to finish</span>
+<span class="kw">func</span> <span class="fn">processBookings</span>(bookings []Booking) {
+    <span class="kw">var</span> wg sync.WaitGroup
+
+    <span class="kw">for</span> _, booking := <span class="kw">range</span> bookings {
+        wg.<span class="fn">Add</span>(<span class="nu">1</span>)               <span class="cm">// increment counter</span>
+        <span class="kw">go func</span>(b Booking) {
+            <span class="kw">defer</span> wg.<span class="fn">Done</span>()    <span class="cm">// decrement when goroutine exits</span>
+            <span class="fn">processBooking</span>(b)
+        }(booking)              <span class="cm">// pass booking as arg (avoid closure bug)</span>
+    }
+
+    wg.<span class="fn">Wait</span>() <span class="cm">// blocks until all goroutines call Done()</span>
+    fmt.<span class="fn">Println</span>(<span class="str">"all bookings processed"</span>)
+}</pre>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="g-conc" id="panel-g-conc-channel">
+<pre><span class="cm">// Channel — typed pipe between goroutines</span>
+<span class="cm">// Goroutines communicate by SENDING VALUES THROUGH CHANNELS</span>
+<span class="cm">// "Don't communicate by sharing memory; share memory by communicating"</span>
+
+<span class="cm">// Unbuffered channel — sender BLOCKS until receiver is ready</span>
+ch := <span class="fn">make</span>(<span class="kw">chan</span> string)
+<span class="kw">go func</span>() { ch <- <span class="str">"hello"</span> }()  <span class="cm">// goroutine sends, blocks until received</span>
+msg := <-ch                       <span class="cm">// main receives</span>
+
+<span class="cm">// Buffered channel — sender doesn't block until buffer is full</span>
+results := <span class="fn">make</span>(<span class="kw">chan</span> Hotel, <span class="nu">10</span>)  <span class="cm">// buffer of 10 items</span>
+
+<span class="cm">// Parallel hotel search — collect results via channel</span>
+<span class="kw">func</span> <span class="fn">searchHotels</span>(cities []string) []Hotel {
+    results := <span class="fn">make</span>(<span class="kw">chan</span> []Hotel, <span class="fn">len</span>(cities))
+
+    <span class="kw">for</span> _, city := <span class="kw">range</span> cities {
+        <span class="kw">go func</span>(c string) {
+            hotels, _ := hotelRepo.<span class="fn">FindByCity</span>(c)
+            results <- hotels  <span class="cm">// send to channel</span>
+        }(city)
+    }
+
+    <span class="cm">// Collect all results</span>
+    <span class="kw">var</span> allHotels []Hotel
+    <span class="kw">for range</span> cities {
+        hotels := <-results  <span class="cm">// receive from channel (blocks until available)</span>
+        allHotels = <span class="fn">append</span>(allHotels, hotels...)
+    }
+    <span class="kw">return</span> allHotels
+}
+
+<span class="cm">// Select — choose between multiple channel operations</span>
+<span class="kw">select</span> {
+<span class="kw">case</span> result := <-hotelCh:
+    fmt.<span class="fn">Println</span>(<span class="str">"got hotel:"</span>, result.Name)
+<span class="kw">case</span> err := <-errCh:
+    fmt.<span class="fn">Println</span>(<span class="str">"error:"</span>, err)
+<span class="kw">case</span> <-time.<span class="fn">After</span>(<span class="nu">2</span> * time.Second):
+    fmt.<span class="fn">Println</span>(<span class="str">"timeout"</span>)  <span class="cm">// neither channel sent in 2s</span>
+}</pre>
+    </div>
+    <div class="tab-panel" data-group="g-conc" id="panel-g-conc-patterns">
+<pre><span class="cm">// Worker pool pattern — limit concurrency</span>
+<span class="cm">// Problem: 10,000 goroutines all hitting DB = connection exhaustion</span>
+<span class="cm">// Solution: worker pool limits to N concurrent workers</span>
+
+<span class="kw">func</span> <span class="fn">processWithWorkerPool</span>(jobs []Job, numWorkers <span class="kw">int</span>) {
+    jobCh := <span class="fn">make</span>(<span class="kw">chan</span> Job, <span class="fn">len</span>(jobs))
+    resultCh := <span class="fn">make</span>(<span class="kw">chan</span> Result, <span class="fn">len</span>(jobs))
+
+    <span class="cm">// Start N workers</span>
+    <span class="kw">for</span> i := <span class="nu">0</span>; i < numWorkers; i++ {
+        <span class="kw">go func</span>() {
+            <span class="kw">for</span> job := <span class="kw">range</span> jobCh {  <span class="cm">// range over channel = receive until closed</span>
+                result, err := <span class="fn">processJob</span>(job)
+                resultCh <- Result{Value: result, Err: err}
+            }
+        }()
+    }
+
+    <span class="cm">// Send all jobs</span>
+    <span class="kw">for</span> _, job := <span class="kw">range</span> jobs {
+        jobCh <- job
+    }
+    <span class="fn">close</span>(jobCh)  <span class="cm">// signals workers to stop after processing remaining jobs</span>
+
+    <span class="cm">// Collect results</span>
+    <span class="kw">for range</span> jobs {
+        result := <-resultCh
+        <span class="cm">// handle result</span>
+    }
+}
+
+<span class="cm">// Mutex — protect shared state (when channels are awkward)</span>
+<span class="kw">type</span> SafeCounter <span class="kw">struct</span> {
+    mu    sync.RWMutex
+    count <span class="kw">int</span>
+}
+
+<span class="kw">func</span> (c *SafeCounter) <span class="fn">Increment</span>() {
+    c.mu.<span class="fn">Lock</span>()
+    <span class="kw">defer</span> c.mu.<span class="fn">Unlock</span>()  <span class="cm">// always unlock, even on panic</span>
+    c.count++
+}
+
+<span class="kw">func</span> (c *SafeCounter) <span class="fn">Value</span>() <span class="kw">int</span> {
+    c.mu.<span class="fn">RLock</span>()   <span class="cm">// multiple readers OK simultaneously</span>
+    <span class="kw">defer</span> c.mu.<span class="fn">RUnlock</span>()
+    <span class="kw">return</span> c.count
+}</pre>
+    </div>
+  </div>
+</div>
+
+<!-- INTERMEDIATE -->
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--int-bg)">🌐</div>
+    <div style="flex:1"><div class="sec-title">Context — Cancellation, Timeouts, Values</div><div class="sec-sub">context.Context propagates through every function call in Go</div></div>
+    <span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+<pre><span class="cm">// Context — carries cancellation signals, deadlines, and request-scoped values</span>
+<span class="cm">// Rule: ALWAYS accept ctx as the FIRST parameter of every function</span>
+
+<span class="kw">func</span> <span class="fn">GetHotel</span>(ctx context.Context, id string) (*Hotel, error) {
+    <span class="cm">// If context is cancelled (request timeout, client disconnect),</span>
+    <span class="cm">// DB call is also cancelled — no wasted resources</span>
+    <span class="kw">return</span> db.<span class="fn">QueryRowContext</span>(ctx, <span class="str">"SELECT * FROM hotels WHERE id = $1"</span>, id)
+}
+
+<span class="cm">// Timeout context — cancel after 2 seconds</span>
+ctx, cancel := context.<span class="fn">WithTimeout</span>(context.<span class="fn">Background</span>(), <span class="nu">2</span>*time.Second)
+<span class="kw">defer</span> <span class="fn">cancel</span>() <span class="cm">// ALWAYS defer cancel to avoid resource leak</span>
+
+hotel, err := <span class="fn">GetHotel</span>(ctx, <span class="str">"123"</span>)
+<span class="kw">if</span> err != <span class="kw">nil</span> {
+    <span class="kw">if</span> errors.<span class="fn">Is</span>(err, context.DeadlineExceeded) {
+        <span class="cm">// timed out</span>
+    }
+}
+
+<span class="cm">// Cancellation context — cancel manually</span>
+ctx, cancel := context.<span class="fn">WithCancel</span>(context.<span class="fn">Background</span>())
+<span class="kw">go func</span>() {
+    time.<span class="fn">Sleep</span>(<span class="nu">5</span> * time.Second)
+    <span class="fn">cancel</span>()  <span class="cm">// cancel after 5s — all functions using ctx will abort</span>
+}()
+
+<span class="cm">// Request-scoped values (user ID, request ID, trace ID)</span>
+<span class="kw">type</span> contextKey <span class="kw">string</span>
+<span class="kw">const</span> userIDKey contextKey = <span class="str">"userID"</span>
+
+ctx = context.<span class="fn">WithValue</span>(ctx, userIDKey, <span class="str">"user-123"</span>)
+
+<span class="cm">// Retrieve value anywhere in the call chain</span>
+userID := ctx.<span class="fn">Value</span>(userIDKey).(string)
+
+<span class="cm">// Listen for cancellation in your own goroutine</span>
+<span class="kw">func</span> <span class="fn">longProcess</span>(ctx context.Context) error {
+    <span class="kw">for</span> {
+        <span class="kw">select</span> {
+        <span class="kw">case</span> <-ctx.<span class="fn">Done</span>():
+            <span class="kw">return</span> ctx.<span class="fn">Err</span>()  <span class="cm">// context.Canceled or DeadlineExceeded</span>
+        <span class="kw">default</span>:
+            <span class="fn">doWork</span>()
+        }
+    }
+}</pre>
+  </div>
+</div>
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--int-bg)">🌐</div>
+    <div style="flex:1"><div class="sec-title">Building REST APIs in Go</div><div class="sec-sub">net/http · chi router · middleware · JSON handling</div></div>
+    <span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+<pre><span class="cm">// Production Go REST API with chi router</span>
+<span class="kw">package</span> main
+
+<span class="kw">import</span> (
+    <span class="str">"context"</span>
+    <span class="str">"encoding/json"</span>
+    <span class="str">"log/slog"</span>
+    <span class="str">"net/http"</span>
+    <span class="str">"os"</span>
+    <span class="str">"os/signal"</span>
+    <span class="str">"syscall"</span>
+    <span class="str">"time"</span>
+    <span class="str">"github.com/go-chi/chi/v5"</span>
+    <span class="str">"github.com/go-chi/chi/v5/middleware"</span>
+)
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    r := chi.<span class="fn">NewRouter</span>()
+
+    <span class="cm">// Middleware</span>
+    r.<span class="fn">Use</span>(middleware.RequestID)
+    r.<span class="fn">Use</span>(middleware.RealIP)
+    r.<span class="fn">Use</span>(middleware.Logger)
+    r.<span class="fn">Use</span>(middleware.Recoverer)  <span class="cm">// recover from panics</span>
+    r.<span class="fn">Use</span>(middleware.Timeout(<span class="nu">60</span> * time.Second))
+
+    <span class="cm">// Routes</span>
+    r.<span class="fn">Get</span>(<span class="str">"/health"</span>, <span class="kw">func</span>(w http.ResponseWriter, r *http.Request) {
+        <span class="fn">respondJSON</span>(w, http.StatusOK, <span class="kw">map</span>[<span class="kw">string</span>]<span class="kw">string</span>{<span class="str">"status"</span>: <span class="str">"UP"</span>})
+    })
+
+    r.<span class="fn">Route</span>(<span class="str">"/api/v1/hotels"</span>, <span class="kw">func</span>(r chi.Router) {
+        r.<span class="fn">Use</span>(<span class="fn">authMiddleware</span>)         <span class="cm">// apply to all hotel routes</span>
+        r.<span class="fn">Get</span>(<span class="str">"/"</span>, <span class="fn">listHotels</span>)
+        r.<span class="fn">Post</span>(<span class="str">"/"</span>, <span class="fn">createHotel</span>)
+        r.<span class="fn">Get</span>(<span class="str">"/{id}"</span>, <span class="fn">getHotel</span>)
+        r.<span class="fn">Put</span>(<span class="str">"/{id}"</span>, <span class="fn">updateHotel</span>)
+    })
+
+    <span class="cm">// Graceful shutdown</span>
+    srv := &http.Server{Addr: <span class="str">":8080"</span>, Handler: r}
+    <span class="kw">go</span> srv.<span class="fn">ListenAndServe</span>()
+
+    quit := <span class="fn">make</span>(<span class="kw">chan</span> os.Signal, <span class="nu">1</span>)
+    signal.<span class="fn">Notify</span>(quit, syscall.SIGTERM, syscall.SIGINT)
+    <-quit  <span class="cm">// block until signal received</span>
+
+    ctx, cancel := context.<span class="fn">WithTimeout</span>(context.<span class="fn">Background</span>(), <span class="nu">30</span>*time.Second)
+    <span class="kw">defer</span> <span class="fn">cancel</span>()
+    srv.<span class="fn">Shutdown</span>(ctx)
+}
+
+<span class="cm">// Handler function</span>
+<span class="kw">func</span> <span class="fn">getHotel</span>(w http.ResponseWriter, r *http.Request) {
+    id := chi.<span class="fn">URLParam</span>(r, <span class="str">"id"</span>)
+    hotel, err := hotelService.<span class="fn">FindByID</span>(r.<span class="fn">Context</span>(), id)  <span class="cm">// pass request context!</span>
+    <span class="kw">if</span> err != <span class="kw">nil</span> {
+        <span class="kw">if</span> errors.<span class="fn">Is</span>(err, ErrNotFound) {
+            <span class="fn">respondError</span>(w, http.StatusNotFound, <span class="str">"hotel not found"</span>)
+            <span class="kw">return</span>
+        }
+        slog.<span class="fn">Error</span>(<span class="str">"failed to get hotel"</span>, <span class="str">"id"</span>, id, <span class="str">"err"</span>, err)
+        <span class="fn">respondError</span>(w, http.StatusInternalServerError, <span class="str">"internal error"</span>)
+        <span class="kw">return</span>
+    }
+    <span class="fn">respondJSON</span>(w, http.StatusOK, hotel)
+}
+
+<span class="cm">// Helper functions</span>
+<span class="kw">func</span> <span class="fn">respondJSON</span>(w http.ResponseWriter, status <span class="kw">int</span>, data <span class="kw">interface</span>{}) {
+    w.<span class="fn">Header</span>().<span class="fn">Set</span>(<span class="str">"Content-Type"</span>, <span class="str">"application/json"</span>)
+    w.<span class="fn">WriteHeader</span>(status)
+    json.<span class="fn">NewEncoder</span>(w).<span class="fn">Encode</span>(data)
+}</pre>
+  </div>
+</div>
+
+<!-- Checklist -->
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--green-bg)">✅</div>
+    <div style="flex:1"><div class="sec-title">Go readiness checklist</div></div>
+    <span class="sec-lv lv-beg">All levels</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <ul class="chk-list" style="padding:14px">
+      <li class="chk-item"><div class="chkbox" id="chk-go1" onclick="goToggle('go1')"></div><div class="chk-text" id="txt-go1">Goroutine vs OS thread — size, cost, how many can you run?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-go2" onclick="goToggle('go2')"></div><div class="chk-text" id="txt-go2">Buffered vs unbuffered channel — when does each block?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-go3" onclick="goToggle('go3')"></div><div class="chk-text" id="txt-go3">The closure bug in goroutines — what is it and how to fix?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-go4" onclick="goToggle('go4')"></div><div class="chk-text" id="txt-go4">Go error handling — why explicit (if err != nil) instead of exceptions?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-go5" onclick="goToggle('go5')"></div><div class="chk-text" id="txt-go5">context.Context — what does it carry and why defer cancel() always?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-go6" onclick="goToggle('go6')"></div><div class="chk-text" id="txt-go6">Worker pool pattern — implement with channels to limit concurrency to 10</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-go7" onclick="goToggle('go7')"></div><div class="chk-text" id="txt-go7">Go interfaces — how does implicit implementation work?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-go8" onclick="goToggle('go8')"></div><div class="chk-text" id="txt-go8">defer keyword — when does it execute, what is it used for?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-go9" onclick="goToggle('go9')"></div><div class="chk-text" id="txt-go9">Channels vs mutex — when to use each for shared state?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-go10" onclick="goToggle('go10')"></div><div class="chk-text" id="txt-go10">How did you actually use Go at UKG? Be specific about the service/script.</div></li>
+    </ul>
+    <div style="padding:0 14px 14px">
+      <a class="ref-link" href="https://go.dev/tour/welcome/1" target="_blank">↗ A Tour of Go (official)</a>
+      <a class="ref-link" href="https://go.dev/doc/effective_go" target="_blank">↗ Effective Go</a>
+      <a class="ref-link" href="https://go.dev/blog/concurrency-patterns" target="_blank">↗ Go Concurrency Patterns</a>
+      <a class="ref-link" href="https://pkg.go.dev/github.com/go-chi/chi/v5" target="_blank">↗ chi router docs</a>
+    </div>
+  </div>
+</div>
+
+</div>
+<script src="shared.js"></script>
+<script>
+buildNav('go');
+const goDone = initChecks('go-done', 10, 'go-done', 'go-pct', 'go-fill');
+function goToggle(id){ toggleCheck(id, goDone, 'go-done', 10, 'go-done', 'go-pct', 'go-fill'); }
+</script>
+</body>
+</html>

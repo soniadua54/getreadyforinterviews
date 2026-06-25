@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PrepKit — Behavioral & Leadership</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+.story-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);margin-bottom:12px;overflow:hidden}
+.story-hd{display:flex;align-items:flex-start;gap:12px;padding:14px;cursor:pointer;user-select:none}
+.story-hd:active{background:var(--bg3)}
+.story-q{font-size:13px;font-weight:600;color:var(--text);line-height:1.45;flex:1}
+.story-tag{padding:2px 8px;border-radius:8px;font-size:10px;font-weight:600;white-space:nowrap;flex-shrink:0;margin-top:2px}
+.story-body{display:none;border-top:1px solid var(--border);padding:14px}
+.story-body.open{display:block}
+.star-block{margin-bottom:14px}
+.star-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent2);margin-bottom:5px}
+.star-s{color:var(--orange)}.star-t{color:var(--blue)}.star-a{color:var(--green)}.star-r{color:var(--purple)}
+.star-row{display:grid;grid-template-columns:60px 1fr;gap:8px;margin-bottom:8px;font-size:12px;line-height:1.65}
+.star-key{font-weight:700;padding-top:1px}
+.staff-signal{background:rgba(108,99,255,0.08);border:1px solid rgba(108,99,255,0.2);border-radius:var(--r);padding:10px 13px;font-size:11.5px;color:var(--text2);margin-top:10px}
+.staff-signal strong{color:var(--accent2)}
+.signal-label{font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.avoid-box{background:var(--red-bg);border-left:3px solid var(--red);border-radius:0 var(--r) var(--r) 0;padding:10px 13px;margin-top:10px;font-size:12px;color:var(--text2)}
+.avoid-box strong{color:var(--red)}
+</style>
+</head>
+<body>
+<nav class="topnav" id="topnav"></nav>
+<div class="page">
+
+<div class="hero">
+  <div class="hero-row">
+    <div class="hero-icon" style="background:rgba(167,139,250,0.15)">🎙️</div>
+    <div>
+      <div class="hero-title">Behavioral & Leadership Round</div>
+      <div class="hero-sub">Staff-level scenarios · Influence · Cross-team decisions · Incident ownership</div>
+    </div>
+  </div>
+  <div class="hero-desc">This round was completely absent from your prep kit. At Staff level, the behavioral round carries as much weight as system design. The bar shifts from "did you build it" to "how did you drive it, align teams on it, and handle it going wrong." Agoda specifically probes for scope, ownership, and influence without authority. Prepared answers with your real examples — not generic STAR templates.</div>
+  <div class="callout c-gap" style="margin-top:10px"><strong>Gap flagged:</strong> Zero behavioral prep existed. A technically perfect system design round can still fail if the behavioral round reveals someone who can't operate at Staff scope — no cross-team examples, no "I was wrong" moments, no evidence of technical leadership beyond writing code.</div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-n" id="beh-done" style="color:var(--green)">0</div><div class="stat-l">Done</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--int)">8</div><div class="stat-l">Scenarios</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--orange)">2</div><div class="stat-l">Frameworks</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--purple)">1h</div><div class="stat-l">Typical round</div></div>
+</div>
+<div class="prog-wrap">
+  <div class="prog-label"><span>Progress — answers prepared</span><span id="beh-pct">0 / 8</span></div>
+  <div class="prog-bar"><div class="prog-fill" id="beh-fill" style="width:0%"></div></div>
+</div>
+
+<!-- FRAMEWORK -->
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--beg-bg)">📐</div>
+    <div style="flex:1">
+      <div class="sec-title">The Staff-Level Framework — How to Structure Every Answer</div>
+      <div class="sec-sub">STAR is insufficient at Staff level. Use this extended version.</div>
+    </div>
+    <span class="sec-lv lv-beg">Framework</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="two-col">
+      <div class="col-card">
+        <h4>What interviewers hear at mid-level</h4>
+        <p>"I noticed a problem. I fixed it. The result was good."<br><br>Situation → Task → Action → Result. Clean, but it doesn't signal Staff. It signals someone who executes well in their lane.</p>
+      </div>
+      <div class="col-card">
+        <h4>What interviewers hear at Staff level</h4>
+        <p>"I identified a systemic problem others missed. I had to convince two resistant teams. Here's what I got wrong and corrected. The org outcome was X — and here's what I'd do differently."</p>
+      </div>
+    </div>
+    <div style="height:12px"></div>
+<pre><span class="cm">Staff STAR — the extended version:
+
+S — Situation: Set the org context. Who were the stakeholders?
+    What was the SCOPE? (team? org? cross-org?)
+
+T — Task: What was YOUR specific responsibility vs the team's?
+    Why were YOU the right person for this?
+    What constraints made it hard? (time, politics, ambiguity?)
+
+A — Action: Be specific about what YOU did (not "we").
+    Show influence: how did you get buy-in from people who didn't report to you?
+    Show judgment: what tradeoff did you make and why?
+    Show leadership: who did you pull in, delegate to, unblock?
+
+R — Result: Quantify if possible. But also:
+    What was the SECOND-ORDER effect? (org learning, process change, team unblocking)
+    What would you do differently?  ← This is the Staff signal many miss</span></pre>
+    <div class="callout c-info"><strong>Time allocation per answer:</strong> 2 min setup → 3 min action (most time here) → 1 min result. Total ~6 min. Don't spend 4 minutes on context and rush the action. The action is where the signal lives.</div>
+  </div>
+</div>
+
+<!-- SCENARIO 1 -->
+<div class="story-card">
+  <div class="story-hd" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.chev').classList.toggle('open')">
+    <div style="flex:1">
+      <div class="story-q">Tell me about a time you drove a technical decision that impacted teams beyond your own.</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px">Influence without authority · Cross-team alignment</div>
+    </div>
+    <span class="story-tag b-int">Cross-team</span>
+    <span class="chev" style="font-size:10px;color:var(--text3);transition:transform .2s;margin-top:3px">▼</span>
+  </div>
+  <div class="story-body">
+    <div class="star-block">
+      <div class="star-label">Your example to build from</div>
+      <div class="star-row"><span class="star-key star-s">S</span><span>At UKG, the WFM Forecasting pipeline was owned by your team but downstream teams (People Fabric, TRex) were consuming its output via direct DB reads — creating tight coupling that caused breakage whenever schema changed.</span></div>
+      <div class="star-row"><span class="star-key star-t">T</span><span>You identified this wasn't a bug, it was an architectural problem. No one owned the API contract between teams. You had to convince the People Fabric team to change how they consumed data — they didn't report to you and had their own roadmap.</span></div>
+      <div class="star-row"><span class="star-key star-a">A</span><span>Describe: how you documented the blast radius (how many breakages in 6 months from schema changes), how you proposed a published API contract via Kafka events instead of direct DB reads, how you ran a demo to show it worked, how you handled the People Fabric team's concern about migration effort (offered to pair on the migration).</span></div>
+      <div class="star-row"><span class="star-key star-r">R</span><span>Quantify: zero cross-team breakages after migration vs N per quarter before. And: "The bigger outcome was the team now has a documented inter-service contract and a pattern others have adopted."</span></div>
+    </div>
+    <div class="staff-signal">
+      <div class="signal-label">🎯 Staff signal to hit</div>
+      <strong>Show the resistance:</strong> "The People Fabric team initially pushed back because they had three deliverables due that quarter. Here's specifically how I handled that — I scoped the migration in phases so phase 1 was no-effort for them, and I committed to doing the integration work myself for their side." The resistance + how you navigated it is what separates Staff answers from Senior answers.
+    </div>
+    <div class="avoid-box"><strong>Don't say:</strong> "We aligned on the approach and implemented it." That's what everyone says. No one asks what you did in the meetings where it wasn't going well.
+    </div>
+  </div>
+</div>
+
+<!-- SCENARIO 2 -->
+<div class="story-card">
+  <div class="story-hd" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.chev').classList.toggle('open')">
+    <div style="flex:1">
+      <div class="story-q">Describe a situation where you had to push back on a product or leadership decision on technical grounds.</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px">Technical judgment · Constructive disagreement</div>
+    </div>
+    <span class="story-tag b-adv">Pushback</span>
+    <span class="chev" style="font-size:10px;color:var(--text3);transition:transform .2s;margin-top:3px">▼</span>
+  </div>
+  <div class="story-body">
+    <div class="star-block">
+      <div class="star-label">What they're actually testing</div>
+      <p style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:10px">Can you disagree with authority without being combative? Can you frame technical risk in business terms? Do you know when to escalate vs when to commit anyway?</p>
+      <div class="star-label">Your example to build from</div>
+      <div class="star-row"><span class="star-key star-s">S</span><span>At Walmart IDC / UKG, there was likely a feature or deadline pushed by product that required technical shortcuts — skipping proper schema migration, hardcoding tenant config, or deploying without proper observability.</span></div>
+      <div class="star-row"><span class="star-key star-t">T</span><span>You had to communicate a technical risk to a stakeholder who didn't have the context to evaluate it. Your job was to translate "this will cause X in production" into "this means Y for the business."</span></div>
+      <div class="star-row"><span class="star-key star-a">A</span><span>Key detail: did you propose an alternative, or just say no? "I pushed back on the 2-week timeline for the Auth0 tenant migration because doing it without testing in staging first risked taking down 12 active tenants. I proposed: ship it for new tenants in week 2, migrate existing tenants over weeks 3-4 with rollback switches." Show you came with a counter-proposal, not just a veto.</span></div>
+      <div class="star-row"><span class="star-key star-r">R</span><span>What happened? Did they accept the alternative? If not, and you had to commit anyway — show you committed fully once the decision was made and what you did to mitigate the risk you'd flagged.</span></div>
+    </div>
+    <div class="staff-signal">
+      <div class="signal-label">🎯 Staff signal to hit</div>
+      <strong>"Disagree and commit"</strong> — the most important phrase in this answer. If the decision went against you, say: "Once the call was made, I committed fully. What I did was add a killswitch / staging validation / monitoring alert so that if my concern materialized we could catch it early." This shows maturity, not capitulation.
+    </div>
+  </div>
+</div>
+
+<!-- SCENARIO 3 -->
+<div class="story-card">
+  <div class="story-hd" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.chev').classList.toggle('open')">
+    <div style="flex:1">
+      <div class="story-q">Tell me about a production incident where you were responsible for the response. What went wrong and what did you change afterwards?</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px">Incident ownership · Postmortem thinking</div>
+    </div>
+    <span class="story-tag b-gap">Incident</span>
+    <span class="chev" style="font-size:10px;color:var(--text3);transition:transform .2s;margin-top:3px">▼</span>
+  </div>
+  <div class="story-body">
+    <div class="star-block">
+      <div class="star-label">What they're actually testing</div>
+      <p style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:10px">Do you own failures or deflect them? Can you stay calm and systematic under pressure? Did you make the org more resilient after, or just fix the immediate thing?</p>
+      <div class="star-label">Structure your incident answer like this</div>
+      <div class="star-row"><span class="star-key star-s">S</span><span>What broke, when, what was the business impact. Be specific: "Forecasting pipeline failures for 3 hours. 4 DISCOM submissions delayed. Impacted grid planning for the next day." Not vague.</span></div>
+      <div class="star-row"><span class="star-key star-t">T</span><span>Your role: were you on-call? Did you escalate correctly? What decisions were yours to make vs escalate?</span></div>
+      <div class="star-row"><span class="star-key star-a">A</span><span>Walk through the actual triage: what you checked first, what red herring you chased, how long before you found root cause. Be honest about where time was lost. Then: mitigation → fix → comms to stakeholders.</span></div>
+      <div class="star-row"><span class="star-key star-r">R</span><span>Resolution time + business impact. Then the postmortem outcome: what three things changed in your system/process as a direct result. "We added an alert for X. We added a circuit breaker for Y. We documented runbook Z."</span></div>
+    </div>
+    <div class="staff-signal">
+      <div class="signal-label">🎯 Staff signal to hit</div>
+      The postmortem actions are where Staff-level thinking lives. Not "we fixed the bug" — but "we identified that the real cause was we had no alert for this class of failure, so we built a detection layer." Show systemic thinking, not patch thinking.
+    </div>
+    <div class="avoid-box"><strong>Don't:</strong> Pick an incident where the fault was entirely someone else's. Interviewers want to see you own something. Pick an incident where your team or you made a mistake, and show how you handled it professionally.
+    </div>
+  </div>
+</div>
+
+<!-- SCENARIO 4 -->
+<div class="story-card">
+  <div class="story-hd" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.chev').classList.toggle('open')">
+    <div style="flex:1">
+      <div class="story-q">How do you decide what technical debt to address vs what to live with? Give a specific example.</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px">Technical judgment · Prioritization · Stakeholder framing</div>
+    </div>
+    <span class="story-tag b-int">Tech Debt</span>
+    <span class="chev" style="font-size:10px;color:var(--text3);transition:transform .2s;margin-top:3px">▼</span>
+  </div>
+  <div class="story-body">
+    <div class="star-block">
+      <div class="star-label">The framework they want to hear</div>
+      <p style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:10px">Not "we pay it down when we have time." That signals you treat tech debt as charity. Staff engineers treat it as a cost-benefit decision and frame it in terms the business understands.</p>
+<pre><span class="cm">Decision criteria for tech debt:
+
+1. VELOCITY TAX: How much dev time does this debt cost per sprint?
+   "Our ad-hoc weather CSV fetching costs ~4h per MAPE report cycle fixing data issues"
+   → 4h × 2 sprints/month = 8h/month. That's worth fixing.
+
+2. BLAST RADIUS: If this fails in production, what breaks?
+   → Debt that's in the critical path of booking/payment: fix now
+   → Debt that's in an admin tool used by 3 people: live with it
+
+3. MIGRATION COST vs COMPOUNDING COST:
+   → If it gets harder to fix every quarter (more callers, more data), fix it now
+   → If it's stable and isolated, defer indefinitely
+
+4. TEAM SPEED: Can the team learn from fixing it?
+   → Refactoring the forecasting pipeline's similar-day lookup taught the team
+      proper feature engineering patterns. Worth it for capability building.</span></pre>
+      <div class="star-row"><span class="star-key star-s">S</span><span>Use your BRPL weather-store refactor: the system used ad-hoc CSV files from IBM API — brittle, no retry, no caching, broke silently when the API changed format.</span></div>
+      <div class="star-row"><span class="star-key star-a">A</span><span>You built the SQLite/FastAPI weather-store. The pitch to leadership: "This costs us 4 hours per forecasting cycle in debugging. Over 6 months that's 48 hours of engineering time — enough to build two new features." Frame it as ROI, not cleanliness.</span></div>
+    </div>
+    <div class="staff-signal">
+      <div class="signal-label">🎯 Staff signal to hit</div>
+      Show you can translate tech debt into business language: time lost, risk of failure, customer impact. "We have 47 TODO comments" is not a business argument. "This failure mode has caused 3 delayed submissions to SLDC this year" is.
+    </div>
+  </div>
+</div>
+
+<!-- SCENARIO 5 -->
+<div class="story-card">
+  <div class="story-hd" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.chev').classList.toggle('open')">
+    <div style="flex:1">
+      <div class="story-q">Tell me about a time you mentored or upleveled someone on your team. What was your approach?</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px">Leadership · Multiplier effect</div>
+    </div>
+    <span class="story-tag b-beg">Mentoring</span>
+    <span class="chev" style="font-size:10px;color:var(--text3);transition:transform .2s;margin-top:3px">▼</span>
+  </div>
+  <div class="story-body">
+    <div class="star-block">
+      <div class="star-label">What they're actually testing</div>
+      <p style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:10px">Staff engineers multiply team output. The question isn't "did you help someone?" — it's "did you change how someone thinks and work, and can you demonstrate that?" Concrete outcome: the person leveled up, shipped something, or became independent on something they weren't before.</p>
+      <div class="star-label">Answer structure</div>
+      <div class="star-row"><span class="star-key star-s">S</span><span>Who was the person, what was their gap (technical, process, confidence), what was the context (junior engineer, new to your domain)?</span></div>
+      <div class="star-row"><span class="star-key star-a">A</span><span>Be specific: did you do code reviews with teaching notes? Pair on a hard problem? Assign a stretch task with scaffolding? "I gave them the DT Load Forecasting pipeline to own with weekly checkpoints. I didn't review every PR — I reviewed the design and let them make implementation choices, stepping in only when I saw a pattern that would compound."</span></div>
+      <div class="star-row"><span class="star-key star-r">R</span><span>What could they do after that they couldn't before? Did they take over ownership? Did they apply the approach elsewhere?</span></div>
+    </div>
+    <div class="staff-signal">
+      <div class="signal-label">🎯 Staff signal to hit</div>
+      The multiplier framing: "The real measure was when they started applying the same debugging approach to problems I wasn't involved in — I knew the pattern had transferred." This shows you think about teaching as capability transfer, not task completion.
+    </div>
+  </div>
+</div>
+
+<!-- SCENARIO 6 -->
+<div class="story-card">
+  <div class="story-hd" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.chev').classList.toggle('open')">
+    <div style="flex:1">
+      <div class="story-q">Describe a time you had to deliver a project under significant ambiguity or changing requirements. How did you handle it?</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px">Ambiguity · Judgment · Scoping</div>
+    </div>
+    <span class="story-tag b-int">Ambiguity</span>
+    <span class="chev" style="font-size:10px;color:var(--text3);transition:transform .2s;margin-top:3px">▼</span>
+  </div>
+  <div class="story-body">
+    <div class="star-block">
+      <div class="star-label">Your example to build from</div>
+      <div class="star-row"><span class="star-key star-s">S</span><span>The Season-Ahead Demand Forecast for June-July 2026: the ask was "build a forecast for SLDC submission" but no clear spec on method, data source, accuracy target, or format. You had 3 weeks.</span></div>
+      <div class="star-row"><span class="star-key star-t">T</span><span>Your job was to turn a vague ask into a deliverable. The real skill: knowing what to decide yourself vs what to escalate for clarification.</span></div>
+      <div class="star-row"><span class="star-key star-a">A</span><span>Walk through your decision process: "I identified the three biggest unknowns — weather data for the forecast period, baseline model to use, and acceptable MAPE target. I got alignment on the MAPE target first (it unblocked model choice), then used El Niño analog data for weather rather than waiting for forecasts that didn't exist yet."</span></div>
+      <div class="star-row"><span class="star-key star-r">R</span><span>Delivered LightGBM-based season-ahead forecast in the two-sheet Excel format for SLDC submission. On time. What would you do differently: "Earlier clarity on the output format would have saved two days of reformatting."</span></div>
+    </div>
+    <div class="staff-signal">
+      <div class="signal-label">🎯 Staff signal to hit</div>
+      Show you distinguish between "ambiguity I should resolve myself" (technical approach, tool choice) and "ambiguity I need to surface to stakeholders" (target accuracy, submission format). Junior engineers freeze on both. Senior engineers ask about both. Staff engineers resolve the first and surface the second.
+    </div>
+  </div>
+</div>
+
+<!-- SCENARIO 7 -->
+<div class="story-card">
+  <div class="story-hd" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.chev').classList.toggle('open')">
+    <div style="flex:1">
+      <div class="story-q">What's the most important system or architectural decision you've made in the last year? What made it hard?</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px">Technical depth · Judgment · Tradeoffs</div>
+    </div>
+    <span class="story-tag b-adv">Architecture</span>
+    <span class="chev" style="font-size:10px;color:var(--text3);transition:transform .2s;margin-top:3px">▼</span>
+  </div>
+  <div class="story-body">
+    <div class="star-block">
+      <div class="star-label">Your example to build from</div>
+      <p style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:10px">Use the three-segment training architecture (normal_day / weekend_day / holiday) or the weather-store SQLite/FastAPI design. Pick the one with the clearest tradeoff story.</p>
+      <div class="star-row"><span class="star-key star-s">S</span><span>Weather data was fetched via ad-hoc IBM API calls embedded in the forecasting pipeline — coupling weather fetching to forecast execution, no retry logic, no caching, no separation of concerns.</span></div>
+      <div class="star-row"><span class="star-key star-t">T</span><span>Design decision: build a separate weather-store service (SQLite + FastAPI) vs just refactor the existing code. The tradeoff: a separate service is more work upfront but decouples concerns cleanly. Monolithic refactor is faster but doesn't solve the root problem.</span></div>
+      <div class="star-row"><span class="star-key star-a">A</span><span>You chose the service: 14-point geographic cluster covering all 41 BRPL/BYPL divisions, blended persistence-to-forecast at the actual/forecast seam, spike-repair algorithm for temperature preprocessing. Each of these was a deliberate design decision — explain the reasoning for one of them in depth.</span></div>
+      <div class="star-row"><span class="star-key star-r">R</span><span>What's measurable: reduced MAPE, eliminated manual debugging hours, other teams can now consume weather data via a stable API. What's the "what I'd do differently": "In hindsight I'd have added OpenTelemetry traces from day one — debugging the geographic weighting required adding logging retroactively."</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- SCENARIO 8 -->
+<div class="story-card">
+  <div class="story-hd" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.chev').classList.toggle('open')">
+    <div style="flex:1">
+      <div class="story-q">Why are you leaving your current role? Why Agoda specifically?</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px">Motivation · Culture fit · Self-awareness</div>
+    </div>
+    <span class="story-tag b-beg">Motivation</span>
+    <span class="chev" style="font-size:10px;color:var(--text3);transition:transform .2s;margin-top:3px">▼</span>
+  </div>
+  <div class="story-body">
+    <div class="star-block">
+      <div class="star-label">What they're actually testing</div>
+      <p style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:10px">Are you running toward something or away from something? Is this just a salary move, or do you have a coherent story? Will you churn quickly? Do you know what Agoda actually does?</p>
+      <div class="star-label">Your answer framework</div>
+<pre><span class="cm">Part 1 — Why leaving (honest, professional, no badmouthing):
+"I've had a great run at BRPL building production ML systems for power demand forecasting.
+I've grown from ML Engineer to leading the forecasting platform architecture.
+At this point I'm looking for a larger-scale challenge — systems at Agoda's scale involve
+orders of magnitude more concurrency, data volume, and distributed complexity than I've
+operated in. That's the environment where I know I'll grow fastest."
+
+Part 2 — Why Agoda specifically (show you've done homework):
+"Agoda's search and pricing infrastructure is a fascinating engineering problem —
+real-time inventory across hundreds of thousands of hotels, dynamic pricing that
+responds to demand signals, recommendations at scale across multiple currencies
+and languages. These are hard distributed systems problems, and the booking domain
+maps directly to what I've been building — just at a scale I haven't operated at yet.
+
+The Bangkok base is also important to us [Sonia's Agoda role context] — this is a
+deliberate move, not a backup plan."
+
+Part 3 — Why now:
+"My probation at BRPL ends [date]. I've delivered the major platform workstreams
+I committed to. Now is the natural time to make the move."</span></pre>
+    </div>
+    <div class="avoid-box"><strong>Don't say:</strong> "I want better compensation" (even if true — let the offer reflect that). Don't say "I want to move to Bangkok" as the primary reason — it makes it sound like Agoda is a vehicle for relocation, not a deliberate career choice. Lead with the engineering problem.
+    </div>
+  </div>
+</div>
+
+<!-- CHECKLIST -->
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--green-bg)">✅</div>
+    <div style="flex:1"><div class="sec-title">Behavioral readiness — can you answer these cold?</div></div>
+    <span class="sec-lv lv-beg">All</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <ul class="chk-list" style="padding:14px">
+      <li class="chk-item"><div class="chkbox" id="chk-b1" onclick="behToggle('b1')"></div><div class="chk-text" id="txt-b1">Cross-team influence story — can you tell it in 6 minutes with the resistance included?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-b2" onclick="behToggle('b2')"></div><div class="chk-text" id="txt-b2">Technical pushback story — do you have a "disagree and commit" example ready?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-b3" onclick="behToggle('b3')"></div><div class="chk-text" id="txt-b3">Production incident story — root cause + three postmortem action items ready to describe?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-b4" onclick="behToggle('b4')"></div><div class="chk-text" id="txt-b4">Tech debt story — can you frame it as ROI, not cleanliness?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-b5" onclick="behToggle('b5')"></div><div class="chk-text" id="txt-b5">Mentoring story — specific person, specific skill gap, measurable outcome after?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-b6" onclick="behToggle('b6')"></div><div class="chk-text" id="txt-b6">Ambiguity story — can you explain what you resolved yourself vs surfaced to stakeholders?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-b7" onclick="behToggle('b7')"></div><div class="chk-text" id="txt-b7">Architecture decision story — tradeoff explained clearly, "what I'd do differently" included?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-b8" onclick="behToggle('b8')"></div><div class="chk-text" id="txt-b8">Why Agoda / why now — can you say it in 90 seconds without mentioning compensation?</div></li>
+    </ul>
+    <div class="callout c-warn" style="margin:0 14px 14px"><strong>Practice requirement:</strong> Say each answer out loud, not just read it. Behavioral answers practiced only in your head sound robotic when spoken. Record yourself once for the incident and cross-team stories — the two highest-signal questions.</div>
+  </div>
+</div>
+
+</div>
+<script src="shared.js"></script>
+<script>
+buildNav('behavioral');
+const behDone = initChecks('behavioral-done', 8, 'beh-done', 'beh-pct', 'beh-fill');
+function behToggle(id){ toggleCheck(id, behDone, 'behavioral-done', 8, 'beh-done', 'beh-pct', 'beh-fill'); }
+</script>
+</body>
+</html>

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PrepKit — Redis In Depth</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav class="topnav" id="topnav"></nav>
+<div class="page">
+<div class="hero">
+  <div class="hero-row">
+    <div class="hero-icon" style="background:rgba(255,77,109,0.15)">🔴</div>
+    <div><div class="hero-title">Redis In Depth</div><div class="hero-sub">Beyond cache: pub/sub · distributed locks · streams · Lua · cluster</div></div>
+  </div>
+  <div class="hero-desc">Redis is on your stack but only as a cache. At Staff level you need to explain Redis as a multi-purpose in-memory data platform — distributed locks, pub/sub messaging, streams, rate limiting. This is what interviewers ask about and what separates Senior from Staff answers in system design.</div>
+  <div class="callout c-gap" style="margin-top:10px"><strong>Gap to close:</strong> When asked "how did you use Redis at UKG/Walmart?" you currently only have caching. You need to speak to distributed locks (preventing double booking) and rate limiting as concrete patterns you understand deeply.</div>
+  <div class="level-pills" style="margin-top:10px">
+    <span class="level-pill lp-all selected" onclick="setLevel('all',this)">All</span>
+    <span class="level-pill lp-beg" onclick="setLevel('beginner',this)">🟢 Beginner</span>
+    <span class="level-pill lp-int" onclick="setLevel('intermediate',this)">🟣 Intermediate</span>
+    <span class="level-pill lp-adv" onclick="setLevel('advanced',this)">🟠 Advanced</span>
+  </div>
+</div>
+<div class="stats">
+  <div class="stat"><div class="stat-n" style="color:var(--beg)">3</div><div class="stat-l">Beginner</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--int)">4</div><div class="stat-l">Intermediate</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--adv)">3</div><div class="stat-l">Advanced</div></div>
+  <div class="stat"><div class="stat-n" id="redis-done" style="color:var(--green)">0</div><div class="stat-l">Done</div></div>
+</div>
+<div class="prog-wrap">
+  <div class="prog-label"><span>Progress</span><span id="redis-pct">0 / 16</span></div>
+  <div class="prog-bar"><div class="prog-fill" id="redis-fill" style="width:0%"></div></div>
+</div>
+
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--beg-bg)">📖</div>
+    <div style="flex:1"><div class="sec-title">Redis Data Structures & Core Commands</div><div class="sec-sub">String · Hash · List · Set · Sorted Set — and when to use each</div></div>
+    <span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="r-ds" id="tab-r-ds-types" onclick="switchTab('r-ds','types')">Data types</div>
+      <div class="tab" data-group="r-ds" id="tab-r-ds-commands" onclick="switchTab('r-ds','commands')">Key commands</div>
+      <div class="tab" data-group="r-ds" id="tab-r-ds-ttl" onclick="switchTab('r-ds','ttl')">TTL & eviction</div>
+    </div>
+    <div class="tab-panel active" data-group="r-ds" id="panel-r-ds-types">
+      <table class="ctable">
+        <tr><th>Type</th><th>Use case</th><th>Key commands</th></tr>
+        <tr><td><strong>String</strong></td><td>Counters, cache values, session tokens, distributed locks</td><td>GET, SET, INCR, DECR, SETNX, GETSET</td></tr>
+        <tr><td><strong>Hash</strong></td><td>Object with multiple fields. User profile, hotel details. Better than JSON string when you update single fields.</td><td>HGET, HSET, HMGET, HGETALL, HDEL</td></tr>
+        <tr><td><strong>List</strong></td><td>Queue (LPUSH + RPOP), recent activity feed, task queue</td><td>LPUSH, RPUSH, LPOP, RPOP, LRANGE, LLEN</td></tr>
+        <tr><td><strong>Set</strong></td><td>Unique values: online users, tags, deduplication. Set operations: union, intersection.</td><td>SADD, SMEMBERS, SISMEMBER, SUNION, SINTER</td></tr>
+        <tr><td><strong>Sorted Set (ZSet)</strong></td><td>Leaderboards, rate limiting (sliding window), priority queues, range queries</td><td>ZADD, ZRANGE, ZRANGEBYSCORE, ZRANK, ZCARD</td></tr>
+        <tr><td><strong>HyperLogLog</strong></td><td>Approximate unique count. "How many unique visitors?" Uses ~12KB regardless of cardinality.</td><td>PFADD, PFCOUNT</td></tr>
+        <tr><td><strong>Stream</strong></td><td>Event streaming (like Kafka, but simpler). CDC events, real-time feeds.</td><td>XADD, XREAD, XREADGROUP</td></tr>
+      </table>
+    </div>
+    <div class="tab-panel" data-group="r-ds" id="panel-r-ds-commands">
+<pre><span class="cm"># String — most common type</span>
+SET hotel:123 '{"name":"Grand Hotel","city":"Bangkok"}' EX 3600  <span class="cm"># set with 1hr TTL</span>
+GET hotel:123
+SETNX lock:room:456:2026-07-01 "userId-789"  <span class="cm"># set ONLY if not exists (lock)</span>
+INCR booking:counter:today         <span class="cm"># atomic increment</span>
+INCRBY booking:counter:today 5
+
+<span class="cm"># Hash — efficient for objects with multiple fields</span>
+HSET user:123 name "Sonia" email "sonia@example.com" role "ADMIN"
+HGET user:123 name              <span class="cm"># get single field</span>
+HMGET user:123 name email       <span class="cm"># get multiple fields</span>
+HGETALL user:123                <span class="cm"># get all fields</span>
+HINCRBY user:123 loginCount 1  <span class="cm"># increment a field</span>
+
+<span class="cm"># Sorted Set — perfect for sliding window rate limiting</span>
+<span class="cm"># Score = timestamp, member = request UUID</span>
+ZADD user:123:requests 1719910800000 "req-uuid-1"   <span class="cm"># score = timestamp ms</span>
+ZREMRANGEBYSCORE user:123:requests 0 1719910740000  <span class="cm"># remove older than 1 min</span>
+ZCARD user:123:requests                              <span class="cm"># count in window</span>
+
+<span class="cm"># List as queue</span>
+LPUSH job:queue "job-1" "job-2"   <span class="cm"># push to front</span>
+RPOP job:queue                    <span class="cm"># pop from back (FIFO)</span>
+BRPOP job:queue 30                <span class="cm"># blocking pop — waits up to 30s</span>
+
+<span class="cm"># Set for online users</span>
+SADD online:users "user-123"
+SREM online:users "user-123"       <span class="cm"># remove (went offline)</span>
+SISMEMBER online:users "user-456"  <span class="cm"># check membership</span>
+SCARD online:users                 <span class="cm"># count online users</span></pre>
+    </div>
+    <div class="tab-panel" data-group="r-ds" id="panel-r-ds-ttl">
+<pre><span class="cm"># TTL — time to live</span>
+SET session:token123 "user-data" EX 1800        <span class="cm"># expire in 30 minutes</span>
+SET session:token123 "user-data" PX 1800000     <span class="cm"># expire in 1800000 milliseconds</span>
+EXPIRE session:token123 1800                     <span class="cm"># set TTL on existing key</span>
+PERSIST session:token123                         <span class="cm"># remove TTL (make permanent)</span>
+TTL session:token123                             <span class="cm"># check remaining TTL in seconds</span>
+PTTL session:token123                            <span class="cm"># check remaining TTL in milliseconds</span>
+
+<span class="cm"># Eviction policies — what happens when memory is full</span>
+<span class="cm"># Set in redis.conf or via CONFIG SET</span>
+<span class="cm"># noeviction     → return error when memory full (default for non-cache)</span>
+<span class="cm"># allkeys-lru    → evict least recently used key from ALL keys</span>
+<span class="cm"># volatile-lru   → evict LRU from keys WITH TTL set</span>
+<span class="cm"># allkeys-lfu    → evict least frequently used (better than LRU for skewed access)</span>
+<span class="cm"># volatile-ttl   → evict key with shortest TTL first</span>
+
+<span class="cm"># For a hotel cache:</span>
+maxmemory 2gb
+maxmemory-policy allkeys-lru       <span class="cm"># most common for cache use case</span>
+
+<span class="cm"># Spring Boot config</span>
+<span class="cm"># spring.redis.timeout=2000ms  ← fail fast if Redis slow</span>
+<span class="cm"># spring.cache.redis.time-to-live=5m  ← default TTL</span></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--int-bg)">🔒</div>
+    <div style="flex:1"><div class="sec-title">Distributed Locks — Preventing Double Booking</div><div class="sec-sub">SETNX pattern · Redlock algorithm · Lock expiry</div></div>
+    <span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="r-lock" id="tab-r-lock-concept" onclick="switchTab('r-lock','concept')">Why needed</div>
+      <div class="tab" data-group="r-lock" id="tab-r-lock-impl" onclick="switchTab('r-lock','impl')">Implementation</div>
+      <div class="tab" data-group="r-lock" id="tab-r-lock-java" onclick="switchTab('r-lock','java')">Java (Redisson)</div>
+    </div>
+    <div class="tab-panel active" data-group="r-lock" id="panel-r-lock-concept">
+      <div class="block">
+        <div class="block-title">The problem without distributed locks</div>
+        <div class="prose">500 users request the last available room simultaneously. All read <code>available_count = 1</code>. All pass the check. All create a booking. Result: 500 confirmed bookings for 1 room. A single-process lock (synchronized/mutex) only works within one JVM. With multiple service instances (3 pods), they don't share memory.</div>
+        <div class="callout c-info"><strong>Redis distributed lock:</strong> Only one process can hold the lock at a time, across ALL service instances. The lock is a key in Redis. If the key exists = locked. SETNX (SET if Not eXists) is atomic — only the first caller sets it.</div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="r-lock" id="panel-r-lock-impl">
+<pre><span class="cm"># SETNX-based distributed lock</span>
+<span class="cm"># Acquire lock: SET key value NX PX milliseconds</span>
+<span class="cm"># NX = only set if Not eXists</span>
+<span class="cm"># PX = auto-expire to prevent deadlock if process crashes</span>
+
+SET lock:room:123:2026-07-01 "owner-uuid-abc" NX PX 30000
+<span class="cm"># Returns "OK" if lock acquired</span>
+<span class="cm"># Returns nil if someone else holds lock</span>
+
+<span class="cm"># Release lock — MUST only delete if we own it!</span>
+<span class="cm"># Wrong: just DELETE the key — could delete someone else's lock</span>
+<span class="cm"># Right: Lua script for atomic check-and-delete</span>
+
+<span class="cm"># lua-release-lock.lua</span>
+<span class="cm">if redis.call("GET", KEYS[1]) == ARGV[1] then</span>
+<span class="cm">    return redis.call("DEL", KEYS[1])</span>
+<span class="cm">else</span>
+<span class="cm">    return 0  -- someone else owns it, don't delete</span>
+<span class="cm">end</span>
+
+<span class="cm"># Run Lua script</span>
+EVAL "if redis.call('GET',KEYS[1])==ARGV[1] then return redis.call('DEL',KEYS[1]) else return 0 end" \
+  1 lock:room:123:2026-07-01 "owner-uuid-abc"
+
+<span class="cm"># The lock value MUST be a unique owner ID (UUID)</span>
+<span class="cm"># So you can only release locks YOU own</span>
+<span class="cm"># Prevents: process A acquires, process A's lock expires, process B acquires,</span>
+<span class="cm">#           process A tries to release B's lock → the UUID check prevents this</span></pre>
+    </div>
+    <div class="tab-panel" data-group="r-lock" id="panel-r-lock-java">
+<pre><span class="cm">// Redisson — production-grade Redis client with lock abstraction</span>
+<span class="cm">// Implements Redlock algorithm (multi-node quorum)</span>
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">BookingService</span> {
+    <span class="kw">private final</span> RedissonClient redisson;
+    <span class="kw">private final</span> BookingRepository bookingRepo;
+
+    <span class="kw">public</span> Booking <span class="fn">createBooking</span>(<span class="cl">CreateBookingRequest</span> req) {
+        String lockKey = <span class="str">"lock:room:"</span> + req.<span class="fn">getRoomId</span>() + <span class="str">":"</span> + req.<span class="fn">getCheckIn</span>();
+        RLock lock = redisson.<span class="fn">getLock</span>(lockKey);
+
+        <span class="kw">try</span> {
+            <span class="cm">// Try to acquire lock, wait max 5s, auto-release after 30s</span>
+            <span class="kw">boolean</span> acquired = lock.<span class="fn">tryLock</span>(<span class="nu">5</span>, <span class="nu">30</span>, TimeUnit.SECONDS);
+            <span class="kw">if</span> (!acquired) {
+                <span class="kw">throw new</span> <span class="cl">RoomUnavailableException</span>(<span class="str">"Room is being booked, please retry"</span>);
+            }
+
+            <span class="cm">// Inside lock — only ONE thread across all pods runs this</span>
+            <span class="kw">int</span> available = inventoryService.<span class="fn">getAvailability</span>(req.<span class="fn">getRoomId</span>(), req.<span class="fn">getCheckIn</span>());
+            <span class="kw">if</span> (available <= <span class="nu">0</span>) <span class="kw">throw new</span> RoomUnavailableException(<span class="str">"No rooms available"</span>);
+
+            inventoryService.<span class="fn">decrementAvailability</span>(req.<span class="fn">getRoomId</span>(), req.<span class="fn">getCheckIn</span>());
+            <span class="kw">return</span> bookingRepo.<span class="fn">save</span>(<span class="kw">new</span> Booking(req));
+
+        } <span class="kw">catch</span> (<span class="cl">InterruptedException</span> e) {
+            Thread.<span class="fn">currentThread</span>().<span class="fn">interrupt</span>();
+            <span class="kw">throw new</span> <span class="cl">BookingException</span>(<span class="str">"Booking interrupted"</span>);
+        } <span class="kw">finally</span> {
+            <span class="cm">// Always release if we own it</span>
+            <span class="kw">if</span> (lock.<span class="fn">isHeldByCurrentThread</span>()) lock.<span class="fn">unlock</span>();
+        }
+    }
+}</pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--int-bg)">🚦</div>
+    <div style="flex:1"><div class="sec-title">Rate Limiting with Redis</div><div class="sec-sub">Token bucket · Sliding window — how to protect your APIs</div></div>
+    <span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+<pre><span class="cm">// Rate limiter with Redis Sorted Set (sliding window)</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">RateLimiter</span> {
+    <span class="kw">private final</span> <span class="cl">RedisTemplate</span>&lt;String, String&gt; redis;
+    <span class="kw">private final int</span> MAX_REQUESTS = <span class="nu">100</span>;
+    <span class="kw">private final long</span> WINDOW_MS = <span class="nu">60_000</span>; <span class="cm">// 1 minute</span>
+
+    <span class="kw">public boolean</span> <span class="fn">isAllowed</span>(String userId) {
+        String key = <span class="str">"rate:"</span> + userId;
+        <span class="kw">long</span> now = System.<span class="fn">currentTimeMillis</span>();
+        <span class="kw">long</span> windowStart = now - WINDOW_MS;
+
+        <span class="kw">return</span> redis.<span class="fn">execute</span>(<span class="kw">new</span> SessionCallback&lt;Boolean&gt;() {
+            <span class="kw">public</span> Boolean <span class="fn">execute</span>(RedisOperations ops) {
+                ops.<span class="fn">multi</span>(); <span class="cm">// atomic transaction</span>
+                ops.<span class="fn">opsForZSet</span>().<span class="fn">removeRangeByScore</span>(key, <span class="nu">0</span>, windowStart); <span class="cm">// remove old</span>
+                ops.<span class="fn">opsForZSet</span>().<span class="fn">add</span>(key, UUID.<span class="fn">randomUUID</span>().<span class="fn">toString</span>(), now);
+                ops.<span class="fn">opsForZSet</span>().<span class="fn">size</span>(key);
+                ops.<span class="fn">expire</span>(key, Duration.<span class="fn">ofMinutes</span>(<span class="nu">2</span>));
+                List&lt;Object&gt; results = ops.<span class="fn">exec</span>();
+                <span class="kw">long</span> count = (Long) results.<span class="fn">get</span>(<span class="nu">2</span>);
+                <span class="kw">return</span> count <= MAX_REQUESTS;
+            }
+        });
+    }
+}
+
+<span class="cm">// In Spring Boot: Bucket4j + Redis for token bucket</span>
+<span class="an">@Bean</span>
+<span class="kw">public</span> BucketProxyManager <span class="fn">bucketManager</span>(<span class="cl">RedissonClient</span> redisson) {
+    <span class="kw">return new</span> RedissonBasedProxyManager(redisson);
+}
+
+<span class="cm">// In filter:</span>
+BucketConfiguration config = BucketConfiguration.<span class="fn">builder</span>()
+    .<span class="fn">addLimit</span>(Bandwidth.<span class="fn">classic</span>(<span class="nu">100</span>, Refill.<span class="fn">intervally</span>(<span class="nu">100</span>, Duration.<span class="fn">ofMinutes</span>(<span class="nu">1</span>))))
+    .<span class="fn">build</span>();
+
+Bucket bucket = bucketManager.<span class="fn">builder</span>()
+    .<span class="fn">build</span>(userId, () -> config);
+
+<span class="kw">if</span> (!bucket.<span class="fn">tryConsume</span>(<span class="nu">1</span>)) {
+    response.<span class="fn">sendError</span>(<span class="nu">429</span>, <span class="str">"Too Many Requests"</span>);
+    <span class="kw">return</span>;
+}</pre>
+  </div>
+</div>
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--int-bg)">📢</div>
+    <div style="flex:1"><div class="sec-title">Pub/Sub & Redis Streams</div><div class="sec-sub">Real-time messaging without Kafka complexity</div></div>
+    <span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+<pre><span class="cm"># Redis Pub/Sub — fire-and-forget messaging</span>
+<span class="cm"># Publisher</span>
+PUBLISH booking.events '{"type":"BOOKING_CREATED","bookingId":"123","userId":"456"}'
+
+<span class="cm"># Subscriber (in another process)</span>
+SUBSCRIBE booking.events
+PSUBSCRIBE booking.*    <span class="cm"># pattern subscribe — matches booking.events, booking.cancelled etc</span>
+
+<span class="cm"># Limitation: messages lost if subscriber is offline (not durable)</span>
+<span class="cm"># Use Redis Streams for durability</span>
+
+<span class="cm">──────────────────────────────────────</span>
+
+<span class="cm"># Redis Streams — durable, consumer groups (like Kafka but simpler)</span>
+<span class="cm"># Add event to stream</span>
+XADD booking:events * type BOOKING_CREATED bookingId 123 userId 456
+<span class="cm"># * = auto-generate ID (timestamp-sequence: 1719910800000-0)</span>
+
+<span class="cm"># Create consumer group (enables parallel consumers + offset tracking)</span>
+XGROUP CREATE booking:events notification-service $ MKSTREAM
+<span class="cm"># $ = start from latest message</span>
+
+<span class="cm"># Consumer reads from group</span>
+XREADGROUP GROUP notification-service consumer-1 COUNT 10 BLOCK 2000 STREAMS booking:events >
+<span class="cm"># > = messages not yet delivered to this group</span>
+
+<span class="cm"># Acknowledge processing</span>
+XACK booking:events notification-service 1719910800000-0
+
+<span class="cm"># Spring Boot Redis Streams</span>
+<span class="an">@Bean</span>
+<span class="kw">public</span> Subscription <span class="fn">subscription</span>(<span class="cl">RedisConnectionFactory</span> factory) {
+    <span class="cl">StreamMessageListenerContainer</span>&lt;String, MapRecord&lt;String,String,String&gt;&gt; container =
+        StreamMessageListenerContainer.<span class="fn">create</span>(factory);
+
+    container.<span class="fn">receive</span>(
+        Consumer.<span class="fn">from</span>(<span class="str">"notification-service"</span>, <span class="str">"consumer-1"</span>),
+        StreamOffset.<span class="fn">create</span>(<span class="str">"booking:events"</span>, ReadOffset.<span class="fn">lastConsumed</span>()),
+        <span class="kw">new</span> <span class="cl">BookingEventListener</span>()
+    );
+    container.<span class="fn">start</span>();
+    <span class="kw">return</span> container;
+}</pre>
+  </div>
+</div>
+
+<div class="section" data-level="advanced">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--adv-bg)">🔵</div>
+    <div style="flex:1"><div class="sec-title">Redis Cluster & High Availability</div><div class="sec-sub">Replication · Sentinel · Cluster mode · persistence</div></div>
+    <span class="sec-lv lv-adv">Advanced</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="arch-title">Redis high availability options</div>
+    <div class="arch">Option 1: Replication (Master + Replicas)
+  Master  ←  all writes
+  Replica ←  sync from master, handle reads
+  Replica ←  
+  Limitation: if master dies, manual failover needed
+
+Option 2: Redis Sentinel (automatic failover)
+  Master + 2 Replicas + 3 Sentinels
+  Sentinels monitor master, vote to promote replica if master fails
+  Automatic failover in ~30 seconds
+
+Option 3: Redis Cluster (sharding + HA)
+  6 nodes: 3 masters + 3 replicas (1 replica per master)
+  Data sharded across masters using 16384 hash slots
+  key → hash → slot → master node
+  If a master dies: its replica promoted automatically
+  Can scale horizontally by adding more shards</div>
+<pre><span class="cm"># Persistence options (important for Staff-level answers)</span>
+<span class="cm"># RDB (snapshot) — point-in-time snapshot</span>
+save 900 1          <span class="cm"># save if 1 key changed in 900s</span>
+save 300 10         <span class="cm"># save if 10 keys changed in 300s</span>
+<span class="cm"># Pros: compact file, fast restart. Cons: data loss between snapshots.</span>
+
+<span class="cm"># AOF (Append Only File) — log every write operation</span>
+appendonly yes
+appendfsync everysec   <span class="cm"># fsync every second (balance durability vs performance)</span>
+<span class="cm"># Pros: minimal data loss. Cons: larger file, slower restart.</span>
+
+<span class="cm"># Production: use both RDB + AOF for maximum durability</span>
+
+<span class="cm"># Spring Boot Cluster config</span>
+<span class="cm"># spring.redis.cluster.nodes=redis-1:6379,redis-2:6379,redis-3:6379</span>
+
+<span class="cm"># AWS ElastiCache Redis (what you'd use in production)</span>
+<span class="cm"># Cluster mode enabled: sharding + replication</span>
+<span class="cm"># Automatic failover, snapshots to S3, encryption at rest</span></pre>
+  </div>
+</div>
+
+<!-- Checklist -->
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--green-bg)">✅</div>
+    <div style="flex:1"><div class="sec-title">Redis readiness checklist</div></div>
+    <span class="sec-lv lv-beg">All levels</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <ul class="chk-list" style="padding:14px">
+      <li class="chk-item"><div class="chkbox" id="chk-r1" onclick="rToggle('r1')"></div><div class="chk-text" id="txt-r1">When would you use Hash instead of JSON String for a hotel object in Redis?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-r2" onclick="rToggle('r2')"></div><div class="chk-text" id="txt-r2">Distributed lock: SETNX pattern — why does the value need to be a UUID?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-r3" onclick="rToggle('r3')"></div><div class="chk-text" id="txt-r3">Sliding window rate limiting with Sorted Set — walk through the algorithm</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-r4" onclick="rToggle('r4')"></div><div class="chk-text" id="txt-r4">Pub/Sub vs Streams — what does Streams give you that Pub/Sub doesn't?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-r5" onclick="rToggle('r5')"></div><div class="chk-text" id="txt-r5">allkeys-lru vs volatile-lru eviction — when to use each?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-r6" onclick="rToggle('r6')"></div><div class="chk-text" id="txt-r6">RDB vs AOF persistence — trade-offs</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-r7" onclick="rToggle('r7')"></div><div class="chk-text" id="txt-r7">Redis Sentinel vs Cluster — what problem does each solve?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-r8" onclick="rToggle('r8')"></div><div class="chk-text" id="txt-r8">Why is Lua script important for atomic operations in Redis?</div></li>
+    </ul>
+    <div style="padding:0 14px 14px">
+      <div class="block-title" style="margin-top:8px">Further reading</div>
+      <a class="ref-link" href="https://redis.io/docs/data-types" target="_blank">↗ Redis Data Types</a>
+      <a class="ref-link" href="https://redis.io/docs/latest/develop/use/patterns/distributed-locks" target="_blank">↗ Redis Distributed Locks</a>
+      <a class="ref-link" href="https://redis.io/docs/latest/develop/data-types/streams" target="_blank">↗ Redis Streams</a>
+      <a class="ref-link" href="https://github.com/redisson/redisson/wiki" target="_blank">↗ Redisson Wiki</a>
+    </div>
+  </div>
+</div>
+
+</div>
+<script src="shared.js"></script>
+<script>
+buildNav('redis');
+const rDone = initChecks('redis-done', 8, 'redis-done', 'redis-pct', 'redis-fill');
+function rToggle(id){ toggleCheck(id, rDone, 'redis-done', 8, 'redis-done', 'redis-pct', 'redis-fill'); }
+</script>
+</body>
+</html>

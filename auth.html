@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>PrepKit — Auth & Security</title><link rel="stylesheet" href="shared.css"></head>
+<body><nav class="topnav" id="topnav"></nav><div class="page">
+<div class="hero"><div class="hero-row"><div class="hero-icon" style="background:rgba(108,99,255,0.12)">🔐</div><div><div class="hero-title">Auth0, OAuth2 & Security</div><div class="hero-sub">OAuth2/OIDC flow · JWT internals · RBAC vs ABAC · API security · Secret management</div></div></div>
+<div class="hero-desc">Auth0 is on your resume from UKG (TRex onboarding — you configured Auth0 credentials for tenants). At Staff level this means knowing the OAuth2/OIDC flow internals, not just "I configured Auth0." This page covers the full authentication/authorization stack — from JWT structure through RBAC, API security, and secrets management.</div>
+<div class="callout c-gap" style="margin-top:10px"><strong>Gap to close:</strong> Security depth. Interviewers at Adyen, Klarna, and Agoda (fintech/payments) will ask about OAuth2 flows, JWT vulnerabilities, and how you secure APIs. Know the Authorization Code Flow with PKCE cold.</div>
+<div class="level-pills" style="margin-top:10px"><span class="level-pill lp-all selected" onclick="setLevel('all',this)">All</span><span class="level-pill lp-beg" onclick="setLevel('beginner',this)">🟢 Beginner</span><span class="level-pill lp-int" onclick="setLevel('intermediate',this)">🟣 Intermediate</span><span class="level-pill lp-adv" onclick="setLevel('advanced',this)">🟠 Advanced</span></div></div>
+<div class="stats"><div class="stat"><div class="stat-n" id="auth-done" style="color:var(--green)">0</div><div class="stat-l">Done</div></div><div class="stat"><div class="stat-n" style="color:var(--beg)">14</div><div class="stat-l">Checklist items</div></div></div>
+<div class="prog-wrap"><div class="prog-label"><span>Progress</span><span id="auth-pct">0 / 14</span></div><div class="prog-bar"><div class="prog-fill" id="auth-fill" style="width:0%"></div></div></div>
+
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--beg-bg)">🔑</div><div style="flex:1"><div class="sec-title">OAuth2 & OIDC — The Complete Flow</div><div class="sec-sub">Authorization Code Flow with PKCE — the one you need to know cold</div></div><span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span></div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="a-oauth" id="tab-a-oauth-flow" onclick="switchTab('a-oauth','flow')">Auth Code + PKCE flow</div>
+      <div class="tab" data-group="a-oauth" id="tab-a-oauth-tokens" onclick="switchTab('a-oauth','tokens')">Token types</div>
+      <div class="tab" data-group="a-oauth" id="tab-a-oauth-diff" onclick="switchTab('a-oauth','diff')">OAuth2 vs OIDC</div>
+    </div>
+    <div class="tab-panel active" data-group="a-oauth" id="panel-a-oauth-flow">
+      <div class="arch-title">Authorization Code Flow with PKCE — step by step</div>
+      <div class="arch">1. User clicks "Login with Google" in your app
+
+2. App generates code_verifier (random string) + code_challenge (SHA256 hash of verifier)
+
+3. App redirects user to Auth0/Google authorization endpoint:
+   GET https://auth0.com/authorize
+     ?client_id=your-app-id
+     &redirect_uri=https://yourapp.com/callback
+     &response_type=code
+     &scope=openid profile email
+     &code_challenge=ABC123...  ← PKCE
+     &code_challenge_method=S256
+     &state=random-csrf-token
+
+4. User sees login screen, enters credentials at Auth0/Google (never at your app)
+
+5. Auth server redirects back to your app:
+   GET https://yourapp.com/callback?code=AUTH_CODE&state=random-csrf-token
+
+6. App verifies state (CSRF protection)
+
+7. App exchanges code for tokens (server-side, never in browser):
+   POST https://auth0.com/oauth/token
+     code=AUTH_CODE
+     code_verifier=original-verifier  ← PKCE proof
+     client_id=your-app-id
+     client_secret=your-secret
+     grant_type=authorization_code
+
+8. Auth server validates code_verifier matches code_challenge
+
+9. Auth server returns:
+   { access_token: "JWT...", id_token: "JWT...", refresh_token: "opaque...",
+     expires_in: 3600 }
+
+10. App uses access_token to call your API
+    Authorization: Bearer {access_token}
+
+11. Your API validates token (signature + expiry + claims) on every request</div>
+    </div>
+    <div class="tab-panel" data-group="a-oauth" id="panel-a-oauth-tokens">
+      <table class="ctable">
+        <tr><th>Token</th><th>What it is</th><th>Who uses it</th><th>Format</th></tr>
+        <tr><td><strong>Access Token</strong></td><td>Authorizes API calls. Short-lived (15min-1hr). Contains user ID, roles, scopes.</td><td>Your API validates it on every request</td><td>JWT (usually)</td></tr>
+        <tr><td><strong>ID Token</strong></td><td>Identity information about the user. Returned by OIDC. Contains name, email, picture.</td><td>Your frontend reads user info from it</td><td>JWT always</td></tr>
+        <tr><td><strong>Refresh Token</strong></td><td>Long-lived (days/weeks). Used to get new access tokens without re-login. Store securely.</td><td>Your app exchanges it for new access token when expired</td><td>Opaque string</td></tr>
+      </table>
+      <div class="callout c-warn"><strong>Security rules:</strong> Access tokens → in memory only (not localStorage!). Refresh tokens → HttpOnly cookie or secure storage, never localStorage. ID tokens → decode for user info, never use to call APIs.</div>
+    </div>
+    <div class="tab-panel" data-group="a-oauth" id="panel-a-oauth-diff">
+      <div class="two-col">
+        <div class="col-card"><h4>OAuth 2.0</h4><p>Authorization framework. Answers: "What can this app do on your behalf?" Grants access to resources. Returns access tokens. Does NOT tell you WHO the user is.</p></div>
+        <div class="col-card"><h4>OpenID Connect (OIDC)</h4><p>Authentication layer on top of OAuth2. Answers: "Who is this user?" Adds ID token (JWT with user claims). Auth0, Google, Azure AD all implement OIDC. This is what you actually use for login.</p></div>
+      </div>
+      <div class="callout c-info"><strong>Remember:</strong> OAuth2 = authorization ("can this app read your files?"). OIDC = authentication ("who are you?"). OIDC is OAuth2 + identity. Your Auth0 work at UKG implements OIDC for tenant authentication.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--beg-bg)">🎫</div><div style="flex:1"><div class="sec-title">JWT — Structure, Validation, Vulnerabilities</div><div class="sec-sub">Header.Payload.Signature — what each part is and how to validate safely</div></div><span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span></div>
+  <div class="sec-body open">
+<pre><span class="cm"># JWT = JSON Web Token = Base64URL(header).Base64URL(payload).Signature</span>
+<span class="cm"># Example JWT (paste at jwt.io to decode):</span>
+<span class="cm"># eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyLTEyMyIsImVtYWlsIjoic29uaWFAZXhhbXBsZS5jb20iLCJyb2xlcyI6WyJBRE1JTiJdLCJpYXQiOjE3MTk5MTA4MDAsImV4cCI6MTcxOTkxNDQwMH0.signature</span>
+
+<span class="cm"># Header (base64 decoded):</span>
+{ "alg": "RS256", "typ": "JWT", "kid": "key-id-1" }
+
+<span class="cm"># Payload (base64 decoded) — the claims:</span>
+{
+  "sub": "user-123",          <span class="cm"># subject (user ID)</span>
+  "email": "sonia@example.com",
+  "roles": ["ADMIN", "USER"],
+  "iss": "https://yourcompany.auth0.com",  <span class="cm"># issuer</span>
+  "aud": "https://api.yourcompany.com",    <span class="cm"># audience</span>
+  "iat": 1719910800,          <span class="cm"># issued at (Unix timestamp)</span>
+  "exp": 1719914400,          <span class="cm"># expires at (1 hour later)</span>
+  "jti": "unique-token-id"    <span class="cm"># JWT ID (for revocation)</span>
+}
+
+<span class="cm"># Signature: RSASHA256(base64(header) + "." + base64(payload), privateKey)</span>
+<span class="cm"># Validation: verify(base64(header) + "." + base64(payload), signature, publicKey)</span>
+
+<span class="cm">--------------------------------------------------</span>
+
+<span class="cm"># JWT validation — what your API MUST check (all of these)</span>
+<span class="cm">1. Signature valid (use the PUBLIC key from JWKS endpoint)</span>
+<span class="cm">2. exp not in the past (token not expired)</span>
+<span class="cm">3. iss matches expected issuer (prevents tokens from other auth servers)</span>
+<span class="cm">4. aud matches your API (prevents tokens meant for other services)</span>
+<span class="cm">5. alg is expected algorithm (NEVER accept "none" algorithm!)</span>
+
+<span class="cm"># Spring Boot JWT validation</span>
+<span class="cm"># application.yml:</span>
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://yourcompany.auth0.com/  <span class="cm"># auto-fetches JWKS</span>
+          audiences: https://api.yourcompany.com
+
+<span class="cm"># JWT VULNERABILITIES — know these</span>
+<span class="cm"># 1. alg=none attack: change algorithm to "none", remove signature</span>
+<span class="cm">#    Fix: ALWAYS specify allowed algorithms, reject "none"</span>
+<span class="cm"># 2. RS256→HS256 attack: server's public key used as HMAC secret</span>
+<span class="cm">#    Fix: ALWAYS specify expected algorithm in validation</span>
+<span class="cm"># 3. Expired token: exp not checked</span>
+<span class="cm">#    Fix: always validate exp</span>
+<span class="cm"># 4. JWT stored in localStorage: XSS can steal it</span>
+<span class="cm">#    Fix: store access token in memory, refresh token in HttpOnly cookie</span></pre>
+  </div>
+</div>
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--int-bg)">👮</div><div style="flex:1"><div class="sec-title">RBAC vs ABAC — Authorization Models</div><div class="sec-sub">How to control who can do what in your system</div></div><span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span></div>
+  <div class="sec-body open">
+    <div class="two-col">
+      <div class="col-card"><h4>RBAC — Role-Based Access Control</h4><p>User has roles (ADMIN, USER, HOTEL_MANAGER). Permissions attached to roles, not users. Simple to understand. Good for: most applications with clear user types.</p></div>
+      <div class="col-card"><h4>ABAC — Attribute-Based Access Control</h4><p>Access decision based on attributes of user, resource, and environment. "User CAN edit hotel IF user.hotelId == hotel.id AND time is business hours." More flexible, more complex. Good for: fine-grained multi-tenant systems.</p></div>
+    </div>
+<pre><span class="cm">// RBAC in Spring Security</span>
+<span class="an">@PreAuthorize</span>(<span class="str">"hasRole('ADMIN')"</span>)
+<span class="kw">public void</span> <span class="fn">deleteHotel</span>(Long id) { ... }
+
+<span class="an">@PreAuthorize</span>(<span class="str">"hasAnyRole('ADMIN', 'HOTEL_MANAGER')"</span>)
+<span class="kw">public</span> Hotel <span class="fn">updateHotel</span>(Long id, UpdateRequest req) { ... }
+
+<span class="cm">// ABAC — check attributes at runtime</span>
+<span class="an">@PreAuthorize</span>(<span class="str">"@hotelSecurityService.canEdit(authentication, #id)"</span>)
+<span class="kw">public</span> Hotel <span class="fn">updateHotel</span>(Long id, UpdateRequest req) { ... }
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> HotelSecurityService {
+    <span class="kw">public boolean</span> <span class="fn">canEdit</span>(Authentication auth, Long hotelId) {
+        String userId = auth.getName();
+        <span class="kw">if</span> (auth.getAuthorities().stream()
+               .anyMatch(a -> a.getAuthority().equals(<span class="str">"ROLE_ADMIN"</span>))) {
+            <span class="kw">return true</span>; <span class="cm">// admins can edit any hotel</span>
+        }
+        <span class="cm">// Hotel managers can only edit their own hotel</span>
+        Hotel hotel = hotelRepo.findById(hotelId).orElseThrow();
+        <span class="kw">return</span> hotel.getManagerId().equals(userId);
+    }
+}
+
+<span class="cm">// Auth0 at UKG — tenant isolation</span>
+<span class="cm">// Each tenant gets their own Auth0 client_id and client_secret</span>
+<span class="cm">// TRex onboarding: you configured these per tenant per environment</span>
+<span class="cm">// JWT contains tenant claim: {"tenantId": "ukg-tenant-xyz"}</span>
+<span class="cm">// API validates tenant claim → data isolation</span></pre>
+  </div>
+</div>
+
+<div class="section" data-level="advanced">
+  <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--adv-bg)">🔒</div><div style="flex:1"><div class="sec-title">API Security — Rate Limiting, CORS, Headers, Secrets</div></div><span class="sec-lv lv-adv">Advanced</span><span class="chev open">▼</span></div>
+  <div class="sec-body open">
+<pre><span class="cm"># Security headers — what your API must set</span>
+Strict-Transport-Security: max-age=31536000; includeSubDomains  <span class="cm"># force HTTPS</span>
+X-Content-Type-Options: nosniff                <span class="cm"># prevent MIME type sniffing</span>
+X-Frame-Options: DENY                          <span class="cm"># prevent clickjacking</span>
+Content-Security-Policy: default-src 'self'   <span class="cm"># prevent XSS</span>
+X-XSS-Protection: 1; mode=block
+Referrer-Policy: strict-origin-when-cross-origin
+
+<span class="cm"># Spring Boot: spring-boot-starter-security + Helmet (Node.js) add most of these</span>
+
+<span class="cm">──────────────────────────────────────</span>
+
+<span class="cm"># CORS — Cross-Origin Resource Sharing</span>
+<span class="cm"># Browser blocks JS from calling API on different domain by default</span>
+<span class="cm"># CORS headers tell browser which origins are allowed</span>
+
+<span class="cm"># Spring Boot CORS config</span>
+<span class="an">@Configuration</span>
+<span class="kw">public class</span> WebConfig <span class="kw">implements</span> WebMvcConfigurer {
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> addCorsMappings(CorsRegistry registry) {
+        registry.addMapping(<span class="str">"/api/**"</span>)
+            .allowedOrigins(<span class="str">"https://yourapp.com"</span>, <span class="str">"https://admin.yourapp.com"</span>)
+            .allowedMethods(<span class="str">"GET"</span>, <span class="str">"POST"</span>, <span class="str">"PUT"</span>, <span class="str">"DELETE"</span>)
+            .allowedHeaders(<span class="str">"Authorization"</span>, <span class="str">"Content-Type"</span>)
+            .allowCredentials(<span class="kw">true</span>)
+            .maxAge(<span class="nu">3600</span>);
+    }
+}
+<span class="cm"># NEVER: .allowedOrigins("*") with .allowCredentials(true) — security vulnerability</span>
+
+<span class="cm">──────────────────────────────────────</span>
+
+<span class="cm"># Secrets management hierarchy</span>
+<span class="cm">
+Local dev:     .env file (git-ignored) or docker-compose env
+Staging/Prod:  
+  Option A: GitHub Secrets (CI/CD env vars)
+  Option B: AWS Secrets Manager / GCP Secret Manager (pull at runtime)
+  Option C: HashiCorp Vault (enterprise, dynamic secrets)
+  Option D: K8s Sealed Secrets (encrypted in git, decrypted by cluster)
+  
+NEVER:
+  → Hardcode in code
+  → Commit .env to git
+  → Put in Docker image
+  → Pass as plain CLI argument (visible in ps aux)
+  → Store in localStorage or sessionStorage</span>
+
+<span class="cm"># AWS Secrets Manager in Spring Boot</span>
+<span class="cm"># application.yml:</span>
+spring:
+  cloud:
+    aws:
+      secretsmanager:
+        import-keys:
+          - /hotel-service/prod/db-password
+          - /hotel-service/prod/jwt-secret
+<span class="cm"># Secrets available as: ${/hotel-service/prod/db-password}</span></pre>
+  </div>
+</div>
+
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--green-bg)">✅</div><div style="flex:1"><div class="sec-title">Auth & Security readiness checklist</div></div><span class="sec-lv lv-beg">All</span><span class="chev open">▼</span></div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="a-chk" id="tab-a-chk-beg" onclick="switchTab('a-chk','beg')">🟢 Beginner</div>
+      <div class="tab" data-group="a-chk" id="tab-a-chk-adv" onclick="switchTab('a-chk','adv')">🟠 Advanced</div>
+    </div>
+    <div class="tab-panel active" data-group="a-chk" id="panel-a-chk-beg">
+      <ul class="chk-list" style="padding:14px">
+        <li class="chk-item"><div class="chkbox" id="chk-a1" onclick="aToggle('a1')"></div><div class="chk-text" id="txt-a1">OAuth2 vs OIDC — what problem does each solve?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-a2" onclick="aToggle('a2')"></div><div class="chk-text" id="txt-a2">Authorization Code Flow with PKCE — walk through all 11 steps</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-a3" onclick="aToggle('a3')"></div><div class="chk-text" id="txt-a3">JWT structure — what is in header, payload, signature?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-a4" onclick="aToggle('a4')"></div><div class="chk-text" id="txt-a4">JWT validation — list all 5 things your API must check</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-a5" onclick="aToggle('a5')"></div><div class="chk-text" id="txt-a5">Access token vs refresh token vs ID token — what each is for</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-a6" onclick="aToggle('a6')"></div><div class="chk-text" id="txt-a6">Why store JWT in memory not localStorage? What is XSS?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-a7" onclick="aToggle('a7')"></div><div class="chk-text" id="txt-a7">alg=none attack — what is it, how do you prevent it?</div></li>
+      </ul>
+    </div>
+    <div class="tab-panel" data-group="a-chk" id="panel-a-chk-adv">
+      <ul class="chk-list" style="padding:14px">
+        <li class="chk-item"><div class="chkbox" id="chk-a8" onclick="aToggle('a8')"></div><div class="chk-text" id="txt-a8">RBAC vs ABAC — implement ABAC to let managers only edit their own hotels</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-a9" onclick="aToggle('a9')"></div><div class="chk-text" id="txt-a9">CORS — why does browser enforce it? What does the preflight OPTIONS request do?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-a10" onclick="aToggle('a10')"></div><div class="chk-text" id="txt-a10">PKCE — what problem does it solve? Why needed for public clients (SPAs)?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-a11" onclick="aToggle('a11')"></div><div class="chk-text" id="txt-a11">Auth0 at UKG — what specifically did you configure for TRex onboarding?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-a12" onclick="aToggle('a12')"></div><div class="chk-text" id="txt-a12">JWT revocation — how do you invalidate a JWT before it expires?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-a13" onclick="aToggle('a13')"></div><div class="chk-text" id="txt-a13">JWKS endpoint — what is it, why does your API use it for validation?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-a14" onclick="aToggle('a14')"></div><div class="chk-text" id="txt-a14">Secret management — hierarchy from local dev to production</div></li>
+      </ul>
+    </div>
+    <div style="padding:0 14px 14px"><a class="ref-link" href="https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow-with-proof-key-for-code-exchange-pkce" target="_blank">↗ Auth0 PKCE Flow</a><a class="ref-link" href="https://jwt.io" target="_blank">↗ JWT Debugger</a><a class="ref-link" href="https://owasp.org/www-project-top-ten" target="_blank">↗ OWASP Top 10</a></div>
+  </div>
+</div>
+</div>
+<script src="shared.js"></script>
+<script>
+buildNav('auth');
+const authDone = initChecks('auth-done', 14, 'auth-done', 'auth-pct', 'auth-fill');
+function aToggle(id){ toggleCheck(id, authDone, 'auth-done', 14, 'auth-done', 'auth-pct', 'auth-fill'); }
+</script>
+</body></html>

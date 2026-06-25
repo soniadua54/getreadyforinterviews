@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PrepKit — Kafka</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav class="topnav" id="topnav"></nav>
+<div class="page">
+
+<div class="hero">
+  <div class="hero-row">
+    <div class="hero-icon" style="background:rgba(251,146,60,0.15)">📨</div>
+    <div><div class="hero-title">Apache Kafka — In Depth</div><div class="hero-sub">Topics · Partitions · Consumer groups · Exactly-once · Schema Registry</div></div>
+  </div>
+  <div class="hero-desc">Kafka is implied in your architecture work at Walmart and UKG but not explicitly listed on your resume. At Staff level, every system design answer that involves async processing, event streaming, or decoupled microservices will land on Kafka. You need to speak to it with precision — not just "I used Kafka" but why, how you partitioned, and how you guaranteed delivery.</div>
+  <div class="callout c-gap" style="margin-top:10px"><strong>Gap to close:</strong> Consumer groups, partition key strategy, and exactly-once semantics are the three areas where Staff candidates separate from Senior. Know all three cold.</div>
+  <div class="level-pills" style="margin-top:10px">
+    <span class="level-pill lp-all selected" onclick="setLevel('all',this)">All</span>
+    <span class="level-pill lp-beg" onclick="setLevel('beginner',this)">🟢 Beginner</span>
+    <span class="level-pill lp-int" onclick="setLevel('intermediate',this)">🟣 Intermediate</span>
+    <span class="level-pill lp-adv" onclick="setLevel('advanced',this)">🟠 Advanced</span>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-n" style="color:var(--beg)">3</div><div class="stat-l">Beginner</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--int)">4</div><div class="stat-l">Intermediate</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--adv)">3</div><div class="stat-l">Advanced</div></div>
+  <div class="stat"><div class="stat-n" id="kafka-done" style="color:var(--green)">0</div><div class="stat-l">Done</div></div>
+</div>
+<div class="prog-wrap">
+  <div class="prog-label"><span>Progress</span><span id="kafka-pct">0 / 18</span></div>
+  <div class="prog-bar"><div class="prog-fill" id="kafka-fill" style="width:0%"></div></div>
+</div>
+
+<!-- BEGINNER -->
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--beg-bg)">📖</div>
+    <div style="flex:1"><div class="sec-title">Core Concepts — What Kafka Is and Why</div><div class="sec-sub">Topics, partitions, offsets, brokers — the mental model</div></div>
+    <span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="k-core" id="tab-k-core-why" onclick="switchTab('k-core','why')">Why Kafka</div>
+      <div class="tab" data-group="k-core" id="tab-k-core-arch" onclick="switchTab('k-core','arch')">Architecture</div>
+      <div class="tab" data-group="k-core" id="tab-k-core-vs" onclick="switchTab('k-core','vs')">Kafka vs alternatives</div>
+    </div>
+    <div class="tab-panel active" data-group="k-core" id="panel-k-core-why">
+      <div class="block">
+        <div class="block-title">The problem Kafka solves</div>
+        <div class="prose">When a booking is confirmed, five things need to happen: send email, send SMS, update loyalty points, sync analytics, trigger voucher generation. If you do all five synchronously in the booking API — the response takes 2 seconds and any one failure fails the whole booking. If you call each service directly (HTTP) — you have tight coupling. If the email service is down, your booking service breaks.</div>
+        <div class="callout c-info"><strong>Kafka decouples producers from consumers.</strong> Booking service publishes one event to Kafka. Email service, SMS service, analytics service — all subscribe independently. Booking service finishes in milliseconds. If email service is down, the message waits in Kafka until it recovers. No coupling, no data loss.</div>
+        <div class="two-col">
+          <div class="col-card"><h4>Without Kafka</h4><p>Booking → calls Email, SMS, Analytics directly. One failure = cascading failures. Tight coupling. Adding a new consumer requires changing booking code.</p></div>
+          <div class="col-card"><h4>With Kafka</h4><p>Booking → publishes to Kafka. Consumers subscribe independently. New consumer = zero changes to booking service. Each service scales independently.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="k-core" id="panel-k-core-arch">
+      <div class="arch-title">Kafka architecture — every term you need</div>
+      <div class="arch">Kafka Cluster
+├── Broker 1 (server)     ├── Broker 2     ├── Broker 3
+│   Partition 0 (leader)  │   Partition 1   │   Partition 2
+│   Partition 1 (replica) │   Partition 2   │   Partition 0
+│   Partition 2 (replica) │   ...           │   ...
+
+Topic "booking.events" with 3 partitions:
+  Partition 0: [offset 0][offset 1][offset 2][offset 3] ←append only
+  Partition 1: [offset 0][offset 1][offset 2]
+  Partition 2: [offset 0][offset 1]
+
+Producer → chooses partition by key hash → appends to tail
+Consumer Group "notification-service":
+  consumer-1 → reads Partition 0
+  consumer-2 → reads Partition 1
+  consumer-3 → reads Partition 2
+
+Key terms:
+  Topic       = named stream of events (like a table)
+  Partition   = ordered, immutable log within a topic
+  Offset      = position of a message in a partition (like array index)
+  Broker      = Kafka server that stores partitions
+  Producer    = writes messages to a topic
+  Consumer    = reads messages from a topic
+  Consumer Group = group of consumers sharing work across partitions
+  Lag         = how far behind a consumer is from latest offset</div>
+    </div>
+    <div class="tab-panel" data-group="k-core" id="panel-k-core-vs">
+      <table class="ctable">
+        <tr><th>Feature</th><th>Kafka</th><th>RabbitMQ</th><th>SQS</th><th>Redis Pub/Sub</th></tr>
+        <tr><td>Throughput</td><td class="good">1M+ msg/sec</td><td class="ok">~50K/sec</td><td class="ok">~10K/sec</td><td class="good">Very high</td></tr>
+        <tr><td>Durability</td><td class="good">Durable (disk)</td><td class="good">Durable</td><td class="good">Durable</td><td class="bad">In-memory only</td></tr>
+        <tr><td>Message replay</td><td class="good">Yes (retention)</td><td class="bad">No</td><td class="bad">No</td><td class="bad">No</td></tr>
+        <tr><td>Ordering</td><td class="good">Per partition</td><td class="ok">Per queue</td><td class="ok">FIFO queue only</td><td class="bad">No guarantee</td></tr>
+        <tr><td>Consumer groups</td><td class="good">Yes</td><td class="ok">Competing consumers</td><td class="ok">Yes</td><td class="bad">No</td></tr>
+        <tr><td>Complexity</td><td class="bad">High (ZooKeeper/KRaft)</td><td class="ok">Medium</td><td class="good">Low (managed)</td><td class="good">Very low</td></tr>
+        <tr><td>Use when</td><td>Event streaming, audit logs, high volume</td><td>Task queues, routing</td><td>Simple async jobs</td><td>Real-time pub/sub, ephemeral</td></tr>
+      </table>
+      <div class="callout c-good"><strong>In your system design answers:</strong> "I'd use Kafka because we need replay capability for the audit log, ordered delivery per user, and the ability to add new consumers without changing the producer. SQS would work for simpler async jobs but we lose message replay."</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--beg-bg)">⚡</div>
+    <div style="flex:1"><div class="sec-title">Producer & Consumer — Spring Boot Integration</div><div class="sec-sub">KafkaTemplate, @KafkaListener, error handling, retry</div></div>
+    <span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="k-sc" id="tab-k-sc-producer" onclick="switchTab('k-sc','producer')">Producer</div>
+      <div class="tab" data-group="k-sc" id="tab-k-sc-consumer" onclick="switchTab('k-sc','consumer')">Consumer</div>
+      <div class="tab" data-group="k-sc" id="tab-k-sc-config" onclick="switchTab('k-sc','config')">Config</div>
+    </div>
+    <div class="tab-panel active" data-group="k-sc" id="panel-k-sc-producer">
+<pre><span class="cm">// Producer — send events from Booking Service</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">BookingEventProducer</span> {
+    <span class="kw">private final</span> KafkaTemplate&lt;String, BookingEvent&gt; kafkaTemplate;
+
+    <span class="kw">public void</span> <span class="fn">publishBookingCreated</span>(Booking booking) {
+        BookingEvent event = BookingEvent.<span class="fn">builder</span>()
+            .bookingId(booking.getId())
+            .userId(booking.getUserId())
+            .roomId(booking.getRoomId())
+            .type(<span class="str">"BOOKING_CREATED"</span>)
+            .occurredAt(Instant.<span class="fn">now</span>())
+            .build();
+
+        <span class="cm">// Key = userId → all events for same user go to same partition (ordered)</span>
+        <span class="kw">var</span> record = <span class="kw">new</span> ProducerRecord&lt;&gt;(<span class="str">"booking.events"</span>, booking.getUserId(), event);
+        record.headers().<span class="fn">add</span>(<span class="str">"eventType"</span>, <span class="str">"BOOKING_CREATED"</span>.getBytes());
+
+        kafkaTemplate.<span class="fn">send</span>(record)
+            .whenComplete((result, ex) -> {
+                <span class="kw">if</span> (ex != <span class="kw">null</span>) {
+                    log.<span class="fn">error</span>(<span class="str">"Failed to publish bookingId={}"</span>, booking.getId(), ex);
+                    <span class="cm">// could also push to outbox table for retry</span>
+                } <span class="kw">else</span> {
+                    log.<span class="fn">info</span>(<span class="str">"Published bookingId={} partition={} offset={}"</span>,
+                        booking.getId(),
+                        result.getRecordMetadata().partition(),
+                        result.getRecordMetadata().offset());
+                }
+            });
+    }
+}</pre>
+    </div>
+    <div class="tab-panel" data-group="k-sc" id="panel-k-sc-consumer">
+<pre><span class="cm">// Consumer — Notification Service reads booking events</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cl">BookingEventConsumer</span> {
+
+    <span class="an">@KafkaListener</span>(
+        topics = <span class="str">"booking.events"</span>,
+        groupId = <span class="str">"notification-service"</span>,
+        concurrency = <span class="str">"3"</span>  <span class="cm">// 3 threads = can consume 3 partitions in parallel</span>
+    )
+    <span class="kw">public void</span> <span class="fn">handle</span>(
+            BookingEvent event,
+            <span class="an">@Header</span>(KafkaHeaders.RECEIVED_PARTITION) <span class="kw">int</span> partition,
+            <span class="an">@Header</span>(KafkaHeaders.OFFSET) <span class="kw">long</span> offset,
+            Acknowledgment ack) {  <span class="cm">// manual ack</span>
+
+        log.<span class="fn">info</span>(<span class="str">"Processing event={} partition={} offset={}"</span>,
+            event.getBookingId(), partition, offset);
+
+        <span class="kw">try</span> {
+            notificationService.<span class="fn">sendConfirmation</span>(event);
+            ack.<span class="fn">acknowledge</span>();  <span class="cm">// commit offset ONLY after successful processing</span>
+        } <span class="kw">catch</span> (<span class="cl">RetryableException</span> e) {
+            <span class="cm">// don't ack — Kafka will redeliver</span>
+            log.<span class="fn">warn</span>(<span class="str">"Retryable error, will retry: {}"</span>, e.getMessage());
+        } <span class="kw">catch</span> (<span class="cl">NonRetryableException</span> e) {
+            <span class="cm">// move to DLT (dead letter topic) instead of infinite retry</span>
+            log.<span class="fn">error</span>(<span class="str">"Non-retryable error, sending to DLT"</span>, e);
+            ack.<span class="fn">acknowledge</span>();  <span class="cm">// ack so we don't redeliver</span>
+            dltProducer.<span class="fn">send</span>(event, e);
+        }
+    }
+}
+
+<span class="cm">// Error handling with retry + DLT</span>
+<span class="an">@Bean</span>
+<span class="kw">public</span> DefaultErrorHandler <span class="fn">errorHandler</span>(KafkaTemplate&lt;?,?&gt; template) {
+    <span class="cm">// Send to booking.events.DLT after 3 retries</span>
+    DeadLetterPublishingRecoverer recoverer =
+        <span class="kw">new</span> DeadLetterPublishingRecoverer(template,
+            (r, e) -> <span class="kw">new</span> TopicPartition(r.topic() + <span class="str">".DLT"</span>, r.partition()));
+
+    <span class="cm">// Retry with exponential backoff: 1s → 2s → 4s → DLT</span>
+    ExponentialBackOff backoff = <span class="kw">new</span> ExponentialBackOff(<span class="nu">1000L</span>, <span class="nu">2.0</span>);
+    backoff.<span class="fn">setMaxAttempts</span>(<span class="nu">3</span>);
+
+    DefaultErrorHandler handler = <span class="kw">new</span> DefaultErrorHandler(recoverer, backoff);
+    <span class="cm">// Don't retry these — they'll never succeed</span>
+    handler.<span class="fn">addNotRetryableExceptions</span>(
+        JsonParseException.<span class="kw">class</span>,
+        IllegalArgumentException.<span class="kw">class</span>
+    );
+    <span class="kw">return</span> handler;
+}</pre>
+    </div>
+    <div class="tab-panel" data-group="k-sc" id="panel-k-sc-config">
+<pre><span class="cm"># application.yml — Kafka config</span>
+spring:
+  kafka:
+    bootstrap-servers: kafka-1:9092,kafka-2:9092,kafka-3:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all          <span class="cm"># wait for ALL replicas to acknowledge (strongest)</span>
+      retries: 3
+      properties:
+        enable.idempotence: true    <span class="cm"># exactly-once from producer side</span>
+        max.in.flight.requests.per.connection: 1
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      group-id: notification-service
+      auto-offset-reset: earliest   <span class="cm"># start from beginning if no committed offset</span>
+      enable-auto-commit: false     <span class="cm"># NEVER use auto-commit — manual ack only</span>
+      properties:
+        spring.json.trusted.packages: "com.yourcompany.events"
+    listener:
+      ack-mode: MANUAL_IMMEDIATE    <span class="cm"># manual acknowledgment</span>
+      concurrency: 3                <span class="cm"># 3 threads per listener container</span>
+
+<span class="cm"># Producer acks explained:
+# acks=0  → fire and forget (fastest, data loss possible)
+# acks=1  → leader acknowledges (default, leader failure = data loss)
+# acks=all → all in-sync replicas ack (slowest, no data loss)</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- INTERMEDIATE -->
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--int-bg)">🔑</div>
+    <div style="flex:1"><div class="sec-title">Partition Key Strategy — The Most Important Design Decision</div><div class="sec-sub">Wrong partition key = no ordering, hot partitions, broken consumers</div></div>
+    <span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="block">
+      <div class="block-title">Why partition key matters</div>
+      <div class="prose">Messages with the same key always go to the same partition. Kafka guarantees ordering <strong>within a partition</strong>, not across partitions. So your key must be the entity whose events must be ordered.</div>
+      <div class="arch-title">Choosing the right partition key</div>
+      <div class="arch">Wrong key: no key (round-robin)
+  Event 1 (BOOKING_CREATED)  → Partition 0
+  Event 2 (BOOKING_CANCELLED) → Partition 1
+  Consumer processes Partition 1 first → CANCELLED before CREATED → broken!
+
+Wrong key: bookingId
+  BOOKING_CREATED and PAYMENT_SUCCESS for booking-123 → different partitions
+  If you need them ordered → wrong choice
+
+Right key for booking events: userId
+  All events for user-456 → same partition → always in order
+  Consumers see: BOOKING_CREATED → PAYMENT_SUCCESS → BOOKING_CONFIRMED ✓
+
+Right key for hotel inventory: hotelId
+  All inventory changes for hotel-789 → same partition → no race conditions
+
+Hot partition problem:
+  If key distribution is uneven (one userId has millions of bookings)
+  → one partition gets all the traffic → that consumer falls behind
+  Fix: append random suffix for high-volume keys: "userId-123-0", "userId-123-1"</div>
+    </div>
+    <div class="block">
+<pre><span class="cm">// Partition key design in code</span>
+<span class="cm">// Booking events: partition by userId (order per user matters)</span>
+kafkaTemplate.<span class="fn">send</span>(<span class="str">"booking.events"</span>, booking.getUserId(), event);
+
+<span class="cm">// Hotel inventory: partition by hotelId (order per hotel matters)</span>
+kafkaTemplate.<span class="fn">send</span>(<span class="str">"hotel.inventory"</span>, update.getHotelId(), update);
+
+<span class="cm">// Notification fanout: no ordering needed → null key (round-robin)</span>
+kafkaTemplate.<span class="fn">send</span>(<span class="str">"notification.send"</span>, <span class="kw">null</span>, notification);
+
+<span class="cm">// Hot partition fix: spread high-volume keys</span>
+<span class="kw">int</span> NUM_VIRTUAL_PARTITIONS = <span class="nu">10</span>;
+String key = userId + <span class="str">"-"</span> + (Math.<span class="fn">abs</span>(eventId.hashCode()) % NUM_VIRTUAL_PARTITIONS);
+kafkaTemplate.<span class="fn">send</span>(<span class="str">"booking.events"</span>, key, event);
+<span class="cm">// NOTE: this breaks strict per-user ordering, acceptable if just need distribution</span></pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--int-bg)">👥</div>
+    <div style="flex:1"><div class="sec-title">Consumer Groups — Parallel Processing & Scaling</div><div class="sec-sub">How Kafka distributes work across multiple consumers</div></div>
+    <span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="arch-title">Consumer group mechanics</div>
+    <div class="arch">Topic "booking.events" — 4 partitions
+
+Scenario 1: 1 consumer in group
+  consumer-1 → reads ALL 4 partitions (sequential)
+
+Scenario 2: 4 consumers in group (optimal)
+  consumer-1 → Partition 0
+  consumer-2 → Partition 1
+  consumer-3 → Partition 2
+  consumer-4 → Partition 3
+  
+Scenario 3: 6 consumers, 4 partitions (wasteful)
+  consumer-1 → Partition 0
+  consumer-2 → Partition 1
+  consumer-3 → Partition 2
+  consumer-4 → Partition 3
+  consumer-5 → IDLE (no partition to read)
+  consumer-6 → IDLE
+  Rule: consumers > partitions = idle consumers, no benefit
+
+Scenario 4: 2 separate consumer groups
+  Group "notification-service": consumer-1 reads all 4 partitions
+  Group "analytics-service":    consumer-1 reads all 4 partitions
+  Both get ALL messages independently (different offsets per group)
+  
+Rebalancing: when consumer joins/leaves, partitions reassigned
+  During rebalance: consumers PAUSE (stop-the-world)
+  Minimize rebalances: use static group membership, tune session.timeout.ms</div>
+<pre><span class="cm"># Key consumer config decisions</span>
+<span class="cm">// session.timeout.ms (default 45s)</span>
+<span class="cm">// How long before broker considers consumer dead</span>
+<span class="cm">// If processing takes longer than this → rebalance triggered</span>
+<span class="cm">// For slow processors: increase to 300s</span>
+
+<span class="cm">// max.poll.interval.ms (default 5m)</span>
+<span class="cm">// Max time between poll() calls</span>
+<span class="cm">// If your business logic takes > 5min → increase this</span>
+
+<span class="cm">// max.poll.records (default 500)</span>
+<span class="cm">// Messages per poll() call</span>
+<span class="cm">// Reduce if processing is slow (process fewer at a time)</span>
+
+<span class="cm">// Static group membership — reduces rebalances on restarts</span>
+<span class="cm">// group.instance.id = "consumer-pod-1" (unique per pod)</span>
+<span class="cm">// Kafka waits session.timeout before reassigning partition</span>
+<span class="cm">// Great for rolling deployments — partitions stay with same pods</span>
+
+<span class="cm"># In Spring Boot:</span>
+spring:
+  kafka:
+    consumer:
+      properties:
+        max.poll.interval.ms: 300000    <span class="cm"># 5 min max processing time</span>
+        max.poll.records: 100           <span class="cm"># smaller batches</span>
+        session.timeout.ms: 60000       <span class="cm"># 60s before considered dead</span>
+        group.instance.id: ${POD_NAME} <span class="cm"># static membership (K8s env var)</span></pre>
+  </div>
+</div>
+
+<!-- ADVANCED -->
+<div class="section" data-level="advanced">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--adv-bg)">🎯</div>
+    <div style="flex:1"><div class="sec-title">Delivery Guarantees — At-least-once vs Exactly-once</div><div class="sec-sub">The Staff-level question: how do you prevent duplicate processing?</div></div>
+    <span class="sec-lv lv-adv">Advanced</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="arch-title">Three delivery semantics</div>
+    <div class="arch">At-most-once (fire and forget)
+  Producer sends, doesn't wait for ack
+  acks=0
+  Result: fast, but messages CAN be lost
+  Use: metrics, logs where some loss is OK
+
+At-least-once (default for most systems)
+  Producer retries until broker acks
+  Consumer processes, then commits offset
+  Result: NO data loss, but possible DUPLICATE processing
+  If consumer crashes after processing but before committing offset
+  → message redelivered → processed again
+  Use: most business events (with idempotent consumers)
+
+Exactly-once (EOS — Exactly Once Semantics)
+  Kafka 0.11+ with transactions
+  Producer: enable.idempotence=true + transactional.id
+  Consumer: read_committed isolation level
+  Result: no loss, no duplicates
+  Cost: ~10-20% throughput reduction
+  Use: financial transactions, inventory updates</div>
+<pre><span class="cm">// Idempotent consumer — the practical "exactly-once" for most cases</span>
+<span class="cm">// At-least-once delivery + idempotent processing = effectively exactly-once</span>
+
+<span class="an">@KafkaListener</span>(topics = <span class="str">"payment.events"</span>, groupId = <span class="str">"payment-processor"</span>)
+<span class="kw">public void</span> <span class="fn">handlePayment</span>(PaymentEvent event, Acknowledgment ack) {
+    <span class="cm">// Check if already processed (idempotency key)</span>
+    <span class="kw">if</span> (processedEventRepo.<span class="fn">existsById</span>(event.getEventId())) {
+        log.<span class="fn">info</span>(<span class="str">"Duplicate event {}, skipping"</span>, event.getEventId());
+        ack.<span class="fn">acknowledge</span>();
+        <span class="kw">return</span>; <span class="cm">// already done — safe to skip</span>
+    }
+
+    <span class="cm">// Process + mark as processed atomically</span>
+    <span class="an">@Transactional</span>
+    walletService.<span class="fn">credit</span>(event.getUserId(), event.getAmount());
+    processedEventRepo.<span class="fn">save</span>(<span class="kw">new</span> ProcessedEvent(event.getEventId()));
+
+    ack.<span class="fn">acknowledge</span>();
+}
+
+<span class="cm">// Kafka Transactions — true exactly-once (read-process-write atomic)</span>
+<span class="cm">// Producer config:</span>
+<span class="cm">// transactional.id = "payment-service-0"  (unique per producer instance)</span>
+<span class="cm">// enable.idempotence = true</span>
+
+<span class="an">@Bean</span>
+<span class="kw">public</span> KafkaTransactionManager <span class="fn">kafkaTransactionManager</span>(...) {
+    <span class="kw">return new</span> KafkaTransactionManager(producerFactory);
+}
+
+<span class="an">@Transactional</span>(<span class="str">"kafkaTransactionManager"</span>)
+<span class="kw">public void</span> <span class="fn">processAndPublish</span>(PaymentEvent in) {
+    <span class="cm">// Read from Kafka + write to Kafka — atomic transaction</span>
+    <span class="cm">// Either both happen or neither</span>
+    walletService.<span class="fn">credit</span>(in.getUserId(), in.getAmount());
+    kafkaTemplate.<span class="fn">send</span>(<span class="str">"wallet.credited"</span>, in.getUserId(), <span class="kw">new</span> WalletCreditedEvent(in));
+}</pre>
+  </div>
+</div>
+
+<div class="section" data-level="advanced">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--adv-bg)">📋</div>
+    <div style="flex:1"><div class="sec-title">Schema Registry & Avro</div><div class="sec-sub">Evolving message schemas without breaking consumers</div></div>
+    <span class="sec-lv lv-adv">Advanced</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="prose">JSON schemas can change without warning — a producer adds a field, consumers break. Schema Registry enforces contract between producers and consumers. Avro schemas are stored centrally; producers/consumers auto-validate against them. Schema evolution rules (backward/forward compatibility) prevent breaking changes.</div>
+<pre><span class="cm"># Schema Registry — Confluent (or AWS Glue for AWS)</span>
+<span class="cm"># Avro schema for BookingEvent</span>
+{
+  "type": "record",
+  "name": "BookingEvent",
+  "namespace": "com.yourcompany.events",
+  "fields": [
+    {"name": "bookingId", "type": "string"},
+    {"name": "userId", "type": "string"},
+    {"name": "roomId", "type": "string"},
+    {"name": "checkIn", "type": "string"},
+    {"name": "totalPrice", "type": "double"},
+    {"name": "currency", "type": {"type": "enum", "name": "Currency", "symbols": ["USD","EUR","GBP"]}},
+    {"name": "couponCode", "type": ["null", "string"], "default": null}  <span class="cm">// optional field</span>
+  ]
+}
+
+<span class="cm"># Schema evolution rules:
+# BACKWARD compatible: consumers with new schema can read old messages
+#   → can ADD optional fields (with default)
+#   → can REMOVE fields consumers don't use
+# FORWARD compatible: consumers with old schema can read new messages
+# FULL compatible: both backward + forward
+#
+# NEVER do (breaks compatibility):
+#   → rename a field
+#   → change a field type
+#   → remove a required field
+
+# application.yml with Schema Registry</span>
+spring:
+  kafka:
+    producer:
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+    consumer:
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+    properties:
+      schema.registry.url: http://schema-registry:8081
+      specific.avro.reader: true   <span class="cm"># deserialize to generated Java class</span></pre>
+  </div>
+</div>
+
+<!-- Checklist -->
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--green-bg)">✅</div>
+    <div style="flex:1"><div class="sec-title">Kafka readiness checklist</div></div>
+    <span class="sec-lv lv-beg">All levels</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="kf-chk" id="tab-kf-chk-beg" onclick="switchTab('kf-chk','beg')">🟢 Beginner</div>
+      <div class="tab" data-group="kf-chk" id="tab-kf-chk-int" onclick="switchTab('kf-chk','int')">🟣 Intermediate</div>
+      <div class="tab" data-group="kf-chk" id="tab-kf-chk-adv" onclick="switchTab('kf-chk','adv')">🟠 Advanced</div>
+    </div>
+    <div class="tab-panel active" data-group="kf-chk" id="panel-kf-chk-beg">
+      <ul class="chk-list" style="padding:14px">
+        <li class="chk-item"><div class="chkbox" id="chk-kf1" onclick="kfToggle('kf1')"></div><div class="chk-text" id="txt-kf1">Explain topic, partition, offset, consumer group in one breath</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-kf2" onclick="kfToggle('kf2')"></div><div class="chk-text" id="txt-kf2">Why does Kafka guarantee ordering only within a partition, not across?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-kf3" onclick="kfToggle('kf3')"></div><div class="chk-text" id="txt-kf3">When would you use Kafka over SQS? Give a concrete booking system example.</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-kf4" onclick="kfToggle('kf4')"></div><div class="chk-text" id="txt-kf4">acks=0 vs acks=1 vs acks=all — what does each mean and when use each?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-kf5" onclick="kfToggle('kf5')"></div><div class="chk-text" id="txt-kf5">Why NEVER use enable-auto-commit: true? What can go wrong?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-kf6" onclick="kfToggle('kf6')"></div><div class="chk-text" id="txt-kf6">Dead Letter Topic (DLT) — what is it and when is a message sent there?</div></li>
+      </ul>
+    </div>
+    <div class="tab-panel" data-group="kf-chk" id="panel-kf-chk-int">
+      <ul class="chk-list" style="padding:14px">
+        <li class="chk-item"><div class="chkbox" id="chk-kf7" onclick="kfToggle('kf7')"></div><div class="chk-text" id="txt-kf7">Partition key strategy for booking events — why userId and not bookingId?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-kf8" onclick="kfToggle('kf8')"></div><div class="chk-text" id="txt-kf8">Hot partition problem — what causes it, how do you fix it?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-kf9" onclick="kfToggle('kf9')"></div><div class="chk-text" id="txt-kf9">consumers > partitions — what happens to the extra consumers?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-kf10" onclick="kfToggle('kf10')"></div><div class="chk-text" id="txt-kf10">Two consumer groups subscribe to the same topic — do they get the same messages?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-kf11" onclick="kfToggle('kf11')"></div><div class="chk-text" id="txt-kf11">What triggers a consumer group rebalance and why is it painful?</div></li>
+      </ul>
+    </div>
+    <div class="tab-panel" data-group="kf-chk" id="panel-kf-chk-adv">
+      <ul class="chk-list" style="padding:14px">
+        <li class="chk-item"><div class="chkbox" id="chk-kf12" onclick="kfToggle('kf12')"></div><div class="chk-text" id="txt-kf12">At-least-once vs exactly-once — difference, and how to achieve each</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-kf13" onclick="kfToggle('kf13')"></div><div class="chk-text" id="txt-kf13">Idempotent consumer pattern — implement it in code with a DB check</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-kf14" onclick="kfToggle('kf14')"></div><div class="chk-text" id="txt-kf14">Outbox pattern — what problem does it solve that Kafka alone can't?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-kf15" onclick="kfToggle('kf15')"></div><div class="chk-text" id="txt-kf15">Schema Registry — why needed, what does backward compatibility mean?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-kf16" onclick="kfToggle('kf16')"></div><div class="chk-text" id="txt-kf16">Consumer lag — how do you monitor it? What does high lag mean?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-kf17" onclick="kfToggle('kf17')"></div><div class="chk-text" id="txt-kf17">Kafka vs Redis Streams — when would you pick Redis Streams over Kafka?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-kf18" onclick="kfToggle('kf18')"></div><div class="chk-text" id="txt-kf18">How do you replay messages from 24 hours ago? (reset consumer group offset)</div></li>
+      </ul>
+    </div>
+    <div style="padding:0 14px 14px">
+      <div class="block-title" style="margin-top:8px">Further reading</div>
+      <a class="ref-link" href="https://kafka.apache.org/documentation" target="_blank">↗ Apache Kafka Docs</a>
+      <a class="ref-link" href="https://docs.confluent.io/platform/current/schema-registry/index.html" target="_blank">↗ Schema Registry Docs</a>
+      <a class="ref-link" href="https://spring.io/projects/spring-kafka" target="_blank">↗ Spring for Apache Kafka</a>
+      <a class="ref-link" href="https://www.conduktor.io/kafka/kafka-topics-internals-segments-and-indexes" target="_blank">↗ Kafka Internals Deep Dive</a>
+    </div>
+  </div>
+</div>
+
+</div>
+<script src="shared.js"></script>
+<script>
+buildNav('kafka');
+const kfDone = initChecks('kafka-done', 18, 'kafka-done', 'kafka-pct', 'kafka-fill');
+function kfToggle(id){ toggleCheck(id, kfDone, 'kafka-done', 18, 'kafka-done', 'kafka-pct', 'kafka-fill'); }
+</script>
+</body>
+</html>

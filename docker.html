@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PrepKit — Docker</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav class="topnav" id="topnav"></nav>
+<div class="page">
+
+<div class="hero">
+  <div class="hero-row">
+    <div class="hero-icon" style="background:rgba(56,189,248,0.15)">🐳</div>
+    <div>
+      <div class="hero-title">Docker — Reference Guide</div>
+      <div class="hero-sub">Dockerfile · Multi-stage builds · Compose · Networking · Security</div>
+    </div>
+  </div>
+  <div class="hero-desc">Docker is on your resume across UKG and Walmart IDC. At Staff level you need to speak beyond "I wrote a Dockerfile." Know multi-stage builds (smaller images), Docker Compose for local dev, networking models, and security hardening. Kubernetes orchestrates Docker containers — so if K8s is your deployment target, your Docker knowledge is the foundation.</div>
+  <div class="level-pills" style="margin-top:10px">
+    <span class="level-pill lp-all selected" onclick="setLevel('all',this)">All</span>
+    <span class="level-pill lp-beg" onclick="setLevel('beginner',this)">🟢 Beginner</span>
+    <span class="level-pill lp-int" onclick="setLevel('intermediate',this)">🟣 Intermediate</span>
+    <span class="level-pill lp-adv" onclick="setLevel('advanced',this)">🟠 Advanced</span>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-n" id="dk-done" style="color:var(--green)">0</div><div class="stat-l">Done</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--beg)">14</div><div class="stat-l">Checklist items</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--int)">3</div><div class="stat-l">Core sections</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--orange)">⚙️</div><div class="stat-l">On resume</div></div>
+</div>
+<div class="prog-wrap">
+  <div class="prog-label"><span>Progress</span><span id="dk-pct">0 / 14</span></div>
+  <div class="prog-bar"><div class="prog-fill" id="dk-fill" style="width:0%"></div></div>
+</div>
+
+<!-- SECTION 1: Dockerfile -->
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--beg-bg)">📄</div>
+    <div style="flex:1">
+      <div class="sec-title">Dockerfile — From Basics to Multi-Stage Builds</div>
+      <div class="sec-sub">The most important Docker skill — writing small, secure, efficient images</div>
+    </div>
+    <span class="sec-lv lv-beg">Beginner</span>
+    <span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="dk-df" id="tab-dk-df-basic" onclick="switchTab('dk-df','basic')">Basic Dockerfile</div>
+      <div class="tab" data-group="dk-df" id="tab-dk-df-multi" onclick="switchTab('dk-df','multi')">Multi-stage (production)</div>
+      <div class="tab" data-group="dk-df" id="tab-dk-df-layers" onclick="switchTab('dk-df','layers')">Layer caching</div>
+    </div>
+
+    <div class="tab-panel active" data-group="dk-df" id="panel-dk-df-basic">
+      <div class="block">
+        <div class="block-title">Spring Boot Dockerfile — Basic</div>
+        <div class="prose">Every instruction creates a new layer. Order matters: put things that change less often at the top, things that change often (your code) at the bottom.</div>
+<pre><span class="cm"># FROM — base image (always pin the version, never use :latest in prod)</span>
+<span class="kw">FROM</span> eclipse-temurin:<span class="nu">17</span>-jre-alpine
+
+<span class="cm"># WORKDIR — all subsequent commands run from here</span>
+<span class="kw">WORKDIR</span> /app
+
+<span class="cm"># COPY — copy the built JAR from your host into the container</span>
+<span class="cm"># The dot at the end means: copy to WORKDIR (/app)</span>
+<span class="kw">COPY</span> target/hotel-service-<span class="nu">1.0</span>.jar app.jar
+
+<span class="cm"># EXPOSE — document which port the app listens on (doesn't actually open it)</span>
+<span class="kw">EXPOSE</span> <span class="nu">8080</span>
+
+<span class="cm"># ENV — environment variables available at runtime</span>
+<span class="kw">ENV</span> SPRING_PROFILES_ACTIVE=prod
+
+<span class="cm"># ENTRYPOINT — the command to run. Prefer ENTRYPOINT over CMD for apps.</span>
+<span class="kw">ENTRYPOINT</span> [<span class="str">"java"</span>, <span class="str">"-XX:+UseContainerSupport"</span>, <span class="str">"-jar"</span>, <span class="str">"app.jar"</span>]
+<span class="cm"># -XX:+UseContainerSupport: makes JVM respect container memory limits (critical!)</span></pre>
+        <div class="callout c-warn"><strong>Common mistake:</strong> Using <code>FROM openjdk:17</code> (1.1 GB!) vs <code>eclipse-temurin:17-jre-alpine</code> (~175 MB). Always use JRE (not JDK) in production — you only need to run, not compile. Alpine base cuts image size dramatically.</div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-group="dk-df" id="panel-dk-df-multi">
+      <div class="block">
+        <div class="block-title">Multi-Stage Build — Compile in one stage, run in another</div>
+        <div class="prose">Multi-stage builds solve the problem: your build tools (Maven, JDK) are needed to compile but you don't want them in your production image. Build in a full JDK image, copy only the JAR into a minimal JRE image.</div>
+<pre><span class="cm"># ─── STAGE 1: Build ───────────────────────────────</span>
+<span class="cm"># Full JDK with Maven — only used during build, not in final image</span>
+<span class="kw">FROM</span> eclipse-temurin:<span class="nu">17</span>-jdk-alpine <span class="kw">AS</span> builder
+
+<span class="kw">WORKDIR</span> /build
+
+<span class="cm"># Copy pom.xml first — so Maven dependency layer is cached</span>
+<span class="cm"># (dependencies only re-downloaded when pom.xml changes)</span>
+<span class="kw">COPY</span> pom.xml .
+<span class="kw">RUN</span> mvn dependency:go-offline -q
+
+<span class="cm"># Now copy source and build</span>
+<span class="kw">COPY</span> src/ src/
+<span class="kw">RUN</span> mvn package -DskipTests -q
+
+<span class="cm"># ─── STAGE 2: Run ─────────────────────────────────</span>
+<span class="cm"># Minimal JRE — this is the final image (no Maven, no JDK, no source code)</span>
+<span class="kw">FROM</span> eclipse-temurin:<span class="nu">17</span>-jre-alpine
+
+<span class="kw">WORKDIR</span> /app
+
+<span class="cm"># Create non-root user — security best practice</span>
+<span class="kw">RUN</span> addgroup -S spring && adduser -S spring -G spring
+<span class="kw">USER</span> spring:spring
+
+<span class="cm"># Copy ONLY the JAR from the builder stage</span>
+<span class="kw">COPY</span> --from=builder /build/target/hotel-service-*.jar app.jar
+
+<span class="kw">EXPOSE</span> <span class="nu">8080</span>
+<span class="kw">ENTRYPOINT</span> [<span class="str">"java"</span>, <span class="str">"-XX:+UseContainerSupport"</span>, <span class="str">"-Xms256m"</span>, <span class="str">"-Xmx512m"</span>, <span class="str">"-jar"</span>, <span class="str">"app.jar"</span>]
+
+<span class="cm"># Result: ~175 MB instead of 500+ MB with full JDK
+#         No build tools exposed in final image
+#         Non-root user = less attack surface</span></pre>
+        <div class="tip-box">
+          <div class="tip-label">💡 Interview answer</div>
+          Multi-stage builds solve two problems: (1) image size — final image only has runtime deps, not build tools; (2) security — your source code and build tooling never make it into the production image. At UKG we'd use this to keep Spring Boot images under 200 MB vs the 500+ MB you'd get with a naive build.
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-group="dk-df" id="panel-dk-df-layers">
+      <div class="block">
+        <div class="block-title">Layer Caching — Why Order of Instructions Matters</div>
+        <div class="prose">Docker caches each layer. If a layer changes, all layers below it are invalidated. This is why you put slow, rarely-changing steps first (dependency download) and fast, frequently-changing steps last (your code).</div>
+<pre><span class="cm"># ❌ WRONG — cache busted every time any source file changes</span>
+<span class="kw">COPY</span> . .                 <span class="cm"># copies everything including source</span>
+<span class="kw">RUN</span> mvn dependency:resolve  <span class="cm"># re-downloads ALL deps every build</span>
+
+<span class="cm"># ✅ RIGHT — Maven dependencies cached separately from source</span>
+<span class="kw">COPY</span> pom.xml .           <span class="cm"># Step 1: copy only manifest</span>
+<span class="kw">RUN</span> mvn dependency:go-offline  <span class="cm"># Step 2: cache deps (only reruns if pom.xml changes)</span>
+<span class="kw">COPY</span> src/ src/           <span class="cm"># Step 3: copy source (only this layer + below rebuild)</span>
+<span class="kw">RUN</span> mvn package          <span class="cm"># Step 4: compile</span>
+
+<span class="cm"># Same principle for Node.js:</span>
+<span class="kw">COPY</span> package*.json .     <span class="cm"># copy package.json first</span>
+<span class="kw">RUN</span> npm ci               <span class="cm"># install deps — cached until package.json changes</span>
+<span class="kw">COPY</span> . .                 <span class="cm"># copy source after — deps already cached</span>
+
+<span class="cm"># Useful commands:
+# docker build -t hotel-service .       Build image
+# docker build --no-cache -t hotel .    Force rebuild all layers
+# docker history hotel-service          Show each layer's size</span></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: Docker Compose -->
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--int-bg)">🔧</div>
+    <div style="flex:1">
+      <div class="sec-title">Docker Compose — Local Dev Environment</div>
+      <div class="sec-sub">Run your full stack locally: Spring Boot + MongoDB + Redis + Kafka in one command</div>
+    </div>
+    <span class="sec-lv lv-int">Intermediate</span>
+    <span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="block">
+      <div class="block-title">docker-compose.yml — Agoda hotel booking local stack</div>
+<pre><span class="cm"># docker-compose.yml — local development environment
+# Run: docker compose up -d
+# Stop: docker compose down (add -v to also remove volumes)</span>
+
+version: <span class="str">'3.9'</span>
+
+services:
+  <span class="cm"># ── Your Spring Boot app ──────────────────────────</span>
+  hotel-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - <span class="str">"8080:8080"</span>         <span class="cm"># host:container</span>
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/hotels
+      SPRING_REDIS_HOST: redis
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_PROFILES_ACTIVE: local
+    depends_on:
+      mongo:
+        condition: service_healthy   <span class="cm"># wait for healthcheck before starting</span>
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs           <span class="cm"># persist logs to host</span>
+    networks:
+      - hotel-net
+
+  <span class="cm"># ── MongoDB ───────────────────────────────────────</span>
+  mongo:
+    image: mongo:<span class="nu">7</span>
+    ports:
+      - <span class="str">"27017:27017"</span>
+    volumes:
+      - mongo_data:/data/db        <span class="cm"># named volume — data persists across restarts</span>
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: <span class="str">"${MONGO_PASSWORD}"</span>  <span class="cm"># from .env file</span>
+    healthcheck:
+      test: [<span class="str">"CMD"</span>, <span class="str">"mongosh"</span>, <span class="str">"--eval"</span>, <span class="str">"db.runCommand('ping').ok"</span>]
+      interval: <span class="nu">10</span>s
+      timeout: <span class="nu">5</span>s
+      retries: <span class="nu">3</span>
+    networks:
+      - hotel-net
+
+  <span class="cm"># ── Redis ─────────────────────────────────────────</span>
+  redis:
+    image: redis:<span class="nu">7</span>-alpine
+    ports:
+      - <span class="str">"6379:6379"</span>
+    command: redis-server --requirepass <span class="str">"${REDIS_PASSWORD}"</span>
+    healthcheck:
+      test: [<span class="str">"CMD"</span>, <span class="str">"redis-cli"</span>, <span class="str">"ping"</span>]
+      interval: <span class="nu">5</span>s
+      retries: <span class="nu">3</span>
+    networks:
+      - hotel-net
+
+  <span class="cm"># ── Kafka + Zookeeper ─────────────────────────────</span>
+  zookeeper:
+    image: confluentinc/cp-zookeeper:<span class="nu">7.4</span>
+    environment:
+      ZOOKEEPER_CLIENT_PORT: <span class="nu">2181</span>
+    networks:
+      - hotel-net
+
+  kafka:
+    image: confluentinc/cp-kafka:<span class="nu">7.4</span>
+    ports:
+      - <span class="str">"9092:9092"</span>
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: <span class="str">"true"</span>
+    depends_on:
+      - zookeeper
+    networks:
+      - hotel-net
+
+volumes:
+  mongo_data:              <span class="cm"># named volume — survives compose down</span>
+
+networks:
+  hotel-net:
+    driver: bridge         <span class="cm"># default; containers on same network can reach each other by service name</span></pre>
+      <div class="callout c-info"><strong>Key concept:</strong> Services on the same Docker network reach each other by service name. Your Spring Boot app connects to <code>mongodb://mongo:27017</code> — not <code>localhost:27017</code>. Docker's internal DNS resolves <code>mongo</code> to the MongoDB container's IP.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: Networking + Security -->
+<div class="section" data-level="advanced">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--adv-bg)">🔒</div>
+    <div style="flex:1">
+      <div class="sec-title">Docker Networking & Security Hardening</div>
+      <div class="sec-sub">Network modes, non-root users, read-only filesystems, secrets</div>
+    </div>
+    <span class="sec-lv lv-adv">Advanced</span>
+    <span class="chev">▼</span>
+  </div>
+  <div class="sec-body">
+    <div class="tabs">
+      <div class="tab active" data-group="dk-ns" id="tab-dk-ns-net" onclick="switchTab('dk-ns','net')">Networking</div>
+      <div class="tab" data-group="dk-ns" id="tab-dk-ns-sec" onclick="switchTab('dk-ns','sec')">Security hardening</div>
+      <div class="tab" data-group="dk-ns" id="tab-dk-ns-dbg" onclick="switchTab('dk-ns','dbg')">Debug commands</div>
+    </div>
+
+    <div class="tab-panel active" data-group="dk-ns" id="panel-dk-ns-net">
+<pre><span class="cm"># Docker network modes</span>
+<span class="cm"># bridge (default) — isolated network, port mapping to host</span>
+docker network create hotel-net
+docker run --network hotel-net hotel-service
+
+<span class="cm"># host — container shares host's network stack (no isolation)</span>
+<span class="cm"># Use for high-performance, but NO port mapping needed</span>
+docker run --network host hotel-service
+
+<span class="cm"># none — no networking (offline processing jobs)</span>
+docker run --network none data-processor
+
+<span class="cm"># Inspect networks</span>
+docker network ls
+docker network inspect hotel-net       <span class="cm"># see which containers are connected</span>
+docker exec hotel-service ping mongo   <span class="cm"># verify container-to-container connectivity</span>
+
+<span class="cm"># Port mapping (-p host:container)</span>
+docker run -p 8080:8080 hotel-service  <span class="cm"># accessible at localhost:8080</span>
+docker run -p 127.0.0.1:8080:8080 hotel-service  <span class="cm"># only from localhost (more secure)</span></pre>
+    </div>
+
+    <div class="tab-panel" data-group="dk-ns" id="panel-dk-ns-sec">
+<pre><span class="cm"># Security checklist for production Docker images</span>
+
+<span class="cm"># 1. Non-root user — default is root (security risk)</span>
+<span class="kw">RUN</span> addgroup -S appgroup && adduser -S appuser -G appgroup
+<span class="kw">USER</span> appuser           <span class="cm"># run as non-root</span>
+
+<span class="cm"># 2. Read-only filesystem (prevent runtime writes)</span>
+docker run --read-only hotel-service
+<span class="cm"># Mount specific write paths:</span>
+docker run --read-only -v /tmp:/tmp hotel-service
+
+<span class="cm"># 3. Drop Linux capabilities</span>
+docker run --cap-drop ALL --cap-add NET_BIND_SERVICE hotel-service
+<span class="cm"># Principle of least privilege: only add what's needed</span>
+
+<span class="cm"># 4. No privileged containers</span>
+<span class="cm"># NEVER: docker run --privileged ... (gives full host access)</span>
+
+<span class="cm"># 5. Resource limits (prevent container starving host)</span>
+docker run --memory="512m" --cpus="1.0" hotel-service
+
+<span class="cm"># 6. Secrets — don't bake into image</span>
+<span class="cm"># BAD: ENV DB_PASSWORD=mysecret  ← visible in docker inspect</span>
+<span class="cm"># GOOD: Use Docker secrets or pass at runtime:</span>
+docker run -e DB_PASSWORD="$(vault kv get -field=password secret/db)" hotel-service
+
+<span class="cm"># 7. Scan image for vulnerabilities</span>
+docker scout cves hotel-service:latest    <span class="cm"># Docker Scout (built-in)</span>
+trivy image hotel-service:latest           <span class="cm"># Trivy (open source, CI/CD friendly)</span>
+
+<span class="cm"># 8. Don't use :latest in production — pin versions</span>
+<span class="cm"># BAD:  FROM openjdk:latest</span>
+<span class="cm"># GOOD: FROM eclipse-temurin:17.0.11_9-jre-alpine</span></pre>
+    </div>
+
+    <div class="tab-panel" data-group="dk-ns" id="panel-dk-ns-dbg">
+<pre><span class="cm"># Essential Docker debug commands</span>
+
+<span class="cm"># See running containers</span>
+docker ps
+docker ps -a                            <span class="cm"># include stopped containers</span>
+
+<span class="cm"># See logs</span>
+docker logs hotel-service               <span class="cm"># all logs</span>
+docker logs -f hotel-service            <span class="cm"># follow (like tail -f)</span>
+docker logs --tail 100 hotel-service    <span class="cm"># last 100 lines</span>
+
+<span class="cm"># Shell into running container</span>
+docker exec -it hotel-service /bin/sh   <span class="cm"># Alpine: sh not bash</span>
+docker exec -it hotel-service bash      <span class="cm"># if bash is available</span>
+
+<span class="cm"># Shell into container without starting the app (debug startup issues)</span>
+docker run -it --entrypoint /bin/sh hotel-service
+
+<span class="cm"># Resource usage</span>
+docker stats                            <span class="cm"># live CPU/memory/network usage</span>
+docker stats hotel-service --no-stream  <span class="cm"># one-time snapshot</span>
+
+<span class="cm"># Inspect container config</span>
+docker inspect hotel-service            <span class="cm"># full JSON: ports, env, mounts, network</span>
+docker inspect hotel-service | jq '.[0].HostConfig.Memory'  <span class="cm"># memory limit</span>
+
+<span class="cm"># Cleanup</span>
+docker system prune                     <span class="cm"># remove stopped containers, unused images</span>
+docker system prune -a                  <span class="cm"># also remove images not used by any container</span>
+docker volume prune                     <span class="cm"># remove unused volumes</span>
+docker image ls                         <span class="cm"># see image sizes</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKLIST -->
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--green-bg)">✅</div>
+    <div style="flex:1"><div class="sec-title">Docker readiness checklist</div></div>
+    <span class="sec-lv lv-beg">All</span>
+    <span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="dk-chk" id="tab-dk-chk-beg" onclick="switchTab('dk-chk','beg')">🟢 Core</div>
+      <div class="tab" data-group="dk-chk" id="tab-dk-chk-adv" onclick="switchTab('dk-chk','adv')">🟠 Advanced</div>
+    </div>
+    <div class="tab-panel active" data-group="dk-chk" id="panel-dk-chk-beg">
+      <ul class="chk-list" style="padding:14px">
+        <li class="chk-item"><div class="chkbox" id="chk-dk1" onclick="dkToggle('dk1')"></div><div class="chk-text" id="txt-dk1">Explain every Dockerfile instruction: FROM, WORKDIR, COPY, RUN, EXPOSE, ENTRYPOINT vs CMD</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-dk2" onclick="dkToggle('dk2')"></div><div class="chk-text" id="txt-dk2">Multi-stage build — what problem does it solve? What goes in stage 1 vs stage 2?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-dk3" onclick="dkToggle('dk3')"></div><div class="chk-text" id="txt-dk3">Layer caching — why copy pom.xml before copying source code?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-dk4" onclick="dkToggle('dk4')"></div><div class="chk-text" id="txt-dk4">JRE vs JDK in production — which do you use and why?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-dk5" onclick="dkToggle('dk5')"></div><div class="chk-text" id="txt-dk5">-XX:+UseContainerSupport — what does it do? Why critical in Docker?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-dk6" onclick="dkToggle('dk6')"></div><div class="chk-text" id="txt-dk6">Docker Compose networking — how does hotel-service reach mongo:27017?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-dk7" onclick="dkToggle('dk7')"></div><div class="chk-text" id="txt-dk7">depends_on with healthcheck — why not just depends_on without condition?</div></li>
+      </ul>
+    </div>
+    <div class="tab-panel" data-group="dk-chk" id="panel-dk-chk-adv">
+      <ul class="chk-list" style="padding:14px">
+        <li class="chk-item"><div class="chkbox" id="chk-dk8" onclick="dkToggle('dk8')"></div><div class="chk-text" id="txt-dk8">Why run containers as non-root? What risk does root in container create?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-dk9" onclick="dkToggle('dk9')"></div><div class="chk-text" id="txt-dk9">How do you pass secrets to a container without baking them into the image?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-dk10" onclick="dkToggle('dk10')"></div><div class="chk-text" id="txt-dk10">Bridge vs host network — when would you use host networking?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-dk11" onclick="dkToggle('dk11')"></div><div class="chk-text" id="txt-dk11">Named volumes vs bind mounts — what persists after docker compose down?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-dk12" onclick="dkToggle('dk12')"></div><div class="chk-text" id="txt-dk12">docker stats — how do you see if a container is memory-constrained?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-dk13" onclick="dkToggle('dk13')"></div><div class="chk-text" id="txt-dk13">How do you debug a container that exits immediately on startup?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-dk14" onclick="dkToggle('dk14')"></div><div class="chk-text" id="txt-dk14">docker system prune -a — what does it remove, what stays? (running containers stay)</div></li>
+      </ul>
+    </div>
+    <div style="padding:0 14px 14px">
+      <a class="ref-link" href="https://docs.docker.com/develop/develop-images/dockerfile_best-practices" target="_blank">↗ Dockerfile Best Practices</a>
+      <a class="ref-link" href="https://docs.docker.com/compose" target="_blank">↗ Docker Compose Docs</a>
+      <a class="ref-link" href="https://aquasecurity.github.io/trivy" target="_blank">↗ Trivy Image Scanner</a>
+    </div>
+  </div>
+</div>
+
+</div>
+<script src="shared.js"></script>
+<script>
+buildNav('docker');
+const dkDone = initChecks('docker-done', 14, 'dk-done', 'dk-pct', 'dk-fill');
+function dkToggle(id){ toggleCheck(id, dkDone, 'docker-done', 14, 'dk-done', 'dk-pct', 'dk-fill'); }
+</script>
+</body>
+</html>

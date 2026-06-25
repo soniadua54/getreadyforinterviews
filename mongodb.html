@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>PrepKit — MongoDB & Cosmos DB</title><link rel="stylesheet" href="shared.css"></head>
+<body><nav class="topnav" id="topnav"></nav><div class="page">
+<div class="hero"><div class="hero-row"><div class="hero-icon" style="background:rgba(34,197,94,0.12)">🍃</div><div><div class="hero-title">MongoDB & Cosmos DB</div><div class="hero-sub">Schema design · Aggregation · Indexing · Cosmos DB API · When NOT to use MongoDB</div></div></div>
+<div class="hero-desc">MongoDB is on your resume (UKG People Fabric / WFM). Cosmos DB is from your Walmart IDC Secure Media Service. At Staff level, "I used MongoDB" is not enough. You need schema design decisions (embed vs reference), aggregation pipeline, indexing strategy, and when MongoDB is the wrong choice.</div>
+<div class="level-pills"><span class="level-pill lp-all selected" onclick="setLevel('all',this)">All</span><span class="level-pill lp-beg" onclick="setLevel('beginner',this)">🟢 Beginner</span><span class="level-pill lp-int" onclick="setLevel('intermediate',this)">🟣 Intermediate</span><span class="level-pill lp-adv" onclick="setLevel('advanced',this)">🟠 Advanced</span></div></div>
+<div class="stats"><div class="stat"><div class="stat-n" id="mdb-done" style="color:var(--green)">0</div><div class="stat-l">Done</div></div><div class="stat"><div class="stat-n" style="color:var(--beg)">12</div><div class="stat-l">Checklist items</div></div></div>
+<div class="prog-wrap"><div class="prog-label"><span>Progress</span><span id="mdb-pct">0 / 12</span></div><div class="prog-bar"><div class="prog-fill" id="mdb-fill" style="width:0%"></div></div></div>
+
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--beg-bg)">📖</div><div style="flex:1"><div class="sec-title">MongoDB vs SQL — When to Choose Which</div></div><span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span></div>
+  <div class="sec-body open">
+    <table class="ctable">
+      <tr><th>Aspect</th><th>MongoDB (Document)</th><th>PostgreSQL (Relational)</th></tr>
+      <tr><td>Schema</td><td>Flexible — each document can have different fields</td><td>Fixed schema — all rows have same columns</td></tr>
+      <tr><td>Joins</td><td>No JOINs — embed or use $lookup (slow)</td><td>Efficient JOINs with foreign keys</td></tr>
+      <tr><td>Transactions</td><td class="ok">ACID since 4.0 (multi-doc)</td><td class="good">Full ACID with complex transactions</td></tr>
+      <tr><td>Scaling</td><td class="good">Horizontal sharding built-in</td><td class="ok">Vertical first, complex to shard</td></tr>
+      <tr><td>Best for</td><td>Catalog data, CMS, logging, flexible schemas, hierarchical data</td><td>Financial data, bookings, anything with complex relationships</td></tr>
+      <tr><td>Your UKG use</td><td>People Fabric: WFM data with varying tenant configurations</td><td>Booking transactions at Agoda</td></tr>
+    </table>
+    <div class="callout c-warn"><strong>Common Staff-level mistake:</strong> Choosing MongoDB because "it's flexible" and then doing complex aggregations that would be simple SQL JOINs. MongoDB's $lookup is much slower than SQL JOIN. If your data has many relationships — use PostgreSQL.</div>
+  </div>
+</div>
+
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--beg-bg)">🏗</div><div style="flex:1"><div class="sec-title">Schema Design — Embed vs Reference</div><div class="sec-sub">The most important MongoDB design decision</div></div><span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span></div>
+  <div class="sec-body open">
+<pre><span class="cm">// EMBED — put related data inside the same document</span>
+<span class="cm">// Use when: data always read together, child data is small, no sharing</span>
+{
+  _id: "user-123",
+  name: "Sonia Dua",
+  email: "sonia@example.com",
+  address: {                    <span class="cm">// embedded — always read with user</span>
+    street: "123 Main St",
+    city: "Noida",
+    country: "India"
+  },
+  preferences: {               <span class="cm">// embedded — small, user-specific</span>
+    currency: "USD",
+    language: "en"
+  }
+}
+
+<span class="cm">// REFERENCE — store ID, fetch separately</span>
+<span class="cm">// Use when: data is large, shared between documents, updated independently</span>
+{
+  _id: "booking-456",
+  userId: "user-123",           <span class="cm">// reference to User collection</span>
+  hotelId: "hotel-789",         <span class="cm">// reference to Hotel collection</span>
+  checkIn: "2026-07-01",
+  checkOut: "2026-07-05",
+  status: "CONFIRMED",
+  payments: [                   <span class="cm">// embedded — only belongs to this booking</span>
+    { amount: 500, currency: "USD", status: "PAID", paidAt: "..." }
+  ]
+}
+
+<span class="cm">// Decision rules:</span>
+<span class="cm">// EMBED if: "Is the child data only meaningful in context of the parent?"</span>
+<span class="cm">// EMBED if: "Is the child data small and bounded (won't grow unboundedly)?"</span>
+<span class="cm">// REFERENCE if: "Is this document shared by multiple parents?"</span>
+<span class="cm">// REFERENCE if: "Do I ever need to query the child independently?"</span></pre>
+  </div>
+</div>
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--int-bg)">🔢</div><div style="flex:1"><div class="sec-title">Aggregation Pipeline</div><div class="sec-sub">The power tool — process and transform data server-side</div></div><span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span></div>
+  <div class="sec-body open">
+<pre><span class="cm">// Aggregation pipeline — chain of stages, each transforms the data</span>
+<span class="cm">// Like SQL: SELECT city, AVG(price) FROM bookings WHERE status='CONFIRMED'</span>
+<span class="cm">//           GROUP BY city ORDER BY avgPrice DESC LIMIT 10</span>
+db.bookings.aggregate([
+  { $match: { status: <span class="str">"CONFIRMED"</span>, checkIn: { $gte: ISODate(<span class="str">"2026-01-01"</span>) } } },  <span class="cm">// WHERE</span>
+  { $lookup: {                                   <span class="cm">// JOIN</span>
+      from: <span class="str">"hotels"</span>,
+      localField: <span class="str">"hotelId"</span>,
+      foreignField: <span class="str">"_id"</span>,
+      as: <span class="str">"hotel"</span>
+  }},
+  { $unwind: <span class="str">"$hotel"</span> },                         <span class="cm">// flatten the array from $lookup</span>
+  { $group: {                                    <span class="cm">// GROUP BY</span>
+      _id: <span class="str">"$hotel.city"</span>,
+      avgPrice: { $avg: <span class="str">"$totalPrice"</span> },
+      totalBookings: { $sum: 1 },
+      maxPrice: { $max: <span class="str">"$totalPrice"</span> }
+  }},
+  { $sort: { avgPrice: -1 } },                  <span class="cm">// ORDER BY avgPrice DESC</span>
+  { $limit: 10 },                               <span class="cm">// LIMIT 10</span>
+  { $project: {                                  <span class="cm">// SELECT specific fields</span>
+      city: <span class="str">"$_id"</span>,
+      avgPrice: { $round: [<span class="str">"$avgPrice"</span>, 2] },
+      totalBookings: 1,
+      _id: 0
+  }}
+]);
+
+<span class="cm">// Common aggregation stages:</span>
+<span class="cm">// $match    → filter documents (use early to reduce pipeline size)</span>
+<span class="cm">// $group    → group + aggregate (sum, avg, min, max, count)</span>
+<span class="cm">// $sort     → order results</span>
+<span class="cm">// $limit    → limit results</span>
+<span class="cm">// $project  → reshape documents (include/exclude/compute fields)</span>
+<span class="cm">// $lookup   → left outer join with another collection</span>
+<span class="cm">// $unwind   → deconstruct array field into multiple documents</span>
+<span class="cm">// $addFields → add computed fields</span>
+<span class="cm">// $facet    → multiple aggregations in one pipeline</span></pre>
+  </div>
+</div>
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--int-bg)">⚡</div><div style="flex:1"><div class="sec-title">Indexing — What Makes MongoDB Fast or Slow</div></div><span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span></div>
+  <div class="sec-body open">
+<pre><span class="cm">// Without index: MongoDB scans EVERY document (collection scan) O(n)</span>
+<span class="cm">// With index: jumps directly to matching documents O(log n)</span>
+
+<span class="cm">// Single field index</span>
+db.bookings.createIndex({ userId: 1 })          <span class="cm">// 1=ascending, -1=descending</span>
+<span class="cm">// Now: db.bookings.find({userId: "u1"}) → fast</span>
+
+<span class="cm">// Compound index — order matters!</span>
+db.bookings.createIndex({ userId: 1, status: 1, checkIn: -1 })
+<span class="cm">// Supports queries that use: userId alone, userId+status, userId+status+checkIn</span>
+<span class="cm">// Does NOT support: status alone, checkIn alone (left prefix rule)</span>
+
+<span class="cm">// Unique index — enforce uniqueness</span>
+db.users.createIndex({ email: 1 }, { unique: true })
+
+<span class="cm">// TTL index — auto-delete documents after N seconds (great for sessions, temp data)</span>
+db.sessions.createIndex({ createdAt: 1 }, { expireAfterSeconds: 86400 }) <span class="cm">// 24h</span>
+
+<span class="cm">// Text index — full text search</span>
+db.hotels.createIndex({ name: <span class="str">"text"</span>, description: <span class="str">"text"</span> })
+db.hotels.find({ $text: { $search: <span class="str">"luxury beachfront"</span> } })
+
+<span class="cm">// Explain query — check if index is being used</span>
+db.bookings.find({ userId: <span class="str">"u1"</span> }).explain(<span class="str">"executionStats"</span>)
+<span class="cm">// Look for: "stage": "IXSCAN" (index scan = good) vs "COLLSCAN" (collection scan = bad)</span>
+<span class="cm">// Also check: nReturned vs totalDocsExamined — big difference = missing index</span>
+
+<span class="cm">// Spring Data MongoDB</span>
+<span class="an">@Document</span>(collection = <span class="str">"bookings"</span>)
+<span class="kw">public class</span> Booking {
+    <span class="an">@Id</span> <span class="kw">private</span> String id;
+    <span class="an">@Indexed</span> <span class="kw">private</span> String userId;                                 <span class="cm">// single index</span>
+    <span class="an">@CompoundIndex</span>(def = <span class="str">"{'userId':1, 'status':1, 'checkIn':-1}"</span>) <span class="cm">// compound</span>
+    <span class="kw">private</span> String status;
+}</pre>
+  </div>
+</div>
+
+<div class="section" data-level="advanced">
+  <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--adv-bg)">☁️</div><div style="flex:1"><div class="sec-title">Cosmos DB — Azure's Multi-Model Database</div><div class="sec-sub">Your Walmart Secure Media Service used Cosmos DB — know the specifics</div></div><span class="sec-lv lv-adv">Advanced</span><span class="chev open">▼</span></div>
+  <div class="sec-body open">
+    <div class="callout c-tag"><strong>Your Walmart context:</strong> Secure Media Service used Cosmos DB. When interviewers ask about Cosmos DB, they want to know: did you make design decisions (partition key, RU provisioning) or just query it? Be honest but show you understand the concepts.</div>
+<pre><span class="cm">// Cosmos DB key concepts</span>
+<span class="cm">// 1. Partition key — most important design decision</span>
+<span class="cm">//    All documents with same partition key = same physical partition</span>
+<span class="cm">//    Queries within a partition = cheap (single partition query)</span>
+<span class="cm">//    Queries across partitions = expensive (cross-partition query)</span>
+
+<span class="cm">// Good partition key for media library: userId</span>
+<span class="cm">// All media for a user accessed together, evenly distributed</span>
+{
+  "id": "media-123",
+  "userId": "user-456",        <span class="cm">// PARTITION KEY — always include in queries</span>
+  "type": "IMAGE",
+  "url": "https://cdn.example.com/img/123.jpg",
+  "metadata": { "width": 1920, "height": 1080 }
+}
+
+<span class="cm">// 2. Request Units (RU) — Cosmos DB's currency</span>
+<span class="cm">// Every read/write costs RUs. Provisioned throughput = RU/s budget.</span>
+<span class="cm">// Point read (by id + partition key): ~1 RU</span>
+<span class="cm">// Query: varies (cross-partition = expensive)</span>
+<span class="cm">// If you exceed RU budget: 429 Too Many Requests</span>
+
+<span class="cm">// 3. Consistency levels (5 options — CAP trade-off)</span>
+<span class="cm">// Strong:          all reads see latest write (like SQL). Highest latency.</span>
+<span class="cm">// Bounded staleness: reads lag by X time/operations</span>
+<span class="cm">// Session:         consistent within a session (default, good for most apps)</span>
+<span class="cm">// Consistent prefix: reads never see out-of-order writes</span>
+<span class="cm">// Eventual:        cheapest, lowest latency, may read stale data</span>
+
+<span class="cm">// 4. Spring Data Cosmos DB</span>
+<span class="an">@Container</span>(containerName = <span class="str">"media"</span>)
+<span class="kw">public class</span> MediaDocument {
+    <span class="an">@Id</span> <span class="kw">private</span> String id;
+    <span class="an">@PartitionKey</span> <span class="kw">private</span> String userId;
+    <span class="kw">private</span> String type, url;
+}
+
+<span class="kw">public interface</span> MediaRepository <span class="kw">extends</span> CosmosRepository&lt;MediaDocument, String&gt; {
+    List&lt;MediaDocument&gt; <span class="fn">findByUserId</span>(String userId);  <span class="cm">// single-partition query</span>
+}</pre>
+  </div>
+</div>
+
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--green-bg)">✅</div><div style="flex:1"><div class="sec-title">MongoDB / Cosmos DB checklist</div></div><span class="sec-lv lv-beg">All</span><span class="chev open">▼</span></div>
+  <div class="sec-body open">
+    <ul class="chk-list" style="padding:14px">
+      <li class="chk-item"><div class="chkbox" id="chk-m1" onclick="mToggle('m1')"></div><div class="chk-text" id="txt-m1">When would you NOT choose MongoDB? Give a concrete example from booking domain.</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-m2" onclick="mToggle('m2')"></div><div class="chk-text" id="txt-m2">Embed vs reference — when to embed payments inside booking document?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-m3" onclick="mToggle('m3')"></div><div class="chk-text" id="txt-m3">Write an aggregation pipeline: avg booking price by city for last 30 days</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-m4" onclick="mToggle('m4')"></div><div class="chk-text" id="txt-m4">Explain the left-prefix rule for compound indexes</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-m5" onclick="mToggle('m5')"></div><div class="chk-text" id="txt-m5">How do you detect a missing index in MongoDB? (explain + executionStats)</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-m6" onclick="mToggle('m6')"></div><div class="chk-text" id="txt-m6">TTL index — what's it for, where did you use it or would use it?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-m7" onclick="mToggle('m7')"></div><div class="chk-text" id="txt-m7">Cosmos DB partition key — why is userId a good choice for media documents?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-m8" onclick="mToggle('m8')"></div><div class="chk-text" id="txt-m8">Cosmos DB RU — what is it, what happens when you exceed your budget?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-m9" onclick="mToggle('m9')"></div><div class="chk-text" id="txt-m9">MongoDB transactions — when did multi-document ACID get added?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-m10" onclick="mToggle('m10')"></div><div class="chk-text" id="txt-m10">$lookup performance — why is it slow compared to SQL JOIN?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-m11" onclick="mToggle('m11')"></div><div class="chk-text" id="txt-m11">Cosmos DB consistency levels — which did Walmart use and why?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-m12" onclick="mToggle('m12')"></div><div class="chk-text" id="txt-m12">People Fabric at UKG — what schema design decisions were made for WFM data?</div></li>
+    </ul>
+    <div style="padding:0 14px 14px"><a class="ref-link" href="https://www.mongodb.com/docs/manual/indexes" target="_blank">↗ MongoDB Indexes</a><a class="ref-link" href="https://www.mongodb.com/docs/manual/aggregation" target="_blank">↗ MongoDB Aggregation</a><a class="ref-link" href="https://learn.microsoft.com/en-us/azure/cosmos-db/partitioning-overview" target="_blank">↗ Cosmos DB Partitioning</a></div>
+  </div>
+</div>
+</div>
+<script src="shared.js"></script>
+<script>
+buildNav('mongo');
+const mDone = initChecks('mongo-done', 12, 'mdb-done', 'mdb-pct', 'mdb-fill');
+function mToggle(id){ toggleCheck(id, mDone, 'mongo-done', 12, 'mdb-done', 'mdb-pct', 'mdb-fill'); }
+</script>
+</body></html>

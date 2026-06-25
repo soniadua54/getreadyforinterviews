@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>PrepKit — Python</title><link rel="stylesheet" href="shared.css"></head>
+<body><nav class="topnav" id="topnav"></nav><div class="page">
+<div class="hero"><div class="hero-row"><div class="hero-icon" style="background:rgba(250,204,21,0.12)">🐍</div><div><div class="hero-title">Python — Reference Guide</div><div class="hero-sub">Scripting · FastAPI · Data processing · Automation</div></div></div>
+<div class="hero-desc">Python is on your UKG stack for scripting and automation (WFM Forecasting pipeline scripts, TRex onboarding automation). At Staff level you need to speak to Python beyond "I wrote scripts" — data structures, list comprehensions, async, and how you'd use it to build a lightweight API or data pipeline.</div>
+<div class="level-pills"><span class="level-pill lp-all selected" onclick="setLevel('all',this)">All</span><span class="level-pill lp-beg" onclick="setLevel('beginner',this)">🟢 Beginner</span><span class="level-pill lp-int" onclick="setLevel('intermediate',this)">🟣 Intermediate</span><span class="level-pill lp-adv" onclick="setLevel('advanced',this)">🟠 Advanced</span></div></div>
+<div class="stats"><div class="stat"><div class="stat-n" id="py-done" style="color:var(--green)">0</div><div class="stat-l">Done</div></div><div class="stat"><div class="stat-n" style="color:var(--beg)">11</div><div class="stat-l">Checklist items</div></div></div>
+<div class="prog-wrap"><div class="prog-label"><span>Progress</span><span id="py-pct">0 / 11</span></div><div class="prog-bar"><div class="prog-fill" id="py-fill" style="width:0%"></div></div></div>
+
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--beg-bg)">⚡</div><div style="flex:1"><div class="sec-title">Python Essentials — Data structures, comprehensions, idiomatic code</div></div><span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span></div>
+  <div class="sec-body open">
+<pre><span class="cm"># Python data structures you use at UKG</span>
+
+<span class="cm"># List comprehension — replace verbose loops</span>
+tenant_ids = [t['id'] <span class="kw">for</span> t <span class="kw">in</span> tenants <span class="kw">if</span> t['status'] == <span class="str">'ACTIVE'</span>]
+<span class="cm"># vs verbose:</span>
+<span class="cm"># tenant_ids = []</span>
+<span class="cm"># for t in tenants:</span>
+<span class="cm">#     if t['status'] == 'ACTIVE':</span>
+<span class="cm">#         tenant_ids.append(t['id'])</span>
+
+<span class="cm"># Dict comprehension</span>
+env_map = {env[<span class="str">'name'</span>]: env[<span class="str">'url'</span>] <span class="kw">for</span> env <span class="kw">in</span> environments}
+
+<span class="cm"># Unpacking and f-strings</span>
+name, *rest = [<span class="str">'Sonia'</span>, <span class="str">'Dua'</span>, <span class="str">'India'</span>]
+print(<span class="str">f"Hello {name}, your remaining data: {rest}"</span>)
+
+<span class="cm"># Context managers — auto-close files/connections</span>
+<span class="kw">with</span> open(<span class="str">'config.json'</span>) <span class="kw">as</span> f:
+    config = json.load(f)
+<span class="cm"># file auto-closed after block, even on exception</span>
+
+<span class="cm"># Dataclasses — clean data objects</span>
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass
+<span class="an">@dataclass</span>
+<span class="kw">class</span> <span class="cl">TenantConfig</span>:
+    tenant_id: str
+    environment: str
+    base_url: str
+    auth0_client_id: str
+
+<span class="cm"># Using: config = TenantConfig(tenant_id="t1", environment="prod", ...)</span>
+
+<span class="cm"># Error handling</span>
+<span class="kw">try</span>:
+    response = requests.get(url, timeout=30)
+    response.raise_for_status()  <span class="cm"># raises HTTPError for 4xx/5xx</span>
+<span class="kw">except</span> requests.exceptions.Timeout:
+    logger.error(<span class="str">f"Request to {url} timed out"</span>)
+    <span class="kw">raise</span>
+<span class="kw">except</span> requests.exceptions.HTTPError <span class="kw">as</span> e:
+    logger.error(<span class="str">f"HTTP error: {e.response.status_code}"</span>)
+    <span class="kw">raise</span>
+
+<span class="cm"># Type hints (Python 3.5+) — makes code readable and IDE-friendly</span>
+<span class="kw">def</span> <span class="fn">onboard_tenant</span>(tenant_id: str, environments: list[str]) -> dict[str, bool]:
+    results: dict[str, bool] = {}
+    <span class="kw">for</span> env <span class="kw">in</span> environments:
+        results[env] = <span class="fn">deploy_to_env</span>(tenant_id, env)
+    <span class="kw">return</span> results</pre>
+  </div>
+</div>
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--int-bg)">🌐</div><div style="flex:1"><div class="sec-title">FastAPI — Building APIs in Python</div><div class="sec-sub">Async REST API with auto-docs and type validation</div></div><span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span></div>
+  <div class="sec-body open">
+<pre><span class="cm"># FastAPI — production-grade Python REST API</span>
+<span class="cm"># pip install fastapi uvicorn pydantic</span>
+<span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI, HTTPException, Depends, Header
+<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel, validator
+<span class="kw">import</span> asyncio
+
+app = FastAPI(title=<span class="str">"Hotel API"</span>, version=<span class="str">"1.0.0"</span>)
+
+<span class="cm"># Pydantic model — auto-validates request/response</span>
+<span class="kw">class</span> <span class="cl">CreateBookingRequest</span>(BaseModel):
+    room_id: str
+    check_in: str
+    check_out: str
+    guest_count: <span class="kw">int</span>
+
+    <span class="an">@validator</span>(<span class="str">'guest_count'</span>)
+    <span class="kw">def</span> <span class="fn">validate_guests</span>(cls, v):
+        <span class="kw">if</span> v < <span class="nu">1</span> <span class="kw">or</span> v > <span class="nu">10</span>:
+            <span class="kw">raise</span> ValueError(<span class="str">'guest_count must be between 1 and 10'</span>)
+        <span class="kw">return</span> v
+
+<span class="cm"># Async route — non-blocking I/O</span>
+<span class="an">@app</span>.post(<span class="str">"/api/v1/bookings"</span>, status_code=<span class="nu">201</span>)
+<span class="kw">async def</span> <span class="fn">create_booking</span>(req: CreateBookingRequest,
+                          x_user_id: str = Header(...)): <span class="cm"># required header</span>
+    <span class="cm"># async DB call — doesn't block other requests</span>
+    booking = <span class="kw">await</span> booking_service.<span class="fn">create</span>(req.dict(), x_user_id)
+    <span class="kw">return</span> booking
+
+<span class="an">@app</span>.get(<span class="str">"/api/v1/hotels/{hotel_id}"</span>)
+<span class="kw">async def</span> <span class="fn">get_hotel</span>(hotel_id: str):
+    hotel = <span class="kw">await</span> hotel_service.<span class="fn">find_by_id</span>(hotel_id)
+    <span class="kw">if not</span> hotel:
+        <span class="kw">raise</span> HTTPException(status_code=<span class="nu">404</span>, detail=<span class="str">f"Hotel {hotel_id} not found"</span>)
+    <span class="kw">return</span> hotel
+
+<span class="cm"># Run: uvicorn main:app --reload</span>
+<span class="cm"># Auto-docs: http://localhost:8000/docs (Swagger UI)</span>
+
+<span class="cm"># Parallel async operations</span>
+<span class="kw">async def</span> <span class="fn">fetch_hotel_data</span>(hotel_id: str):
+    hotel, rooms, reviews = <span class="kw">await</span> asyncio.<span class="fn">gather</span>(
+        hotel_repo.<span class="fn">find_by_id</span>(hotel_id),
+        room_repo.<span class="fn">find_by_hotel</span>(hotel_id),
+        review_repo.<span class="fn">find_by_hotel</span>(hotel_id),
+    )
+    <span class="kw">return</span> {<span class="str">"hotel"</span>: hotel, <span class="str">"rooms"</span>: rooms, <span class="str">"reviews"</span>: reviews}</pre>
+  </div>
+</div>
+
+<div class="section" data-level="advanced">
+  <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--adv-bg)">🧵</div><div style="flex:1"><div class="sec-title">Python Concurrency — Threading vs Asyncio vs Multiprocessing</div><div class="sec-sub">The GIL, async event loop, and when to use each model</div></div><span class="sec-lv lv-adv">Advanced</span><span class="chev open">▼</span></div>
+  <div class="sec-body open">
+<pre><span class="cm"># The GIL (Global Interpreter Lock) — the most-asked Python internals question
+# CPython only allows ONE thread to execute Python bytecode at a time
+# This means threading doesn't give true parallelism for CPU-bound work
+
+# Three concurrency models in Python:
+
+# 1. threading — I/O-bound tasks, GIL released during I/O
+import threading
+
+def fetch_tenant_data(tenant_id: str):
+    response = requests.get(f"/api/tenants/{tenant_id}")  # GIL released here
+    return response.json()
+
+# Multiple threads — OK for HTTP calls, file I/O
+threads = [threading.Thread(target=fetch_tenant_data, args=(tid,)) for tid in tenant_ids]
+for t in threads: t.start()
+for t in threads: t.join()
+
+# 2. asyncio — I/O-bound, single thread, cooperative scheduling
+# Better than threading for high concurrency (1000s of connections)
+import asyncio
+import aiohttp
+
+async def fetch_all(tenant_ids: list[str]):
+    async with aiohttp.ClientSession() as session:
+        tasks = [fetch_one(session, tid) for tid in tenant_ids]
+        results = await asyncio.gather(*tasks)  # run all concurrently
+    return results
+
+async def fetch_one(session: aiohttp.ClientSession, tenant_id: str):
+    async with session.get(f"/api/tenants/{tenant_id}") as resp:
+        return await resp.json()
+
+# 3. multiprocessing — CPU-bound tasks, bypasses GIL
+from multiprocessing import Pool
+
+def compute_forecast(data: list) -> float:
+    # Heavy ML computation — benefits from true parallelism
+    return run_lightgbm_model(data)
+
+with Pool(processes=4) as pool:  # 4 CPU cores
+    results = pool.map(compute_forecast, datasets)  # parallel execution</span>
+
+<span class="cm"># When to use which:
+# Threading:       I/O-bound + sharing state between threads (use locks)
+# Asyncio:         I/O-bound + high concurrency + you control the codebase
+# Multiprocessing: CPU-bound (data processing, model inference)
+#
+# Rule of thumb: "If you're waiting (network/disk) → asyncio. If you're computing → multiprocessing."</span></pre>
+    <div class="callout c-info"><strong>At BRPL (your forecasting work):</strong> LightGBM training is CPU-bound → multiprocessing. Weather API fetching is I/O-bound → asyncio with aiohttp would be correct. The GIL is why Python's threading is fine for web servers (waiting on DB) but useless for parallel number crunching.</div>
+  </div>
+</div>
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--int-bg)">🎁</div><div style="flex:1"><div class="sec-title">Generators & Decorators — Pythonic Patterns</div><div class="sec-sub">Memory-efficient iteration and reusable behaviour wrapping</div></div><span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span></div>
+  <div class="sec-body open">
+<pre><span class="cm"># Generators — lazy iteration (don't load everything into memory)
+# Use yield instead of return — returns values one at a time</span>
+
+<span class="kw">def</span> read_large_csv(filepath: str):
+    <span class="cm">"""Generator — yields one row at a time, never loads whole file into memory"""</span>
+    <span class="kw">with</span> open(filepath) <span class="kw">as</span> f:
+        header = next(f)
+        <span class="kw">for</span> line <span class="kw">in</span> f:
+            <span class="kw">yield</span> line.strip().split(<span class="str">','</span>)  <span class="cm"># yield = pauses and returns value</span>
+
+<span class="cm"># Process 10M row CSV without running out of RAM</span>
+<span class="kw">for</span> row <span class="kw">in</span> read_large_csv(<span class="str">'load_data_2024.csv'</span>):
+    process_row(row)  <span class="cm"># only ONE row in memory at a time</span>
+
+<span class="cm"># Generator expression (like list comprehension but lazy)</span>
+squares = (x**<span class="nu">2</span> <span class="kw">for</span> x <span class="kw">in</span> range(<span class="nu">1_000_000</span>))  <span class="cm"># no memory allocation yet</span>
+total = sum(squares)  <span class="cm"># computed on demand</span>
+
+<span class="cm">──────────────────────────────────────────────
+# Decorators — wrap functions with reusable behaviour</span>
+
+<span class="kw">import</span> functools, time, logging
+
+<span class="kw">def</span> retry(max_attempts: <span class="kw">int</span> = <span class="nu">3</span>, delay: <span class="kw">float</span> = <span class="nu">1.0</span>):
+    <span class="cm">"""Decorator factory — retries function on exception"""</span>
+    <span class="kw">def</span> decorator(func):
+        <span class="an">@functools</span>.wraps(func)  <span class="cm"># preserve function name and docstring</span>
+        <span class="kw">def</span> wrapper(*args, **kwargs):
+            <span class="kw">for</span> attempt <span class="kw">in</span> range(max_attempts):
+                <span class="kw">try</span>:
+                    <span class="kw">return</span> func(*args, **kwargs)
+                <span class="kw">except</span> Exception <span class="kw">as</span> e:
+                    <span class="kw">if</span> attempt == max_attempts - <span class="nu">1</span>:
+                        <span class="kw">raise</span>  <span class="cm"># re-raise on final attempt</span>
+                    time.sleep(delay)
+        <span class="kw">return</span> wrapper
+    <span class="kw">return</span> decorator
+
+<span class="an">@retry</span>(max_attempts=<span class="nu">3</span>, delay=<span class="nu">2.0</span>)
+<span class="kw">def</span> fetch_weather(station_id: str) -> dict:
+    <span class="kw">return</span> requests.get(f<span class="str">"/weather/{station_id}"</span>).json()
+
+<span class="cm"># Equivalent to: fetch_weather = retry(3, 2.0)(fetch_weather)</span></pre>
+  </div>
+</div>
+
+
+  <div class="sec-body open">
+    <ul class="chk-list" style="padding:14px">
+      <li class="chk-item"><div class="chkbox" id="chk-py1" onclick="pyToggle('py1')"></div><div class="chk-text" id="txt-py1">List comprehension — rewrite a filter+map loop as a one-liner</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-py2" onclick="pyToggle('py2')"></div><div class="chk-text" id="txt-py2">Context managers (with statement) — what problem do they solve?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-py3" onclick="pyToggle('py3')"></div><div class="chk-text" id="txt-py3">Python vs Java error handling — how are they different?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-py4" onclick="pyToggle('py4')"></div><div class="chk-text" id="txt-py4">Type hints — why use them, what tool checks them (mypy)?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-py5" onclick="pyToggle('py5')"></div><div class="chk-text" id="txt-py5">async/await in Python — what is the event loop? Same as Node.js?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-py6" onclick="pyToggle('py6')"></div><div class="chk-text" id="txt-py6">FastAPI vs Flask vs Django — when would you choose each?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-py7" onclick="pyToggle('py7')"></div><div class="chk-text" id="txt-py7">GIL — what does it mean for threading? When does threading NOT help in Python?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-py8" onclick="pyToggle('py8')"></div><div class="chk-text" id="txt-py8">What specifically did you build in Python at BRPL/UKG? (forecasting scripts? FastAPI?)</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-py9" onclick="pyToggle('py9')"></div><div class="chk-text" id="txt-py9">Threading vs asyncio vs multiprocessing — which for CPU-bound ML training? Why?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-py10" onclick="pyToggle('py10')"></div><div class="chk-text" id="txt-py10">Generator vs list — why use a generator for reading a 10M row CSV?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-py11" onclick="pyToggle('py11')"></div><div class="chk-text" id="txt-py11">Write a decorator that retries a function 3 times on exception. What is functools.wraps for?</div></li>
+    </ul>
+    <div style="padding:0 14px 14px"><a class="ref-link" href="https://docs.python.org/3" target="_blank">↗ Python 3 Docs</a><a class="ref-link" href="https://fastapi.tiangolo.com" target="_blank">↗ FastAPI Docs</a><a class="ref-link" href="https://docs.python.org/3/library/asyncio.html" target="_blank">↗ asyncio Docs</a></div>
+  </div>
+</div>
+</div>
+<script src="shared.js"></script>
+<script>
+buildNav('python');
+const pyDone = initChecks('python-done', 11, 'py-done', 'py-pct', 'py-fill');
+function pyToggle(id){ toggleCheck(id, pyDone, 'python-done', 11, 'py-done', 'py-pct', 'py-fill'); }
+</script>
+</body></html>

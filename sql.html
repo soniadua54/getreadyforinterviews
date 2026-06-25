@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PrepKit — SQL & Relational DB</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav class="topnav" id="topnav"></nav>
+<div class="page">
+
+<div class="hero">
+  <div class="hero-row">
+    <div class="hero-icon" style="background:rgba(34,197,94,0.15)">🗄️</div>
+    <div>
+      <div class="hero-title">SQL & Relational Databases</div>
+      <div class="hero-sub">MySQL · PostgreSQL · Transactions · Locking · Indexing · N+1 · Query planning</div>
+    </div>
+  </div>
+  <div class="hero-desc">Agoda runs on MySQL at scale. Booking, inventory, payments — all relational. Your kit had zero SQL depth. This is the single biggest gap for a Staff backend role in the hotel/booking domain. The core question you WILL get: "Two users click Book on the last available room simultaneously. Walk me through exactly how your system prevents a double booking." Know this cold.</div>
+  <div class="callout c-gap" style="margin-top:10px"><strong>Gap flagged:</strong> No SQL page existed in your prep kit. MongoDB is covered well — but SQL internals (locking, isolation levels, N+1, EXPLAIN) are tested at Staff level and directly apply to Agoda's booking domain.</div>
+  <div class="level-pills" style="margin-top:10px">
+    <span class="level-pill lp-all selected" onclick="setLevel('all',this)">All</span>
+    <span class="level-pill lp-beg" onclick="setLevel('beginner',this)">🟢 Beginner</span>
+    <span class="level-pill lp-int" onclick="setLevel('intermediate',this)">🟣 Intermediate</span>
+    <span class="level-pill lp-adv" onclick="setLevel('advanced',this)">🟠 Advanced</span>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-n" id="sql-done" style="color:var(--green)">0</div><div class="stat-l">Done</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--beg)">16</div><div class="stat-l">Checklist items</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--int)">5</div><div class="stat-l">Core sections</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--red)">🔴</div><div class="stat-l">Was missing</div></div>
+</div>
+<div class="prog-wrap">
+  <div class="prog-label"><span>Progress</span><span id="sql-pct">0 / 16</span></div>
+  <div class="prog-bar"><div class="prog-fill" id="sql-fill" style="width:0%"></div></div>
+</div>
+
+<!-- SECTION 1: Locking -->
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--int-bg)">🔒</div>
+    <div style="flex:1">
+      <div class="sec-title">Optimistic vs Pessimistic Locking — Preventing Double Booking</div>
+      <div class="sec-sub">The most important Staff-level SQL question for booking systems</div>
+    </div>
+    <span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="sql-lock" id="tab-sql-lock-pes" onclick="switchTab('sql-lock','pes')">Pessimistic (SELECT FOR UPDATE)</div>
+      <div class="tab" data-group="sql-lock" id="tab-sql-lock-opt" onclick="switchTab('sql-lock','opt')">Optimistic (@Version)</div>
+      <div class="tab" data-group="sql-lock" id="tab-sql-lock-vs" onclick="switchTab('sql-lock','vs')">When to use which</div>
+    </div>
+
+    <div class="tab-panel active" data-group="sql-lock" id="panel-sql-lock-pes">
+      <div class="block">
+        <div class="block-title">Pessimistic Locking — Lock the row at read time</div>
+        <div class="prose"><strong>Idea:</strong> When you read the inventory row, acquire an exclusive lock immediately. No other transaction can read or write that row until you commit or rollback. Best for high-contention scenarios — last room, flash sales, limited seats.</div>
+<pre><span class="cm">-- Two users hit Book simultaneously for room 101 on 2026-07-09
+-- User A and User B both run this transaction</span>
+
+BEGIN TRANSACTION;
+
+<span class="cm">-- SELECT FOR UPDATE: locks this row exclusively
+-- User B blocks here until User A commits or rolls back</span>
+SELECT available_count
+FROM room_inventory
+WHERE room_id = 101 AND date = '2026-07-09'
+FOR UPDATE;
+
+<span class="cm">-- User A gets available_count = 1 (last room)
+-- User A proceeds:</span>
+UPDATE room_inventory
+SET available_count = available_count - 1
+WHERE room_id = 101 AND date = '2026-07-09';
+
+INSERT INTO bookings (room_id, user_id, date, status)
+VALUES (101, 'user_a', '2026-07-09', 'CONFIRMED');
+
+COMMIT;
+<span class="cm">-- Lock released. User B unblocks.
+-- User B's SELECT FOR UPDATE now returns available_count = 0
+-- User B sees no availability → return error to user</span></pre>
+
+<pre><span class="cm">// Spring Boot / JPA implementation</span>
+<span class="an">@Repository</span>
+<span class="kw">public interface</span> RoomInventoryRepository <span class="kw">extends</span> JpaRepository&lt;RoomInventory, Long&gt; {
+
+  <span class="cm">// @Lock(PESSIMISTIC_WRITE) = SELECT ... FOR UPDATE in SQL</span>
+  <span class="an">@Lock</span>(LockModeType.PESSIMISTIC_WRITE)
+  <span class="an">@Query</span>(<span class="str">"SELECT r FROM RoomInventory r WHERE r.roomId = :roomId AND r.date = :date"</span>)
+  Optional&lt;RoomInventory&gt; findForUpdate(<span class="an">@Param</span>(<span class="str">"roomId"</span>) Long roomId,
+                                         <span class="an">@Param</span>(<span class="str">"date"</span>) LocalDate date);
+}
+
+<span class="an">@Service</span>
+<span class="kw">public class</span> BookingService {
+
+  <span class="an">@Transactional</span>  <span class="cm">// CRITICAL: must be inside a transaction</span>
+  <span class="kw">public</span> Booking createBooking(Long roomId, LocalDate date, Long userId) {
+    RoomInventory inv = inventoryRepo
+      .findForUpdate(roomId, date)              <span class="cm">// acquires lock</span>
+      .orElseThrow(() -> <span class="kw">new</span> NotFoundException());
+
+    <span class="kw">if</span> (inv.getAvailableCount() &lt;= 0) {
+      <span class="kw">throw new</span> RoomNotAvailableException(<span class="str">"No rooms left"</span>);
+    }
+
+    inv.setAvailableCount(inv.getAvailableCount() - 1);
+    inventoryRepo.save(inv);                    <span class="cm">// UPDATE</span>
+
+    Booking booking = <span class="kw">new</span> Booking(roomId, userId, date, BookingStatus.CONFIRMED);
+    <span class="kw">return</span> bookingRepo.save(booking);           <span class="cm">// INSERT</span>
+    <span class="cm">// Transaction commits here → lock released</span>
+  }
+}</pre>
+        <div class="callout c-warn"><strong>Risk of pessimistic locking:</strong> Deadlocks. If Transaction A locks room 101 then tries to lock room 102, while Transaction B locked room 102 and tries to lock room 101 — deadlock. Fix: always acquire locks in a consistent order (by room_id ASC). MySQL detects deadlocks and auto-rolls back one transaction.</div>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-group="sql-lock" id="panel-sql-lock-opt">
+      <div class="block">
+        <div class="block-title">Optimistic Locking — Check at write time, not read time</div>
+        <div class="prose"><strong>Idea:</strong> Don't lock at all. Add a <code>version</code> column. When you update, verify the version hasn't changed since you read it. If it has, someone else modified the row — throw an exception and let the caller retry. Best for low-contention scenarios.</div>
+<pre><span class="cm">-- Schema: version column tracks row revision</span>
+CREATE TABLE room_inventory (
+  room_id    BIGINT,
+  date       DATE,
+  available  INT,
+  version    INT DEFAULT 0,   <span class="cm">-- incremented on every UPDATE</span>
+  PRIMARY KEY (room_id, date)
+);
+
+<span class="cm">-- User A reads: available=1, version=5
+-- User B reads: available=1, version=5 (same read, no lock)</span>
+
+<span class="cm">-- User A writes first:
+-- WHERE version=5 ensures no one else modified since we read</span>
+UPDATE room_inventory
+SET available = available - 1, version = version + 1
+WHERE room_id = 101 AND date = '2026-07-09' AND version = 5;
+<span class="cm">-- Rows affected: 1 → success, now version=6</span>
+
+<span class="cm">-- User B writes second (version=5 no longer exists):
+-- WHERE version=5 matches nothing → 0 rows affected</span>
+UPDATE room_inventory
+SET available = available - 1, version = version + 1
+WHERE room_id = 101 AND date = '2026-07-09' AND version = 5;
+<span class="cm">-- Rows affected: 0 → OptimisticLockException → retry or error</span></pre>
+
+<pre><span class="cm">// JPA: @Version does this automatically</span>
+<span class="an">@Entity</span>
+<span class="kw">public class</span> RoomInventory {
+  <span class="an">@Id</span>
+  <span class="kw">private</span> Long roomId;
+
+  <span class="an">@Version</span>                   <span class="cm">// JPA auto-manages this column</span>
+  <span class="kw">private</span> Integer version;   <span class="cm">// included in WHERE clause of every UPDATE</span>
+
+  <span class="kw">private</span> Integer available;
+}
+
+<span class="cm">// If version mismatch on save() → throws OptimisticLockException
+// Caller catches it and retries, or returns 409 Conflict to client</span>
+<span class="kw">try</span> {
+  bookingService.createBooking(roomId, date, userId);
+} <span class="kw">catch</span> (OptimisticLockException e) {
+  <span class="kw">throw new</span> ResponseStatusException(HttpStatus.CONFLICT,
+    <span class="str">"Room just got booked by someone else, please try again"</span>);
+}</pre>
+      </div>
+    </div>
+
+    <div class="tab-panel" data-group="sql-lock" id="panel-sql-lock-vs">
+      <table class="ctable">
+        <tr><th>Aspect</th><th>Pessimistic (SELECT FOR UPDATE)</th><th>Optimistic (@Version)</th></tr>
+        <tr><td>How it works</td><td>Lock row at read time, hold until commit</td><td>No lock; check version at write time</td></tr>
+        <tr><td>Best for</td><td>High contention (last room, flash sale)</td><td>Low contention (most reads, rare conflict)</td></tr>
+        <tr><td>Throughput</td><td class="bad">Lower — readers block on locked rows</td><td class="good">Higher — no blocking on reads</td></tr>
+        <tr><td>Failure mode</td><td>Deadlock (always acquire locks in same order)</td><td>OptimisticLockException on conflict → retry</td></tr>
+        <tr><td>Agoda use case</td><td>Last room in inventory, checkout flow</td><td>Price updates, review counts, search ranking</td></tr>
+        <tr><td>JPA annotation</td><td>@Lock(PESSIMISTIC_WRITE)</td><td>@Version on entity field</td></tr>
+      </table>
+      <div class="tip-box">
+        <div class="tip-label">💡 Interview answer template</div>
+        "For the final booking write, we use pessimistic locking via SELECT FOR UPDATE — because at the moment of booking, contention is high and the window is small, so the cost of blocking is acceptable. For inventory availability checks (which happen on every search), we don't lock at all — we read the current count and accept slight staleness. The locking only kicks in when the user actually commits to booking."
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: Isolation Levels -->
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--int-bg)">🧱</div>
+    <div style="flex:1">
+      <div class="sec-title">Transaction Isolation Levels — What Each One Allows</div>
+      <div class="sec-sub">Dirty read · Non-repeatable read · Phantom read — what these mean and when they bite you</div>
+    </div>
+    <span class="sec-lv lv-int">Intermediate</span><span class="chev">▼</span>
+  </div>
+  <div class="sec-body">
+<pre><span class="cm">-- The 4 isolation levels (weakest → strongest)
+-- MySQL default: REPEATABLE READ
+-- PostgreSQL default: READ COMMITTED</span>
+
+<span class="cm">-- READ UNCOMMITTED (never use in production)
+-- Allows dirty reads: you can read data another transaction hasn't committed yet
+-- If that transaction rolls back, you read data that never existed
+-- Problem: User A updates price to $50 but rolls back. User B read $50 during that time.</span>
+
+<span class="cm">-- READ COMMITTED (PostgreSQL default)
+-- No dirty reads. But allows non-repeatable reads:
+-- Same SELECT within one transaction can return different results if another tx commits between reads</span>
+BEGIN; <span class="cm">-- Transaction A</span>
+SELECT available FROM room_inventory WHERE room_id = 101; <span class="cm">-- returns 2</span>
+<span class="cm">-- Transaction B commits: UPDATE room_inventory SET available = 1 WHERE room_id = 101</span>
+SELECT available FROM room_inventory WHERE room_id = 101; <span class="cm">-- returns 1 (changed!)</span>
+COMMIT;
+
+<span class="cm">-- REPEATABLE READ (MySQL InnoDB default)
+-- Same SELECT always returns same rows within a transaction
+-- But allows phantom reads: new rows inserted by other transactions ARE visible</span>
+BEGIN; <span class="cm">-- Transaction A</span>
+SELECT COUNT(*) FROM bookings WHERE date = '2026-07-09'; <span class="cm">-- returns 10</span>
+<span class="cm">-- Transaction B commits: INSERT INTO bookings ... (adds new row for 2026-07-09)</span>
+SELECT COUNT(*) FROM bookings WHERE date = '2026-07-09'; <span class="cm">-- still 10 (snapshot isolation)</span>
+<span class="cm">-- MySQL's MVCC prevents phantom reads in REPEATABLE READ — PostgreSQL doesn't</span>
+
+<span class="cm">-- SERIALIZABLE (strongest, slowest)
+-- Transactions execute as if sequential. No dirty, non-repeatable, or phantom reads.
+-- Use for: financial summaries, inventory audits where exact counts matter</span>
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+BEGIN;
+<span class="cm">-- Full table-range locks prevent any insert/update that affects our query range</span></pre>
+
+    <table class="ctable" style="margin-top:12px">
+      <tr><th>Isolation Level</th><th>Dirty Read</th><th>Non-Repeatable Read</th><th>Phantom Read</th><th>Use at Agoda</th></tr>
+      <tr><td>READ UNCOMMITTED</td><td class="bad">✗ Possible</td><td class="bad">✗ Possible</td><td class="bad">✗ Possible</td><td class="bad">Never</td></tr>
+      <tr><td>READ COMMITTED</td><td class="good">✓ Safe</td><td class="bad">✗ Possible</td><td class="bad">✗ Possible</td><td class="ok">Search/availability reads</td></tr>
+      <tr><td>REPEATABLE READ</td><td class="good">✓ Safe</td><td class="good">✓ Safe</td><td class="ok">MySQL: Safe</td><td class="good">Booking transaction (default)</td></tr>
+      <tr><td>SERIALIZABLE</td><td class="good">✓ Safe</td><td class="good">✓ Safe</td><td class="good">✓ Safe</td><td class="ok">Financial reconciliation</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 3: Indexing -->
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--beg-bg)">📇</div>
+    <div style="flex:1">
+      <div class="sec-title">SQL Indexing — B-Tree, Composite, Covering Indexes</div>
+      <div class="sec-sub">How MySQL uses indexes and why the left-prefix rule matters for your queries</div>
+    </div>
+    <span class="sec-lv lv-beg">Beginner</span><span class="chev">▼</span>
+  </div>
+  <div class="sec-body">
+<pre><span class="cm">-- B-Tree index: data sorted in a balanced tree
+-- Range queries, ORDER BY, equality — all benefit from B-tree
+-- MySQL InnoDB: clustered B-tree on PRIMARY KEY; secondary indexes hold primary key values</span>
+
+<span class="cm">-- Composite index: covers multiple columns
+-- Stored sorted by (col1, then col2, then col3)</span>
+CREATE INDEX idx_booking_search
+ON bookings (user_id, status, check_in);
+
+<span class="cm">-- Left-prefix rule: index is usable only if query starts from the LEFT
+-- This index helps these queries:</span>
+SELECT * FROM bookings WHERE user_id = 'u1';                             <span class="cm">-- ✓ uses index</span>
+SELECT * FROM bookings WHERE user_id = 'u1' AND status = 'CONFIRMED';    <span class="cm">-- ✓ uses both cols</span>
+SELECT * FROM bookings WHERE user_id = 'u1' AND status = 'CONFIRMED'
+                        AND check_in > '2026-07-01';                     <span class="cm">-- ✓ uses all 3</span>
+
+<span class="cm">-- These queries CANNOT use the index efficiently:</span>
+SELECT * FROM bookings WHERE status = 'CONFIRMED';                       <span class="cm">-- ✗ skips user_id (leftmost)</span>
+SELECT * FROM bookings WHERE check_in > '2026-07-01';                    <span class="cm">-- ✗ skips first two cols</span>
+
+<span class="cm">-- Covering index: index contains ALL columns the query needs
+-- Avoids hitting the actual table row (faster)</span>
+CREATE INDEX idx_room_availability
+ON room_inventory (room_id, date, available_count);  <span class="cm">-- available_count in index</span>
+
+<span class="cm">-- This query is served entirely from the index — no table lookup needed:</span>
+SELECT available_count FROM room_inventory
+WHERE room_id = 101 AND date = '2026-07-09';
+
+<span class="cm">-- EXPLAIN: check if your query uses an index</span>
+EXPLAIN SELECT * FROM bookings WHERE user_id = 'u1' AND status = 'CONFIRMED';
+<span class="cm">-- key: idx_booking_search  ← good, using index
+-- type: ref               ← good (eq_ref, ref, range are all good)
+-- type: ALL               ← BAD: full table scan — add an index
+-- rows: 1                 ← estimated rows examined (lower = better)
+-- Extra: Using index      ← covering index being used (best case)</span></pre>
+    <div class="callout c-info"><strong>InnoDB nuance:</strong> Secondary indexes in InnoDB store the primary key, not the row pointer. So a query that hits a secondary index then needs a primary key lookup if it needs columns not in the index. This is why covering indexes (all needed columns are in the index) are faster — they avoid the second lookup.</div>
+  </div>
+</div>
+
+<!-- SECTION 4: N+1 Problem -->
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--int-bg)">🔁</div>
+    <div style="flex:1">
+      <div class="sec-title">N+1 Query Problem — The JPA Performance Trap</div>
+      <div class="sec-sub">How to detect it with Hibernate logging and fix it with JOIN FETCH or @EntityGraph</div>
+    </div>
+    <span class="sec-lv lv-int">Intermediate</span><span class="chev">▼</span>
+  </div>
+  <div class="sec-body">
+<pre><span class="cm">// PROBLEM: Get 100 hotels with their rooms
+// This looks fine but runs 101 SQL queries</span>
+
+<span class="an">@Entity</span>
+<span class="kw">public class</span> Hotel {
+  <span class="an">@Id</span> <span class="kw">private</span> Long id;
+  <span class="kw">private</span> String name;
+
+  <span class="an">@OneToMany</span>(mappedBy = <span class="str">"hotel"</span>, fetch = FetchType.LAZY)  <span class="cm">// LAZY = loaded on demand</span>
+  <span class="kw">private</span> List&lt;Room&gt; rooms;
+}
+
+<span class="cm">// Service code that causes N+1:</span>
+List&lt;Hotel&gt; hotels = hotelRepo.findAll();              <span class="cm">// Query 1: SELECT * FROM hotels (100 rows)</span>
+<span class="kw">for</span> (Hotel h : hotels) {
+  h.getRooms().size();                                 <span class="cm">// Query 2-101: SELECT * FROM rooms WHERE hotel_id=?
+                                                       // One query per hotel = 100 extra queries</span>
+}
+<span class="cm">// Total: 1 + N = 101 queries. For 1000 hotels: 1001 queries. Production killer.</span>
+
+<span class="cm">// DETECT with Hibernate SQL logging in application.properties:</span>
+<span class="cm">// spring.jpa.show-sql=true
+// logging.level.org.hibernate.stat=DEBUG
+// spring.jpa.properties.hibernate.generate_statistics=true
+// Look for: HQL queries fired: 101</span>
+
+<span class="cm">// FIX 1: JOIN FETCH (one SQL query with JOIN)</span>
+<span class="an">@Query</span>(<span class="str">"SELECT h FROM Hotel h JOIN FETCH h.rooms WHERE h.cityId = :cityId"</span>)
+List&lt;Hotel&gt; findWithRoomsByCityId(<span class="an">@Param</span>(<span class="str">"cityId"</span>) Long cityId);
+<span class="cm">// SQL: SELECT h.*, r.* FROM hotels h JOIN rooms r ON r.hotel_id = h.id WHERE h.city_id = ?
+// Result: 1 query instead of N+1</span>
+
+<span class="cm">// FIX 2: @EntityGraph (declarative approach)</span>
+<span class="an">@EntityGraph</span>(attributePaths = {<span class="str">"rooms"</span>, <span class="str">"amenities"</span>})
+<span class="an">@Query</span>(<span class="str">"SELECT h FROM Hotel h WHERE h.cityId = :cityId"</span>)
+List&lt;Hotel&gt; findWithDetails(<span class="an">@Param</span>(<span class="str">"cityId"</span>) Long cityId);
+<span class="cm">// Fetches rooms AND amenities in one LEFT OUTER JOIN query</span>
+
+<span class="cm">// FIX 3: @BatchSize (compromise — still N queries but batched)
+// @BatchSize(size=50) on the collection — fetches 50 hotels' rooms in one IN clause</span>
+<span class="an">@OneToMany</span>(fetch = FetchType.LAZY)
+<span class="an">@BatchSize</span>(size = 50)
+<span class="kw">private</span> List&lt;Room&gt; rooms;</pre>
+    <div class="callout c-warn"><strong>JOIN FETCH caveat:</strong> JOIN FETCH with pagination (<code>setMaxResults</code>) causes Hibernate to load ALL rows into memory and paginate in Java, not SQL. This is a silent performance killer. When you need pagination + eager loading, use two separate queries: one for the page of IDs, one JOIN FETCH for those specific IDs.</div>
+  </div>
+</div>
+
+<!-- SECTION 5: EXPLAIN & Query Planning -->
+<div class="section" data-level="advanced">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--adv-bg)">🔍</div>
+    <div style="flex:1">
+      <div class="sec-title">EXPLAIN & Slow Query Debugging</div>
+      <div class="sec-sub">How to read a query plan and fix slow queries in production</div>
+    </div>
+    <span class="sec-lv lv-adv">Advanced</span><span class="chev">▼</span>
+  </div>
+  <div class="sec-body">
+<pre><span class="cm">-- EXPLAIN: what MySQL does with your query</span>
+EXPLAIN SELECT b.id, h.name, b.check_in, b.total_price
+FROM bookings b
+JOIN hotels h ON b.hotel_id = h.id
+WHERE b.user_id = 'u123'
+AND b.status = 'CONFIRMED'
+AND b.check_in > '2026-07-01'
+ORDER BY b.check_in DESC
+LIMIT 20;
+
+<span class="cm">-- Example output (read left-to-right, inner first):
+-- id | table | type   | possible_keys              | key              | rows | Extra
+-- 1  | b     | ref    | idx_user_status,idx_user   | idx_user_status  | 15   | Using where; Using filesort
+-- 1  | h     | eq_ref | PRIMARY                    | PRIMARY          | 1    |
+
+-- WHAT TO LOOK FOR:
+-- type column (best to worst):
+--   const    → single row by primary key or unique key (best)
+--   eq_ref   → single row lookup per outer row (JOIN on unique key)
+--   ref      → multiple rows matching non-unique index
+--   range    → index range scan (WHERE col BETWEEN / > / <)
+--   index    → full index scan (better than ALL but still slow for large tables)
+--   ALL      → FULL TABLE SCAN — almost always a problem on large tables
+
+-- Extra column warning signs:
+--   Using filesort  → no index covers the ORDER BY → slow for large result sets
+--   Using temporary → temp table created (GROUP BY without index)
+--   Using where     → filtering after index access (usually fine)
+
+-- FIX "Using filesort" for ORDER BY check_in DESC:
+-- Add check_in to the index so ORDER is already sorted in the index</span>
+CREATE INDEX idx_booking_user_status_checkin
+ON bookings (user_id, status, check_in DESC);
+<span class="cm">-- Now ORDER BY check_in DESC is free (index already ordered that way)</span>
+
+<span class="cm">-- EXPLAIN ANALYZE (MySQL 8.0+): actual vs estimated rows</span>
+EXPLAIN ANALYZE SELECT ...;
+<span class="cm">-- Shows: actual time=0.5..2.3 rows=15 loops=1
+-- If actual rows >> estimated rows → statistics stale → run ANALYZE TABLE bookings</span>
+
+<span class="cm">-- Slow query log: find real production slow queries</span>
+<span class="cm">-- my.cnf:
+-- slow_query_log = 1
+-- slow_query_log_file = /var/log/mysql/slow.log
+-- long_query_time = 1.0   ← log queries taking > 1 second
+-- log_queries_not_using_indexes = 1</span></pre>
+  </div>
+</div>
+
+<!-- SECTION 6: Connection Pooling -->
+<div class="section" data-level="advanced">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--adv-bg)">🔗</div>
+    <div style="flex:1">
+      <div class="sec-title">Connection Pooling — HikariCP in Spring Boot</div>
+      <div class="sec-sub">Why you need it, how to size it, what goes wrong when it's misconfigured</div>
+    </div>
+    <span class="sec-lv lv-adv">Advanced</span><span class="chev">▼</span>
+  </div>
+  <div class="sec-body">
+<pre><span class="cm"># application.yml — HikariCP (Spring Boot default pool)</span>
+spring:
+  datasource:
+    url: jdbc:mysql://prod-db:3306/agoda_bookings
+    username: <span class="str">"${DB_USER}"</span>
+    password: <span class="str">"${DB_PASSWORD}"</span>
+    hikari:
+      maximum-pool-size: 20      <span class="cm"># max DB connections (NOT more than DB can handle)</span>
+      minimum-idle: 5            <span class="cm"># keep 5 connections warm at idle</span>
+      connection-timeout: 30000  <span class="cm"># wait max 30s for a connection from pool</span>
+      idle-timeout: 600000       <span class="cm"># close idle connections after 10min</span>
+      max-lifetime: 1800000      <span class="cm"># recycle connections every 30min (avoids stale connections)</span>
+      leak-detection-threshold: 5000  <span class="cm"># warn if connection held > 5s (leaks!)</span>
+
+<span class="cm"># Pool sizing rule: don't guess, measure
+# MySQL max_connections default: 151
+# If you have 10 Spring Boot pods × 20 pool = 200 connections
+# → Exceeds MySQL limit → connection refused errors
+# 
+# Formula (Hikari docs): connections = (core_count × 2) + effective_spindle_count
+# For a 4-core DB server: ~9 connections per app instance
+#
+# Key failure modes:
+# 1. Pool exhaustion: all 20 connections in use, new request waits → timeout after 30s
+#    Fix: increase pool size OR reduce query time OR add read replica
+# 2. Connection leak: code takes connection, throws exception before returning it
+#    Fix: leak-detection-threshold catches these; use @Transactional or try-with-resources
+# 3. Too many connections: total app connections > DB max_connections
+#    Fix: use a connection proxy like PgBouncer/ProxySQL in front of DB</span></pre>
+  </div>
+</div>
+
+<!-- CHECKLIST -->
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--green-bg)">✅</div>
+    <div style="flex:1"><div class="sec-title">SQL readiness checklist</div></div>
+    <span class="sec-lv lv-beg">All</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="sql-chk" id="tab-sql-chk-core" onclick="switchTab('sql-chk','core')">🟢 Core</div>
+      <div class="tab" data-group="sql-chk" id="tab-sql-chk-adv" onclick="switchTab('sql-chk','adv')">🟠 Advanced</div>
+    </div>
+    <div class="tab-panel active" data-group="sql-chk" id="panel-sql-chk-core">
+      <ul class="chk-list" style="padding:14px">
+        <li class="chk-item"><div class="chkbox" id="chk-s1" onclick="sqlToggle('s1')"></div><div class="chk-text" id="txt-s1">Walk through the double-booking problem. Two users click Book on the last room. What SQL prevents both succeeding?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s2" onclick="sqlToggle('s2')"></div><div class="chk-text" id="txt-s2">SELECT FOR UPDATE — what lock does it acquire? What transaction must it be inside?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s3" onclick="sqlToggle('s3')"></div><div class="chk-text" id="txt-s3">@Version in JPA — what SQL does it generate? What exception on conflict?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s4" onclick="sqlToggle('s4')"></div><div class="chk-text" id="txt-s4">Pessimistic vs Optimistic — when to use each at Agoda?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s5" onclick="sqlToggle('s5')"></div><div class="chk-text" id="txt-s5">N+1 problem — demonstrate how findAll() + lazy collection = 101 queries</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s6" onclick="sqlToggle('s6')"></div><div class="chk-text" id="txt-s6">JOIN FETCH vs @EntityGraph — what's the difference? When does JOIN FETCH break with pagination?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s7" onclick="sqlToggle('s7')"></div><div class="chk-text" id="txt-s7">Composite index left-prefix rule — which queries use idx(user_id, status, check_in)?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s8" onclick="sqlToggle('s8')"></div><div class="chk-text" id="txt-s8">Covering index — what makes a query use "Using index" in EXPLAIN?</div></li>
+      </ul>
+    </div>
+    <div class="tab-panel" data-group="sql-chk" id="panel-sql-chk-adv">
+      <ul class="chk-list" style="padding:14px">
+        <li class="chk-item"><div class="chkbox" id="chk-s9" onclick="sqlToggle('s9')"></div><div class="chk-text" id="txt-s9">Dirty read vs non-repeatable read vs phantom read — concrete example of each</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s10" onclick="sqlToggle('s10')"></div><div class="chk-text" id="txt-s10">MySQL default isolation level (REPEATABLE READ) — what does it prevent vs allow?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s11" onclick="sqlToggle('s11')"></div><div class="chk-text" id="txt-s11">EXPLAIN output — what does type=ALL mean? type=ref? Extra=Using filesort?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s12" onclick="sqlToggle('s12')"></div><div class="chk-text" id="txt-s12">How do you fix "Using filesort" on ORDER BY check_in DESC?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s13" onclick="sqlToggle('s13')"></div><div class="chk-text" id="txt-s13">Deadlock — how does it occur with pessimistic locking? Prevention strategy?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s14" onclick="sqlToggle('s14')"></div><div class="chk-text" id="txt-s14">HikariCP pool exhaustion — what happens to requests when all 20 connections are in use?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s15" onclick="sqlToggle('s15')"></div><div class="chk-text" id="txt-s15">10 pods × 20 pool size = 200 connections. MySQL max_connections=151. What breaks?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-s16" onclick="sqlToggle('s16')"></div><div class="chk-text" id="txt-s16">Connection leak — how does leak-detection-threshold catch it? What causes it in code?</div></li>
+      </ul>
+    </div>
+    <div style="padding:0 14px 14px">
+      <a class="ref-link" href="https://dev.mysql.com/doc/refman/8.0/en/innodb-locking.html" target="_blank">↗ MySQL InnoDB Locking</a>
+      <a class="ref-link" href="https://dev.mysql.com/doc/refman/8.0/en/explain-output.html" target="_blank">↗ EXPLAIN Output Format</a>
+      <a class="ref-link" href="https://github.com/brettwooldridge/HikariCP#configuration-knobs-baby" target="_blank">↗ HikariCP Configuration</a>
+    </div>
+  </div>
+</div>
+
+</div>
+<script src="shared.js"></script>
+<script>
+buildNav('sql');
+const sqlDone = initChecks('sql-done', 16, 'sql-done', 'sql-pct', 'sql-fill');
+function sqlToggle(id){ toggleCheck(id, sqlDone, 'sql-done', 16, 'sql-done', 'sql-pct', 'sql-fill'); }
+</script>
+</body>
+</html>
