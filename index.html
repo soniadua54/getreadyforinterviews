@@ -1,70 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>PrepKit — Agoda Staff Interview</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PrepKit — Software Engineering Interview Prep</title>
 <link rel="stylesheet" href="shared.css">
 <style>
-/* ── GRID ── */
-.home-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px;margin-bottom:4px}
-.tech-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px;cursor:pointer;transition:all .15s;text-decoration:none;display:block}
-.tech-card:hover{border-color:var(--border2);background:var(--bg3);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.3)}
-.tech-card.gap-card{border-color:rgba(255,77,109,0.3);background:rgba(255,77,109,0.04)}
-.tech-card.gap-card:hover{border-color:rgba(255,77,109,0.6)}
-.tech-card.new-card{border-color:rgba(16,185,129,0.35);background:rgba(16,185,129,0.04)}
-.tech-card.new-card:hover{border-color:rgba(16,185,129,0.7)}
-.tech-card.round-card{border-color:rgba(108,99,255,0.35);background:rgba(108,99,255,0.05)}
-.tech-card.round-card:hover{border-color:rgba(108,99,255,0.7)}
-.tc-icon{font-size:22px;margin-bottom:8px}
-.tc-name{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:3px}
-.tc-desc{font-size:10.5px;color:var(--text3);line-height:1.55}
-.tc-badge{display:inline-block;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:600;margin-top:6px}
-.tc-footer{display:flex;align-items:center;justify-content:space-between;margin-top:7px}
-.tc-prog{font-size:10px;color:var(--text3)}
-
-/* ── SECTION LABEL ── */
-.section-label{font-size:10.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:22px 0 10px;display:flex;align-items:center;gap:8px}
-.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
-
-/* ── GAP PANEL ── */
-.gap-panel{background:rgba(255,77,109,0.06);border:1px solid rgba(255,77,109,0.18);border-radius:var(--rl);padding:16px;margin-bottom:18px}
-.gap-panel-title{font-size:13px;font-weight:700;color:var(--red);margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.gap-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.gap-item{display:flex;align-items:flex-start;gap:9px;background:var(--bg2);border-radius:var(--r);padding:10px;border:1px solid rgba(255,77,109,0.12)}
-.gap-rank{width:20px;height:20px;min-width:20px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0;margin-top:1px}
-.gap-rank.resolved{background:var(--green)}
-.gap-body{font-size:11.5px;color:var(--text2);line-height:1.5}
-.gap-body strong{color:var(--text);display:block;margin-bottom:2px}
-.gap-body a{color:var(--blue)}
-
-/* ── COUNTDOWN BLOCK ── */
-.countdown-bar{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.cd-label{font-size:11px;color:var(--text3)}
-.cd-date{font-size:16px;font-weight:700;color:var(--text)}
-.cd-sub{font-size:11px;color:var(--text3);margin-top:1px}
-.cd-stats{display:flex;gap:16px}
-.cd-stat{text-align:center}
-.cd-stat-n{font-size:20px;font-weight:700;line-height:1}
-.cd-stat-l{font-size:10px;color:var(--text3);margin-top:2px}
-.cd-rounds{display:flex;gap:6px;flex-wrap:wrap}
-.cd-round{padding:3px 9px;border-radius:8px;font-size:11px;font-weight:600;background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
-
-/* ── OVERALL PROGRESS ── */
-.overall-prog{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px;margin-bottom:18px}
-.op-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:10px}
-.op-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
-.op-stat{text-align:center;background:var(--bg3);border-radius:var(--r);padding:10px 6px}
-.op-stat-n{font-size:18px;font-weight:700}
-.op-stat-l{font-size:10px;color:var(--text3);margin-top:3px}
-
-/* ── MOBILE ── */
-@media(max-width:600px){
-  .gap-grid{grid-template-columns:1fr}
-  .home-grid{grid-template-columns:repeat(2,1fr)}
-  .cd-stats{gap:10px}
-  .cd-stat-n{font-size:17px}
-  .op-grid{grid-template-columns:repeat(3,1fr)}
-  .countdown-bar{flex-direction:column;align-items:flex-start}
+/* Index-specific overrides */
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.hero-stat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--rl);
+  padding: 16px 18px;
+}
+.hero-stat-n { font-size: 28px; font-weight: 800; letter-spacing: -.5px; }
+.hero-stat-l { font-size: 11px; color: var(--text3); margin-top: 3px; }
+.hero-banner {
+  background: linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--rl);
+  padding: 22px 24px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  overflow: hidden;
+  position: relative;
+}
+.hero-banner::before {
+  content: '';
+  position: absolute;
+  right: -40px; top: -40px;
+  width: 180px; height: 180px;
+  background: var(--accent3);
+  border-radius: 50%;
+}
+.hero-banner-text { flex: 1; position: relative; }
+.hero-banner-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -.4px;
+  margin-bottom: 6px;
+}
+.hero-banner-sub {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.65;
+  max-width: 560px;
+}
+.hero-banner-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.hero-banner-tag {
+  padding: 3px 9px;
+  background: var(--bg4);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  font-size: 10.5px;
+  color: var(--text2);
+}
+.company-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.company-chip {
+  padding: 3px 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  font-size: 11px;
+  color: var(--text2);
+}
+@media(max-width:640px){
+  .hero-banner { flex-direction: column; align-items: flex-start; }
+  .hero-grid   { grid-template-columns: 1fr 1fr; }
+  .hero-banner-title { font-size: 18px; }
+}
+@media(max-width:400px){
+  .hero-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -72,52 +96,32 @@
 <nav class="topnav" id="topnav"></nav>
 <div class="page">
 
-<!-- ══════════════════════════════════════
-     HERO
-     ══════════════════════════════════════ -->
-<div class="hero" style="margin-bottom:16px">
-  <div class="hero-row">
-    <div class="hero-icon" style="background:rgba(108,99,255,0.15)">🎯</div>
-    <div>
-      <div class="hero-title">PrepKit — Agoda Staff Interview</div>
-      <div class="hero-sub">17 pages · Java · Spring · K8s · SQL · DSA · System Design · Behavioral · All four rounds</div>
-    </div>
-  </div>
-  <div class="hero-desc">Built for your stack and your resume. Every page: Beginner → Advanced, concept questions an interviewer actually asks, code you need to write cold, and checkboxes that track progress across sessions. July 9, 2026 — all four rounds same day.</div>
-</div>
-
-<!-- ══════════════════════════════════════
-     COUNTDOWN
-     ══════════════════════════════════════ -->
-<div class="countdown-bar">
-  <div>
-    <div class="cd-label">Interview date</div>
-    <div class="cd-date">July 9, 2026 — Agoda, Bangkok</div>
-    <div class="cd-sub" id="cd-detail">Calculating...</div>
-  </div>
-  <div>
-    <div class="cd-label" style="margin-bottom:6px">Four rounds</div>
-    <div class="cd-rounds">
-      <span class="cd-round">⚙️ Platform</span>
-      <span class="cd-round">🏗️ System Design</span>
-      <span class="cd-round">⌨️ DSA / Coding</span>
-      <span class="cd-round">🎙️ Behavioral</span>
+<!-- ── HERO BANNER ── -->
+<div class="hero-banner">
+  <div class="hero-banner-text">
+    <div class="hero-banner-title">PrepKit ⚡</div>
+    <div class="hero-banner-sub">A complete software engineering interview reference — languages, algorithms, system design, platform engineering, and behavioral prep in one place.</div>
+    <div class="hero-banner-tags">
+      <span class="hero-banner-tag">☕ Java</span>
+      <span class="hero-banner-tag">🏗 System Design</span>
+      <span class="hero-banner-tag">⌨ DSA</span>
+      <span class="hero-banner-tag">☸ Kubernetes</span>
+      <span class="hero-banner-tag">🗄 SQL</span>
+      <span class="hero-banner-tag">🎙 Behavioral</span>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     OVERALL PROGRESS
-     ══════════════════════════════════════ -->
+<!-- ── AGGREGATE PROGRESS ── -->
 <div class="overall-prog">
-  <div class="op-title">📊 Overall prep progress — tracked across all 17 pages</div>
+  <div class="op-title">📊 Your overall progress — tracked across all pages</div>
   <div class="op-grid">
     <div class="op-stat">
       <div class="op-stat-n" id="total-done" style="color:var(--green)">—</div>
-      <div class="op-stat-l">Checkboxes done</div>
+      <div class="op-stat-l">Items checked off</div>
     </div>
     <div class="op-stat">
-      <div class="op-stat-n" style="color:var(--text2)">159</div>
+      <div class="op-stat-n" style="color:var(--text2)">183</div>
       <div class="op-stat-l">Total items</div>
     </div>
     <div class="op-stat">
@@ -126,93 +130,55 @@
     </div>
   </div>
   <div class="prog-bar"><div class="prog-fill" id="total-fill" style="width:0%"></div></div>
-  <div style="font-size:11px;color:var(--text3);margin-top:8px">Check boxes on individual pages — progress saves automatically and shows here.</div>
+  <div style="font-size:11px;color:var(--text3);margin-top:8px">Check items on topic pages — progress saves automatically and totals here.</div>
 </div>
 
-<!-- ══════════════════════════════════════
-     PRIORITY GAPS
-     ══════════════════════════════════════ -->
-<div class="gap-panel">
-  <div class="gap-panel-title">⚠️ Staff-level gaps — ranked by interview impact</div>
-  <div class="gap-grid">
-    <div class="gap-item">
-      <div class="gap-rank">1</div>
-      <div class="gap-body"><strong>SQL & Relational DB</strong> Agoda runs MySQL. Double-booking prevention, SELECT FOR UPDATE, N+1, EXPLAIN. <a href="sql.html">→ New page added</a></div>
-    </div>
-    <div class="gap-item">
-      <div class="gap-rank">2</div>
-      <div class="gap-body"><strong>Behavioral / Leadership</strong> Staff round tests cross-team influence, incident ownership, tech debt framing. Zero prep existed. <a href="behavioral.html">→ New page added</a></div>
-    </div>
-    <div class="gap-item">
-      <div class="gap-rank">3</div>
-      <div class="gap-body"><strong>CI/CD Pipelines</strong> Not on your resume. Every Staff role expects pipeline ownership. GitHub Actions, ArgoCD, GitOps. <a href="cicd.html">→ Study now</a></div>
-    </div>
-    <div class="gap-item">
-      <div class="gap-rank">4</div>
-      <div class="gap-body"><strong>Distributed correctness</strong> Idempotency keys, Outbox pattern, exactly-once consumer handling. <a href="sysdesign.html">→ System Design</a></div>
-    </div>
-    <div class="gap-item">
-      <div class="gap-rank">5</div>
-      <div class="gap-body"><strong>Observability triad</strong> Prometheus + ELK/Loki + OpenTelemetry/Jaeger. Metrics, logs, traces. <a href="kubernetes.html">→ Kubernetes</a></div>
-    </div>
-    <div class="gap-item">
-      <div class="gap-rank">6</div>
-      <div class="gap-body"><strong>Go depth</strong> Listed on resume as "also aware of." Need goroutines + channels cold before interview. <a href="go.html">→ Study now</a></div>
-    </div>
-    <div class="gap-item">
-      <div class="gap-rank resolved">✓</div>
-      <div class="gap-body"><strong>Docker</strong> Page was missing entirely. Multi-stage builds, Compose, security hardening now covered. <a href="docker.html">→ Covered</a></div>
-    </div>
-    <div class="gap-item">
-      <div class="gap-rank resolved">✓</div>
-      <div class="gap-body"><strong>DSA patterns 7–10</strong> Graphs, Heap, Stack, Backtracking were stubs. Now full with concept Qs + LeetCode links. <a href="dsa.html">→ Covered</a></div>
-    </div>
-  </div>
+<!-- ── TARGET COMPANIES ── -->
+<div class="section-label">Prepared for these companies</div>
+<div class="company-chips" style="margin-bottom:20px">
+  <span class="company-chip">🎯 Agoda</span>
+  <span class="company-chip">🛒 Amazon</span>
+  <span class="company-chip">🔍 Google</span>
+  <span class="company-chip">🪟 Microsoft</span>
+  <span class="company-chip">📘 Meta</span>
+  <span class="company-chip">🚗 Uber</span>
+  <span class="company-chip">⬛ Atlassian</span>
+  <span class="company-chip">🏪 Walmart</span>
+  <span class="company-chip">📦 Flipkart</span>
+  <span class="company-chip">🏨 Booking.com</span>
 </div>
 
-<!-- ══════════════════════════════════════
-     INTERVIEW ROUNDS (top section)
-     ══════════════════════════════════════ -->
-<div class="section-label">Interview rounds — July 9</div>
+<!-- ── INTERVIEW ROUNDS ── -->
+<div class="section-label">Interview rounds</div>
 <div class="home-grid">
-  <a class="tech-card round-card" href="platform.html">
-    <div class="tc-icon">⚙️</div>
-    <div class="tc-name">Platform Round</div>
-    <div class="tc-desc">LLD · Code review · Agoda-specific scenarios · Java internals · Design patterns</div>
-    <div class="tc-footer">
-      <span class="tc-badge b-int">Round 1</span>
-    </div>
+  <a class="tech-card round-card" href="dsa.html">
+    <div class="tc-icon">⌨️</div>
+    <div class="tc-name">DSA & Coding</div>
+    <div class="tc-desc">10 patterns · 28 problems · Concept questions · LeetCode links · Key insight per problem</div>
+    <div class="tc-footer"><span class="tc-badge b-int">Coding round</span></div>
   </a>
   <a class="tech-card round-card" href="sysdesign.html">
     <div class="tc-icon">🏗️</div>
     <div class="tc-name">System Design</div>
-    <div class="tc-desc">Hotel booking · Payment · Search · Notifications · Rate limiter · Idempotency</div>
-    <div class="tc-footer">
-      <span class="tc-badge b-int">Round 2</span>
-    </div>
+    <div class="tc-desc">Hotel booking · Payment · Search · Notifications · Rate limiter · Idempotency · Outbox</div>
+    <div class="tc-footer"><span class="tc-badge b-int">Design round</span></div>
   </a>
-  <a class="tech-card round-card" href="dsa.html">
-    <div class="tc-icon">⌨️</div>
-    <div class="tc-name">DSA & Coding</div>
-    <div class="tc-desc">10 patterns · 28 problems · Concept Qs · LeetCode links · Key insight per problem</div>
-    <div class="tc-footer">
-      <span class="tc-badge b-int">Round 3</span>
-    </div>
+  <a class="tech-card round-card" href="platform.html">
+    <div class="tc-icon">⚙️</div>
+    <div class="tc-name">Platform / LLD Round</div>
+    <div class="tc-desc">Low-level design · Code review · Java internals · Design patterns · Agoda scenarios</div>
+    <div class="tc-footer"><span class="tc-badge b-int">Platform round</span></div>
   </a>
   <a class="tech-card round-card" href="behavioral.html">
     <div class="tc-icon">🎙️</div>
     <div class="tc-name">Behavioral</div>
-    <div class="tc-desc">Cross-team influence · Incident ownership · Tech debt · Mentoring · Why Agoda</div>
-    <div class="tc-footer">
-      <span class="tc-badge b-new">New page</span>
-    </div>
+    <div class="tc-desc">Cross-team influence · Incident ownership · Tech debt · Mentoring · Why this company</div>
+    <div class="tc-footer"><span class="tc-badge b-new">Staff-level answers</span></div>
   </a>
 </div>
 
-<!-- ══════════════════════════════════════
-     CORE SKILLS
-     ══════════════════════════════════════ -->
-<div class="section-label">Core backend — your primary stack</div>
+<!-- ── CORE LANGUAGES ── -->
+<div class="section-label">Languages & frameworks</div>
 <div class="home-grid">
   <a class="tech-card" href="java.html">
     <div class="tc-icon">☕</div>
@@ -223,44 +189,71 @@
   <a class="tech-card" href="spring.html">
     <div class="tc-icon">🍃</div>
     <div class="tc-name">Spring Boot</div>
-    <div class="tc-desc">REST · JPA · Security · Kafka · Cache · Actuator · Testing</div>
+    <div class="tc-desc">REST · JPA · Security · Kafka integration · Caching · Actuator · Testing</div>
     <div class="tc-footer"><span class="tc-badge b-tag">Primary framework</span></div>
-  </a>
-  <a class="tech-card new-card" href="sql.html">
-    <div class="tc-icon">🗄️</div>
-    <div class="tc-name">SQL & Relational DB</div>
-    <div class="tc-desc">Locking · Isolation levels · N+1 · EXPLAIN · HikariCP · Double booking</div>
-    <div class="tc-footer"><span class="tc-badge b-new">New — critical gap</span></div>
   </a>
   <a class="tech-card" href="node.html">
     <div class="tc-icon">🟢</div>
     <div class="tc-name">Node.js</div>
     <div class="tc-desc">Event loop · Express · async/await · GraphQL · Streams · Clustering</div>
-    <div class="tc-footer"><span class="tc-badge b-int">Intermediate</span></div>
+    <div class="tc-footer"><span class="tc-badge b-int">Backend</span></div>
   </a>
   <a class="tech-card" href="go.html">
     <div class="tc-icon">🔵</div>
     <div class="tc-name">Go</div>
-    <div class="tc-desc">Goroutines · Channels · Context · REST APIs · Error handling</div>
-    <div class="tc-footer"><span class="tc-badge b-gap">⚠️ Needs depth</span></div>
+    <div class="tc-desc">Goroutines · Channels · Context · REST APIs · Error handling patterns</div>
+    <div class="tc-footer"><span class="tc-badge b-gap">⚠ Needs depth</span></div>
   </a>
   <a class="tech-card" href="python.html">
     <div class="tc-icon">🐍</div>
     <div class="tc-name">Python</div>
-    <div class="tc-desc">Scripting · FastAPI · GIL · asyncio vs threading · Generators · Decorators</div>
+    <div class="tc-desc">GIL · asyncio vs threading · Generators · Decorators · FastAPI</div>
     <div class="tc-footer"><span class="tc-badge b-int">Supporting</span></div>
+  </a>
+  <a class="tech-card" href="angular.html">
+    <div class="tc-icon">🔺</div>
+    <div class="tc-name">Angular</div>
+    <div class="tc-desc">Components · RxJS · Routing · HTTP Interceptors · OnPush · Reactive Forms</div>
+    <div class="tc-footer"><span class="tc-badge b-int">Frontend</span></div>
   </a>
 </div>
 
-<!-- ══════════════════════════════════════
-     INFRA
-     ══════════════════════════════════════ -->
-<div class="section-label">Infrastructure & databases</div>
+<!-- ── DATABASES ── -->
+<div class="section-label">Databases & messaging</div>
+<div class="home-grid">
+  <a class="tech-card new-card" href="sql.html">
+    <div class="tc-icon">🗄️</div>
+    <div class="tc-name">SQL & Relational DB</div>
+    <div class="tc-desc">Locking · Isolation levels · N+1 · EXPLAIN · HikariCP · Double-booking prevention</div>
+    <div class="tc-footer"><span class="tc-badge b-new">Added — was missing</span></div>
+  </a>
+  <a class="tech-card" href="mongodb.html">
+    <div class="tc-icon">🍃</div>
+    <div class="tc-name">MongoDB & Cosmos DB</div>
+    <div class="tc-desc">Schema design · Aggregation pipeline · Indexing · Cosmos partitioning</div>
+    <div class="tc-footer"><span class="tc-badge b-tag">On resume</span></div>
+  </a>
+  <a class="tech-card gap-card" href="kafka.html">
+    <div class="tc-icon">📨</div>
+    <div class="tc-name">Kafka</div>
+    <div class="tc-desc">Partitioning · Consumer groups · Exactly-once · Schema registry · Outbox pattern</div>
+    <div class="tc-footer"><span class="tc-badge b-gap">⚠ Needs depth</span></div>
+  </a>
+  <a class="tech-card gap-card" href="redis.html">
+    <div class="tc-icon">🔴</div>
+    <div class="tc-name">Redis</div>
+    <div class="tc-desc">Distributed locks · Pub/sub · Streams · Lua scripts · Cluster mode</div>
+    <div class="tc-footer"><span class="tc-badge b-gap">⚠ Beyond cache</span></div>
+  </a>
+</div>
+
+<!-- ── INFRA ── -->
+<div class="section-label">Infrastructure & platform</div>
 <div class="home-grid">
   <a class="tech-card" href="kubernetes.html">
     <div class="tc-icon">☸️</div>
     <div class="tc-name">Kubernetes</div>
-    <div class="tc-desc">Pods · Deployments · HPA · Observability · Debugging · GitOps</div>
+    <div class="tc-desc">Pods · Deployments · HPA · Observability triad · Debugging · GitOps</div>
     <div class="tc-footer"><span class="tc-badge b-tag">On resume</span></div>
   </a>
   <a class="tech-card" href="docker.html">
@@ -272,26 +265,8 @@
   <a class="tech-card gap-card" href="cicd.html">
     <div class="tc-icon">🔄</div>
     <div class="tc-name">CI/CD</div>
-    <div class="tc-desc">GitHub Actions · Jenkins · ArgoCD · GitOps · Quality gates</div>
-    <div class="tc-footer"><span class="tc-badge b-gap">❌ Not on resume</span></div>
-  </a>
-  <a class="tech-card" href="mongodb.html">
-    <div class="tc-icon">🍃</div>
-    <div class="tc-name">MongoDB / Cosmos DB</div>
-    <div class="tc-desc">Schema design · Aggregation pipeline · Indexing · Cosmos partitioning</div>
-    <div class="tc-footer"><span class="tc-badge b-tag">On resume</span></div>
-  </a>
-  <a class="tech-card gap-card" href="kafka.html">
-    <div class="tc-icon">📨</div>
-    <div class="tc-name">Kafka</div>
-    <div class="tc-desc">Partitioning · Consumer groups · Exactly-once · Schema registry · Outbox</div>
-    <div class="tc-footer"><span class="tc-badge b-gap">⚠️ Needs depth</span></div>
-  </a>
-  <a class="tech-card gap-card" href="redis.html">
-    <div class="tc-icon">🔴</div>
-    <div class="tc-name">Redis</div>
-    <div class="tc-desc">Distributed locks · Pub/sub · Streams · Lua scripts · Cluster mode</div>
-    <div class="tc-footer"><span class="tc-badge b-gap">⚠️ Beyond cache</span></div>
+    <div class="tc-desc">GitHub Actions · Jenkins · ArgoCD · GitOps · Quality gates · Pipeline design</div>
+    <div class="tc-footer"><span class="tc-badge b-gap">❌ Gap to close</span></div>
   </a>
   <a class="tech-card" href="auth.html">
     <div class="tc-icon">🔐</div>
@@ -301,94 +276,48 @@
   </a>
 </div>
 
-<!-- ══════════════════════════════════════
-     FRONTEND
-     ══════════════════════════════════════ -->
-<div class="section-label">Frontend (deprioritise for Staff backend role)</div>
-<div class="home-grid">
-  <a class="tech-card" href="angular.html">
-    <div class="tc-icon">🔺</div>
-    <div class="tc-name">Angular</div>
-    <div class="tc-desc">Components · RxJS · Routing · Interceptors · OnPush · Reactive Forms</div>
-    <div class="tc-footer"><span class="tc-badge b-int">Frontend — low priority</span></div>
-  </a>
-</div>
-
-<!-- ══════════════════════════════════════
-     STUDY PLAN CALLOUT
-     ══════════════════════════════════════ -->
-<div class="callout c-info" style="margin-top:20px;font-size:12px">
-  <strong>14 days to July 9 — suggested priority order:</strong><br>
-  <span style="color:var(--text2)">
-  Day 1–3: <strong>SQL</strong> (biggest gap — know SELECT FOR UPDATE and N+1 cold) + <strong>Behavioral</strong> (prepare 3 stories out loud, not just read them)<br>
-  Day 4–6: <strong>System Design</strong> (Agoda hotel booking end-to-end, payment flow, Outbox pattern) + <strong>DSA</strong> (patterns 1–5 drilled to muscle memory)<br>
-  Day 7–9: <strong>Java/Spring</strong> deep review + <strong>Kafka/Redis</strong> gaps + <strong>CI/CD</strong> basics<br>
-  Day 10–12: <strong>DSA</strong> patterns 6–10 + <strong>Platform round</strong> LLD scenarios<br>
-  Day 13: Full mock — one of each round type, timed. Identify weak spots.<br>
-  Day 14: Light review only. Sleep. Don't cram.
-  </span>
-</div>
 
 </div>
 <script src="shared.js"></script>
 <script>
 buildNav('home');
 
-// Detailed countdown
 function updateCountdown() {
   const target = new Date('2026-07-09T09:00:00');
-  const now = new Date();
-  const diff = target - now;
+  const diff = target - new Date();
   const el = document.getElementById('cd-detail');
   if (!el) return;
-  if (diff <= 0) { el.textContent = '🎯 Interview day — you\'ve got this!'; return; }
-  const d = Math.floor(diff / 864e5);
-  const h = Math.floor((diff % 864e5) / 36e5);
-  const m = Math.floor((diff % 36e5) / 60000);
-  el.textContent = `${d} days, ${h} hours, ${m} minutes remaining`;
+  if (diff <= 0) { el.textContent = '🎯 Interview day!'; return; }
+  const d = Math.floor(diff / 864e5), h = Math.floor((diff % 864e5) / 36e5);
+  el.textContent = `${d} days, ${h} hours remaining`;
 }
 updateCountdown();
 setInterval(updateCountdown, 60000);
 
-// Aggregate progress from all localStorage keys
-function calcTotalProgress() {
+// Aggregate progress
+function calcTotal() {
   const keys = [
-    { key: 'java-done',       total: 20 },
-    { key: 'spring-done',     total: 18 },
-    { key: 'node-done',       total: 16 },
-    { key: 'go-done',         total: 12 },
-    { key: 'python-done',     total: 11 },
-    { key: 'angular-done',    total: 14 },
-    { key: 'mongo-done',      total: 12 },
-    { key: 'docker-done',     total: 14 },
-    { key: 'k8s-done',        total: 14 },
-    { key: 'auth-done',       total: 14 },
-    { key: 'kafka-done',      total: 14 },
-    { key: 'redis-done',      total: 12 },
-    { key: 'cicd-done',       total: 14 },
-    { key: 'sql-done',        total: 16 },
-    { key: 'behavioral-done', total: 8  },
-    { key: 'dsa-done',        total: 10 },
-    { key: 'platform-done',   total: 10 },
+    {key:'java-done',total:20},{key:'spring-done',total:18},
+    {key:'node-done',total:16},{key:'go-done',total:12},
+    {key:'python-done',total:11},{key:'angular-done',total:14},
+    {key:'mongo-done',total:12},{key:'docker-done',total:14},
+    {key:'k8s-done',total:14},{key:'auth-done',total:14},
+    {key:'kafka-done',total:14},{key:'redis-done',total:12},
+    {key:'cicd-done',total:14},{key:'sql-done',total:16},
+    {key:'behavioral-done',total:12},{key:'dsa-done',total:18},
+    {key:'platform-done',total:10},
   ];
-  let done = 0;
-  let total = 0;
-  keys.forEach(({ key, total: t }) => {
+  let done=0, total=0;
+  keys.forEach(({key,total:t})=>{
     total += t;
-    try {
-      const saved = JSON.parse(localStorage.getItem(key) || '[]');
-      done += Array.isArray(saved) ? saved.length : 0;
-    } catch(e) {}
+    try { const s = JSON.parse(localStorage.getItem(key)||'[]'); done += Array.isArray(s)?s.length:0; } catch(e){}
   });
-  const pct = total ? Math.round(done / total * 100) : 0;
-  const doneEl  = document.getElementById('total-done');
-  const pctEl   = document.getElementById('total-pct');
-  const fillEl  = document.getElementById('total-fill');
-  if (doneEl)  doneEl.textContent  = done;
-  if (pctEl)   pctEl.textContent   = pct + '%';
-  if (fillEl)  fillEl.style.width  = pct + '%';
+  const pct = total ? Math.round(done/total*100) : 0;
+  const dn = document.getElementById('total-done'); if(dn) dn.textContent=done;
+  const pt = document.getElementById('total-pct');  if(pt) pt.textContent=pct+'%';
+  const fl = document.getElementById('total-fill'); if(fl) fl.style.width=pct+'%';
 }
-calcTotalProgress();
+calcTotal();
 </script>
 </body>
 </html>

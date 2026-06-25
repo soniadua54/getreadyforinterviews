@@ -2,60 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Interview Prep — System Design</title>
+<title>PrepKit — System Design</title>
+<link rel="stylesheet" href="shared.css">
 <style>
-:root{--bg:#0f1117;--bg2:#1a1d27;--bg3:#222536;--bg4:#2a2d3e;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);--text:#e8eaf0;--text2:#9498b0;--text3:#5a5f7a;--accent:#6c63ff;--accent2:#a5a0ff;--tag:#ff6b4a;--tag-bg:rgba(255,107,74,0.12);--must:#ff4d6d;--must-bg:rgba(255,77,109,0.12);--green:#10b981;--green-bg:rgba(16,185,129,0.1);--blue:#38bdf8;--blue-bg:rgba(56,189,248,0.1);--warn:#f59e0b;--warn-bg:rgba(245,158,11,0.1);--r:8px;--rl:12px}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.6;min-height:100vh}
-a{color:inherit;text-decoration:none}
-.topnav{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;height:50px;position:sticky;top:0;z-index:100;gap:8px}
-.nav-brand{font-size:14px;font-weight:700;white-space:nowrap;flex-shrink:0}.nav-brand span{color:var(--accent2)}
-.nav-links{display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex:1}.nav-links::-webkit-scrollbar{display:none}
-.nav-link{padding:6px 10px;border-radius:var(--r);font-size:12px;color:var(--text2);white-space:nowrap;flex-shrink:0}
-.nav-link.active{background:rgba(108,99,255,0.15);color:var(--accent2);font-weight:500}
-.countdown{background:var(--tag-bg);border:1px solid rgba(255,107,74,0.3);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--tag);font-weight:600;white-space:nowrap;flex-shrink:0}
-.page{padding:16px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
-.stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px}
-.stat-n{font-size:20px;font-weight:700;line-height:1}.stat-l{font-size:10px;color:var(--text3);margin-top:3px}
-.prog-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px;margin-bottom:16px}
-.prog-label{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:8px}
-.prog-bar{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden}
-.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:2px;transition:width .3s}
-.section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);margin-bottom:10px;overflow:hidden}
-.sec-hd{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;user-select:none}
-.sec-hd:active{background:var(--bg3)}
-.sec-icon{width:30px;height:30px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-.ph1 .sec-icon{background:rgba(108,99,255,0.15)}.ph2 .sec-icon{background:rgba(16,185,129,0.15)}.ph3 .sec-icon{background:rgba(245,158,11,0.15)}.ph4 .sec-icon{background:rgba(255,77,109,0.15)}
-.sec-title{font-size:13px;font-weight:600;flex:1;line-height:1.3}
-.chev{font-size:10px;color:var(--text3);margin-left:4px;transition:transform .2s;flex-shrink:0}.chev.open{transform:rotate(180deg)}
-.sec-body{display:none;border-top:1px solid var(--border)}.sec-body.open{display:block}
-.sec-sum{font-size:12px;color:var(--text2);padding:10px 14px 0;line-height:1.6}
-.block{padding:14px;border-top:1px solid var(--border)}
-.block:first-child{border-top:none}
-.block-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.block-desc{font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:10px}
-pre{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px;font-family:'Fira Code',monospace;font-size:11.5px;line-height:1.7;overflow-x:auto;-webkit-overflow-scrolling:touch;margin:8px 0;white-space:pre}
-.kw{color:#c084fc}.fn{color:#60a5fa}.str{color:#4ade80}.cm{color:var(--text3);font-style:italic}.nu{color:#fb923c}.cl{color:#f472b6}
-.callout{border-radius:var(--r);padding:10px 12px;margin:8px 0;font-size:12px;line-height:1.6;border-left:3px solid}
-.c-info{background:var(--blue-bg);border-color:var(--blue);color:var(--text2)}.c-warn{background:var(--warn-bg);border-color:var(--warn);color:var(--text2)}.c-good{background:var(--green-bg);border-color:var(--green);color:var(--text2)}.c-tag{background:var(--tag-bg);border-color:var(--tag);color:var(--text2)}
-.callout strong{color:var(--text)}
-.badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600}
-.b-tag{background:var(--tag-bg);color:var(--tag);border:1px solid rgba(255,107,74,0.25)}
-.b-generic{background:rgba(148,152,176,0.12);color:var(--text2);border:1px solid var(--border2)}
-.b-must{background:var(--must-bg);color:var(--must);border:1px solid rgba(255,77,109,0.25)}
-.chk-list{list-style:none}
-.chk-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
-.chk-item:last-child{border-bottom:none}
-.chk{width:18px;height:18px;min-width:18px;border:1.5px solid var(--border2);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px;flex-shrink:0;transition:all .12s}
-.chk.done{background:var(--green);border-color:var(--green)}.chk.done::after{content:"✓";font-size:11px;color:#fff;font-weight:700}
-.chk-text{flex:1;color:var(--text2);line-height:1.5;font-size:12px}.chk-text.done{color:var(--text3);text-decoration:line-through}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
-.col-card{background:var(--bg3);border-radius:var(--r);padding:10px 12px}
-.col-card h4{font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px}
-.col-card p{font-size:11px;color:var(--text2);line-height:1.6}
-@media(max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}.stat-n{font-size:18px}pre{font-size:11px;padding:10px}.two-col{grid-template-columns:1fr}}
+/* Sysdesign-specific classes not in shared.css */
+.ph1 .sec-icon{background:rgba(108,99,255,0.15)}
+.ph2 .sec-icon{background:rgba(16,185,129,0.15)}
+.ph3 .sec-icon{background:rgba(245,158,11,0.15)}
+.ph4 .sec-icon{background:rgba(255,77,109,0.15)}
+.sec-sum{font-size:12.5px;color:var(--text2);padding:10px 14px 4px;line-height:1.65}
+.block-desc{font-size:12.5px;color:var(--text2);line-height:1.75;margin-bottom:10px}
+.chk{width:18px;height:18px;min-width:18px;border:1.5px solid var(--border2);border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px;flex-shrink:0;transition:all .14s}
+.chk:hover{border-color:var(--accent)}
+.chk.done{background:var(--green);border-color:var(--green)}
+.chk.done::after{content:"✓";font-size:11px;color:#fff;font-weight:700}
 </style>
 </head>
 <body>
@@ -477,6 +437,233 @@ Presence (online/offline): Redis with heartbeat TTL
   </div>
 
   <!-- CHECKLIST -->
+  <div class="section ph4">
+    <div class="sec-hd" onclick="toggleSec(this)">
+      <div class="sec-icon">🏛️</div>
+      <div><div class="sec-title">CAP Theorem & Consistency Models</div><div class="sec-sub">CP vs AP · Strong vs Eventual · Read-your-writes · Linearizability</div></div>
+      <span class="chev open">▼</span>
+    </div>
+    <div class="sec-body open">
+      <div class="block">
+        <div class="block-title">CAP Theorem — what it actually means in practice</div>
+        <div class="prose">CAP says: in a distributed system with a <strong>network partition</strong>, you must choose between <strong>Consistency</strong> (every read sees latest write) and <strong>Availability</strong> (every request gets a response, may be stale). You can't have both. Without partition: you get both. The question is what happens <em>when</em> a partition occurs.</div>
+        <table class="ctable">
+          <tr><th>System</th><th>Chooses</th><th>What happens on partition</th><th>Use when</th></tr>
+          <tr><td>MySQL (primary-replica)</td><td>CP</td><td>Replica goes read-only if can't reach primary</td><td>Bookings, payments — stale data is dangerous</td></tr>
+          <tr><td>Cassandra / DynamoDB</td><td>AP</td><td>Still returns data, may be stale</td><td>Shopping carts, user preferences — stale OK</td></tr>
+          <tr><td>Redis Sentinel</td><td>CP</td><td>No writes until leader elected</td><td>Distributed locks, rate limiting</td></tr>
+          <tr><td>Zookeeper / etcd</td><td>CP</td><td>Majority quorum required for writes</td><td>Config, leader election</td></tr>
+        </table>
+      </div>
+      <div class="block">
+        <div class="block-title">Consistency models — weakest to strongest</div>
+<pre><span class="cm">// Eventual consistency — Cassandra, DynamoDB default
+// Writes propagate asynchronously. Reads may see stale data.
+// Good for: shopping carts, likes, view counts, recommendations</span>
+
+<span class="cm">// Read-your-writes (session consistency)
+// You always see your own writes. Others may see stale.
+// Implement: route user's reads to same replica, or use sticky sessions</span>
+
+<span class="cm">// Monotonic read consistency  
+// If you read a value, future reads never return older values.
+// Good for: news feed (don't show post then hide it)</span>
+
+<span class="cm">// Strong consistency (linearizability)
+// All reads see the most recent committed write.
+// Single-node or consensus protocol (Raft, Paxos).
+// Good for: bank balances, inventory counts, booking availability</span>
+
+<span class="cm">// Interview answer for booking system:
+// Availability check (search): eventual consistency OK, stale by seconds fine
+// Booking write: strong consistency required — use SELECT FOR UPDATE or OCC
+// Payment: strong consistency, idempotency key to prevent double charge</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="section ph4">
+    <div class="sec-hd" onclick="toggleSec(this)">
+      <div class="sec-icon">📬</div>
+      <div><div class="sec-title">CQRS & Event Sourcing</div><div class="sec-sub">Command Query Responsibility Segregation · Event store · Projections</div></div>
+      <span class="chev open">▼</span>
+    </div>
+    <div class="sec-body open">
+      <div class="tabs">
+        <div class="tab active" data-group="sd-cqrs" id="tab-sd-cqrs-cqrs" onclick="switchTab('sd-cqrs','cqrs')">CQRS</div>
+        <div class="tab" data-group="sd-cqrs" id="tab-sd-cqrs-es" onclick="switchTab('sd-cqrs','es')">Event Sourcing</div>
+        <div class="tab" data-group="sd-cqrs" id="tab-sd-cqrs-saga" onclick="switchTab('sd-cqrs','saga')">Saga Pattern</div>
+      </div>
+      <div class="tab-panel active" data-group="sd-cqrs" id="panel-sd-cqrs-cqrs">
+        <div class="prose"><strong>CQRS:</strong> Separate the read model (Query) from the write model (Command). Write side handles commands and emits events. Read side maintains denormalized projections optimised for queries. Solves the impedance mismatch between write-optimised (normalised) and read-optimised (denormalised) data models.</div>
+<pre><span class="cm">// Command side — normalised, consistent
+BookingCommand → BookingAggregate → BookingEvent → EventStore
+
+// Query side — denormalised, fast reads
+EventHandler → BookingReadModel (Elasticsearch/Redis)
+               ↓
+               GET /hotels/{id}/availability → O(1) from read model
+
+// Why CQRS for hotel search:
+// Write: 1 booking → affects 1 inventory row (simple write)
+// Read: search → join hotel + rooms + prices + reviews + availability (complex)
+// Separate models → each optimised independently</span></pre>
+        <div class="callout c-info"><strong>When NOT to use CQRS:</strong> Simple CRUD apps. CQRS adds eventual consistency between command and query sides — you have to handle the lag. Only worth it when read and write patterns are fundamentally different in shape.</div>
+      </div>
+      <div class="tab-panel" data-group="sd-cqrs" id="panel-sd-cqrs-es">
+        <div class="prose"><strong>Event Sourcing:</strong> Instead of storing current state, store the sequence of events that led to it. Current state = replay of all events. Gives you full audit trail, time travel, and event-driven integration for free.</div>
+<pre><span class="cm">// Traditional: store current state
+bookings table: id=1, status=CONFIRMED, price=200
+
+// Event sourcing: store events
+events table:
+  {type: BOOKING_CREATED,    bookingId: 1, price: 200, ts: T1}
+  {type: PRICE_ADJUSTED,     bookingId: 1, price: 180, ts: T2}
+  {type: BOOKING_CONFIRMED,  bookingId: 1, ts: T3}
+
+// Current state = fold over events
+// Pros: full audit, easy debugging, replay to fix bugs
+// Cons: eventual consistency in projections, snapshot needed for large event streams</span></pre>
+      </div>
+      <div class="tab-panel" data-group="sd-cqrs" id="panel-sd-cqrs-saga">
+        <div class="prose"><strong>Saga pattern:</strong> Manages distributed transactions across microservices without a 2-phase commit. Each step in the saga publishes an event. If a later step fails, compensating transactions undo previous steps.</div>
+<pre><span class="cm">// Booking saga: BookingService → InventoryService → PaymentService → NotificationService
+
+Step 1: BookingService creates booking (status=PENDING) → publishes BOOKING_CREATED
+Step 2: InventoryService reserves room → publishes INVENTORY_RESERVED  
+Step 3: PaymentService charges card → publishes PAYMENT_PROCESSED
+Step 4: BookingService confirms → publishes BOOKING_CONFIRMED
+Step 5: NotificationService sends email
+
+// If Step 3 fails (payment declined):
+Compensation 2: InventoryService releases reservation → publishes INVENTORY_RELEASED
+Compensation 1: BookingService cancels → publishes BOOKING_CANCELLED
+
+// Choreography vs Orchestration:
+// Choreography: each service listens to events and decides what to do (decoupled, hard to trace)
+// Orchestration: a saga orchestrator sends commands and waits for responses (clearer, single failure point)</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="section ph4">
+    <div class="sec-hd" onclick="toggleSec(this)">
+      <div class="sec-icon">📦</div>
+      <div><div class="sec-title">Caching Strategies — Cache-aside, Write-through, Write-behind, Read-through</div><div class="sec-sub">When to invalidate, thundering herd, cache stampede prevention</div></div>
+      <span class="chev">▼</span>
+    </div>
+    <div class="sec-body">
+<pre><span class="cm">// 1. CACHE-ASIDE (Lazy loading) — most common
+// Read: check cache first. Miss → fetch from DB → write to cache → return.
+// Write: write to DB. Invalidate (or update) cache.
+// Pro: only cache what's requested. Con: first request always slow (cold miss).
+// Use for: hotel details, user profiles, search results</span>
+
+String key = "hotel:" + hotelId;
+Hotel hotel = cache.get(key);
+<span class="kw">if</span> (hotel == <span class="kw">null</span>) {
+    hotel = db.findById(hotelId);       <span class="cm">// cache miss</span>
+    cache.set(key, hotel, Duration.ofMinutes(<span class="nu">10</span>));
+}
+<span class="kw">return</span> hotel;
+
+<span class="cm">// 2. WRITE-THROUGH
+// Write to DB AND cache synchronously on every write.
+// Pro: cache always fresh. Con: writes slower, cache fills with infrequently-read data.
+// Use for: user session data, recently modified hotel prices</span>
+
+<span class="cm">// 3. WRITE-BEHIND (Write-back)  
+// Write to cache immediately, async batch write to DB later.
+// Pro: fast writes. Con: data loss risk if cache fails before flush.
+// Use for: view counts, like counts, analytics (losing a few OK)</span>
+
+<span class="cm">// THUNDERING HERD: popular cache key expires → 10,000 concurrent requests all hit DB
+// Fix 1: Mutex/lock — first thread fetches, others wait
+// Fix 2: Stale-while-revalidate — serve stale data while refreshing async
+// Fix 3: Jitter — randomize TTL by ±10% to prevent simultaneous expiry
+cache.set(key, value, Duration.ofMinutes(10 + random.nextInt(2)));</span></pre>
+    </div>
+  </div>
+
+  <div class="section ph4">
+    <div class="sec-hd" onclick="toggleSec(this)">
+      <div class="sec-icon">🔀</div>
+      <div><div class="sec-title">Database Sharding & Replication</div><div class="sec-sub">Horizontal scaling · Sharding strategies · Read replicas · Replication lag</div></div>
+      <span class="chev">▼</span>
+    </div>
+    <div class="sec-body">
+<pre><span class="cm">// REPLICATION: primary handles writes, replicas handle reads
+// Primary → binlog → replicas (async by default)
+// Replication lag: replica may be seconds behind primary
+// Problem: user writes booking, immediately reads → reads stale replica (booking not there)
+// Fix: route writes AND immediate post-write reads to primary (sticky reads)</span>
+
+<span class="cm">// SHARDING: split data horizontally across multiple DB nodes
+// Each shard holds a subset of rows
+
+// Sharding strategy 1: Range sharding
+// hotel_id 1-10,000 → Shard A, 10,001-20,000 → Shard B
+// Pro: range queries easy. Con: hotspots (new hotels all go to latest shard)
+
+// Sharding strategy 2: Hash sharding (most common)
+// shard = hash(hotel_id) % num_shards
+// Pro: even distribution. Con: range queries need all shards, resharding is painful
+
+// Sharding strategy 3: Directory (lookup service)
+// A routing service maps hotel_id → shard_id
+// Pro: flexible. Con: routing service is a bottleneck/SPOF
+
+// WHAT TO SHARD ON for hotel booking:
+// hotel_id: hotel-specific queries fast, cross-hotel aggregations slow
+// user_id: user's bookings fast, availability check needs broadcast
+// Common pattern: shard on hotel_id, denormalize user's bookings to separate read store</span>
+
+<span class="cm">// Cross-shard transactions — the big problem
+// If booking spans two shards (user on shard A, hotel on shard B):
+// Option 1: two-phase commit (2PC) — slow, blocking
+// Option 2: saga — eventually consistent compensations
+// Option 3: co-locate related data on same shard (hotel + its bookings together)</span></pre>
+    </div>
+  </div>
+
+  <div class="section ph4">
+    <div class="sec-hd" onclick="toggleSec(this)">
+      <div class="sec-icon">🔭</div>
+      <div><div class="sec-title">Distributed Tracing & Observability</div><div class="sec-sub">OpenTelemetry · Trace ID propagation · Metrics vs Logs vs Traces</div></div>
+      <span class="chev">▼</span>
+    </div>
+    <div class="sec-body">
+<pre><span class="cm">// THE OBSERVABILITY TRIAD
+// Metrics:  what is happening right now (numbers) → Prometheus + Grafana
+// Logs:     what happened, with context (text) → ELK stack / Loki
+// Traces:   how a request flows through services → Jaeger / Zipkin / OpenTelemetry
+
+// DISTRIBUTED TRACING: a single user request spans multiple services
+// TraceId: unique ID for the entire request journey  
+// SpanId: ID for one service's portion of the work
+// ParentSpanId: links child span to parent
+
+// HTTP header propagation (OpenTelemetry W3C format):
+// traceparent: 00-{traceId}-{spanId}-{flags}
+
+// Flow for hotel booking:
+// Browser → API Gateway → BookingService → InventoryService → PaymentService
+//              traceId=abc123  spanId=1        spanId=2           spanId=3
+//              (root span)     parent=1        parent=1           parent=2
+
+// Jaeger query: find trace abc123 → see full waterfall, find which service was slow
+
+// KEY METRICS to track (USE method):
+// Utilization: CPU%, memory%, DB connection pool usage
+// Saturation:  queue depth, request backlog  
+// Errors:      5xx rate, timeout rate, payment failure rate
+
+// ALERTING: alert on symptoms not causes
+// BAD:  alert when CPU > 80% (might be fine)
+// GOOD: alert when p99 latency > 500ms OR error rate > 0.1%</span></pre>
+    </div>
+  </div>
+
   <div class="section ph4">
     <div class="sec-hd" onclick="toggleSec(this)">
       <div class="sec-icon">✅</div>

@@ -62,7 +62,7 @@
       <div class="hero-sub">10 patterns · Concept questions · LeetCode links · Key insight per problem</div>
     </div>
   </div>
-  <div class="hero-desc">Agoda platform round: ~45 min coding, 1–2 problems. Pattern recognition beats problem memorization. Each section has: the key concept questions an interviewer asks before or instead of coding, the must-solve LeetCode problems with direct links, and the one-line insight that unlocks each problem.</div>
+  <div class="hero-desc">Coding rounds are pattern recognition, not problem memorization. Each section covers the concept questions interviewers ask before and during coding, must-solve LeetCode problems with direct links, and the one-line key insight that unlocks each problem. Covers every major pattern from arrays to backtracking.</div>
   <div class="level-pills">
     <span class="level-pill lp-all selected" onclick="setLevel('all',this)">All</span>
     <span class="level-pill lp-beg" onclick="setLevel('beginner',this)">🟢 Easy</span>
@@ -72,13 +72,13 @@
 </div>
 
 <div class="stats">
-  <div class="stat"><div class="stat-n" style="color:var(--beg)">10</div><div class="stat-l">Patterns</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--beg)">18</div><div class="stat-l">Patterns</div></div>
   <div class="stat"><div class="stat-n" id="dsa-done" style="color:var(--green)">0</div><div class="stat-l">Patterns done</div></div>
-  <div class="stat"><div class="stat-n" style="color:var(--int)">28</div><div class="stat-l">Must-solve problems</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--int)">42</div><div class="stat-l">Must-solve problems</div></div>
   <div class="stat"><div class="stat-n" style="color:var(--orange)">45m</div><div class="stat-l">Round length</div></div>
 </div>
 <div class="prog-wrap">
-  <div class="prog-label"><span>Patterns mastered</span><span id="dsa-pct">0 / 10</span></div>
+  <div class="prog-label"><span>Patterns mastered</span><span id="dsa-pct">0 / 18</span></div>
   <div class="prog-bar"><div class="prog-fill" id="dsa-fill" style="width:0%"></div></div>
 </div>
 
@@ -771,6 +771,436 @@
   </div>
 </div>
 
+<!-- ══ PATTERN 11: TWO POINTERS ══ -->
+<div class="pattern-header" data-level="beginner">
+  <div class="pattern-hd" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.chev').classList.toggle('open')">
+    <div class="chkbox" id="chk-p11" onclick="event.stopPropagation();dsaToggle('p11')" style="flex-shrink:0"></div>
+    <div class="sec-icon" style="background:var(--beg-bg);width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">👆</div>
+    <div style="flex:1"><div style="font-size:13px;font-weight:600">11 · Two Pointers — O(n) on Sorted Arrays</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Two Sum II · 3Sum · Container With Most Water · Trapping Rain Water</div></div>
+    <span class="sec-lv lv-beg">Easy/Med</span><span class="chev open" style="font-size:10px;color:var(--text3);transition:transform .2s">▼</span>
+  </div>
+  <div class="pattern-body open">
+    <div class="tab-inner">
+      <div class="tab active" data-group="p11" id="tab-p11-cq" onclick="switchTab('p11','cq')">Concept Questions</div>
+      <div class="tab" data-group="p11" id="tab-p11-prob" onclick="switchTab('p11','prob')">Problems & Links</div>
+      <div class="tab" data-group="p11" id="tab-p11-code" onclick="switchTab('p11','code')">Key Code</div>
+    </div>
+    <div class="tab-panel active" data-group="p11" id="panel-p11-cq">
+      <div class="concept-block">
+        <div class="cq-title">Concept questions</div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>When does two pointers work?</strong> The array must be sorted (or sortable). The key insight: if the sum is too big, move the right pointer left. If too small, move left pointer right. This eliminates O(n²) nested loops.</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>Two pointers vs sliding window — what's the difference?</strong> Two pointers: pointers move independently toward each other (opposite ends) or in the same direction. Sliding window: both pointers move in same direction, maintaining a window constraint. Sliding window is a specialization of two pointers.</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>3Sum — how do you handle duplicates?</strong> Sort first. For each element i, use two pointers left/right on the rest. Skip duplicates at i (if nums[i]==nums[i-1] continue), and skip duplicates after finding a triplet (while loop to skip equal values).</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>Trapping Rain Water — what's the O(n) approach?</strong> For each position, water level = min(maxLeft, maxRight) - height[i]. Use two pointers: maintain maxLeft and maxRight. If maxLeft &lt; maxRight, process left pointer (we know the limiting wall). O(n) time, O(1) space.</span></div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="p11" id="panel-p11-prob">
+      <table class="q-table"><tr><th>#</th><th>Problem</th><th>Diff</th></tr>
+        <tr class="q-row"><td class="q-num">1</td><td><div class="q-name">Two Sum II (sorted array)</div><div class="q-insight">Left + right pointers. Sum too big → right--. Sum too small → left++.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/" target="_blank">↗ LC 167</a><a class="q-link neet" href="https://www.youtube.com/watch?v=cQ1Oz4ckceM" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff easy">Easy</span></td></tr>
+        <tr class="q-row"><td class="q-num">2</td><td><div class="q-name">3Sum</div><div class="q-insight">Sort, fix i, two-pointer on rest. Skip duplicates at every level.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/3sum/" target="_blank">↗ LC 15</a><a class="q-link neet" href="https://www.youtube.com/watch?v=jzZsG8n2R9A" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff med">Med</span></td></tr>
+        <tr class="q-row"><td class="q-num">3</td><td><div class="q-name">Container With Most Water</div><div class="q-insight">Two pointers from ends. Always move the shorter wall inward — taller wall can only get worse.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/container-with-most-water/" target="_blank">↗ LC 11</a><a class="q-link neet" href="https://www.youtube.com/watch?v=UuiTKBwPgAo" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff med">Med</span></td></tr>
+        <tr class="q-row"><td class="q-num">4</td><td><div class="q-name">Trapping Rain Water</div><div class="q-insight">Two pointers with maxLeft/maxRight. Process the side with the smaller max.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/trapping-rain-water/" target="_blank">↗ LC 42</a><a class="q-link neet" href="https://www.youtube.com/watch?v=ZI2z5pq0TqA" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff hard">Hard</span></td></tr>
+      </table>
+    </div>
+    <div class="tab-panel" data-group="p11" id="panel-p11-code">
+<pre style="margin:0"><span class="cm">// 3Sum — sort + two pointers + skip duplicates</span>
+<span class="kw">public</span> List&lt;List&lt;Integer&gt;&gt; threeSum(<span class="kw">int</span>[] nums) {
+    Arrays.sort(nums);
+    List&lt;List&lt;Integer&gt;&gt; res = <span class="kw">new</span> ArrayList&lt;&gt;();
+    <span class="kw">for</span> (<span class="kw">int</span> i = 0; i < nums.length - 2; i++) {
+        <span class="kw">if</span> (i > 0 && nums[i] == nums[i-1]) <span class="kw">continue</span>; <span class="cm">// skip dup</span>
+        <span class="kw">int</span> l = i+1, r = nums.length-1;
+        <span class="kw">while</span> (l < r) {
+            <span class="kw">int</span> s = nums[i]+nums[l]+nums[r];
+            <span class="kw">if</span> (s == 0) {
+                res.add(Arrays.asList(nums[i],nums[l],nums[r]));
+                <span class="kw">while</span> (l < r && nums[l]==nums[l+1]) l++;
+                <span class="kw">while</span> (l < r && nums[r]==nums[r-1]) r--;
+                l++; r--;
+            } <span class="kw">else if</span> (s < 0) l++; <span class="kw">else</span> r--;
+        }
+    }
+    <span class="kw">return</span> res;
+}</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PATTERN 12: TRIE ══ -->
+<div class="pattern-header" data-level="advanced">
+  <div class="pattern-hd" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.chev').classList.toggle('open')">
+    <div class="chkbox" id="chk-p12" onclick="event.stopPropagation();dsaToggle('p12')" style="flex-shrink:0"></div>
+    <div class="sec-icon" style="background:var(--adv-bg);width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">🌲</div>
+    <div style="flex:1"><div style="font-size:13px;font-weight:600">12 · Trie — Prefix Tree</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Implement Trie · Word Search II · Design Add & Search Words</div></div>
+    <span class="sec-lv lv-adv">Hard</span><span class="chev open" style="font-size:10px;color:var(--text3);transition:transform .2s">▼</span>
+  </div>
+  <div class="pattern-body open">
+    <div class="tab-inner">
+      <div class="tab active" data-group="p12" id="tab-p12-cq" onclick="switchTab('p12','cq')">Concept Questions</div>
+      <div class="tab" data-group="p12" id="tab-p12-prob" onclick="switchTab('p12','prob')">Problems & Links</div>
+      <div class="tab" data-group="p12" id="tab-p12-code" onclick="switchTab('p12','code')">Key Code</div>
+    </div>
+    <div class="tab-panel active" data-group="p12" id="panel-p12-cq">
+      <div class="concept-block">
+        <div class="cq-title">Concept questions</div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>What is a Trie and when do you use it?</strong> A tree where each node represents a character. All words sharing a prefix share nodes. Use when: autocomplete, spell check, prefix searching. O(L) insert/search where L = word length — faster than HashMap for prefix queries.</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>Trie node structure?</strong> Each node has children[26] (or HashMap&lt;Character, TrieNode&gt;) and a boolean isEnd. Insert: walk characters, creating nodes as needed. Search: walk characters, return false if any node missing.</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>Why HashMap children vs array[26]?</strong> Array[26] is faster (O(1) index) but wastes memory for sparse alphabets. HashMap uses less memory but O(1) average with hash overhead. For interview: array[26] is simpler to code and faster to explain.</span></div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="p12" id="panel-p12-prob">
+      <table class="q-table"><tr><th>#</th><th>Problem</th><th>Diff</th></tr>
+        <tr class="q-row"><td class="q-num">1</td><td><div class="q-name">Implement Trie (Prefix Tree)</div><div class="q-insight">children[26] + isEnd. Insert walks creating nodes. Search/startsWith walk returning false if missing.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/implement-trie-prefix-tree/" target="_blank">↗ LC 208</a><a class="q-link neet" href="https://www.youtube.com/watch?v=oobqoCJlHA0" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff med">Med</span></td></tr>
+        <tr class="q-row"><td class="q-num">2</td><td><div class="q-name">Design Add and Search Words Data Structure</div><div class="q-insight">'.' matches any char — use DFS with branching at dot positions.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/design-add-and-search-words-data-structure/" target="_blank">↗ LC 211</a><a class="q-link neet" href="https://www.youtube.com/watch?v=BTf05gs_8iU" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff med">Med</span></td></tr>
+        <tr class="q-row"><td class="q-num">3</td><td><div class="q-name">Word Search II</div><div class="q-insight">Build Trie from word list. DFS on grid, pruning when current path not in Trie.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/word-search-ii/" target="_blank">↗ LC 212</a><a class="q-link neet" href="https://www.youtube.com/watch?v=asbcE9mZz_U" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff hard">Hard</span></td></tr>
+      </table>
+    </div>
+    <div class="tab-panel" data-group="p12" id="panel-p12-code">
+<pre style="margin:0"><span class="cm">// Trie — array[26] children approach</span>
+<span class="kw">class</span> TrieNode {
+    TrieNode[] ch = <span class="kw">new</span> TrieNode[<span class="nu">26</span>];
+    <span class="kw">boolean</span> end;
+}
+<span class="kw">class</span> Trie {
+    TrieNode root = <span class="kw">new</span> TrieNode();
+    <span class="kw">void</span> insert(String w) {
+        TrieNode cur = root;
+        <span class="kw">for</span> (<span class="kw">char</span> c : w.toCharArray()) {
+            <span class="kw">int</span> i = c - <span class="str">'a'</span>;
+            <span class="kw">if</span> (cur.ch[i] == <span class="kw">null</span>) cur.ch[i] = <span class="kw">new</span> TrieNode();
+            cur = cur.ch[i];
+        }
+        cur.end = <span class="kw">true</span>;
+    }
+    <span class="kw">boolean</span> search(String w) {
+        TrieNode cur = root;
+        <span class="kw">for</span> (<span class="kw">char</span> c : w.toCharArray()) {
+            <span class="kw">int</span> i = c - <span class="str">'a'</span>;
+            <span class="kw">if</span> (cur.ch[i] == <span class="kw">null</span>) <span class="kw">return false</span>;
+            cur = cur.ch[i];
+        }
+        <span class="kw">return</span> cur.end;
+    }
+    <span class="kw">boolean</span> startsWith(String p) { <span class="cm">/* same but return true at end */</span> <span class="kw">return true</span>; }
+}</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PATTERN 13: BIT MANIPULATION ══ -->
+<div class="pattern-header" data-level="intermediate">
+  <div class="pattern-hd" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.chev').classList.toggle('open')">
+    <div class="chkbox" id="chk-p13" onclick="event.stopPropagation();dsaToggle('p13')" style="flex-shrink:0"></div>
+    <div class="sec-icon" style="background:var(--int-bg);width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">🔢</div>
+    <div style="flex:1"><div style="font-size:13px;font-weight:600">13 · Bit Manipulation — XOR & Bitmasks</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Single Number · Number of 1 Bits · Reverse Bits · Missing Number</div></div>
+    <span class="sec-lv lv-int">Medium</span><span class="chev open" style="font-size:10px;color:var(--text3);transition:transform .2s">▼</span>
+  </div>
+  <div class="pattern-body open">
+    <div class="tab-inner">
+      <div class="tab active" data-group="p13" id="tab-p13-cq" onclick="switchTab('p13','cq')">Concept Questions</div>
+      <div class="tab" data-group="p13" id="tab-p13-prob" onclick="switchTab('p13','prob')">Problems & Links</div>
+      <div class="tab" data-group="p13" id="tab-p13-code" onclick="switchTab('p13','code')">Key Code</div>
+    </div>
+    <div class="tab-panel active" data-group="p13" id="panel-p13-cq">
+      <div class="concept-block">
+        <div class="cq-title">Essential bit tricks to memorize</div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>XOR properties:</strong> n ^ n = 0, n ^ 0 = n, XOR is commutative/associative. So XOR-ing all numbers where one appears once cancels duplicates, leaving the unique one.</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>n & (n-1) — what does it do?</strong> Clears the lowest set bit of n. If n & (n-1) == 0, n is a power of 2. Count 1-bits by repeatedly applying until n == 0.</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>Check if bit i is set:</strong> (n >> i) & 1. Set bit i: n | (1 << i). Clear bit i: n & ~(1 << i). Toggle bit i: n ^ (1 << i).</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>Missing Number trick:</strong> XOR 0..n with all array elements. Pairs cancel, leaving the missing number. Alternative: sum(0..n) - sum(array).</span></div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="p13" id="panel-p13-prob">
+      <table class="q-table"><tr><th>#</th><th>Problem</th><th>Diff</th></tr>
+        <tr class="q-row"><td class="q-num">1</td><td><div class="q-name">Single Number</div><div class="q-insight">XOR all elements. Duplicates cancel (n^n=0). One unique element remains.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/single-number/" target="_blank">↗ LC 136</a></div></td><td><span class="q-diff easy">Easy</span></td></tr>
+        <tr class="q-row"><td class="q-num">2</td><td><div class="q-name">Number of 1 Bits (Hamming Weight)</div><div class="q-insight">n & (n-1) clears lowest bit. Count how many times until n==0.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/number-of-1-bits/" target="_blank">↗ LC 191</a><a class="q-link neet" href="https://www.youtube.com/watch?v=5Km3utixwZs" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff easy">Easy</span></td></tr>
+        <tr class="q-row"><td class="q-num">3</td><td><div class="q-name">Missing Number</div><div class="q-insight">XOR indices 0..n with all values. Paired numbers cancel, missing remains.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/missing-number/" target="_blank">↗ LC 268</a></div></td><td><span class="q-diff easy">Easy</span></td></tr>
+        <tr class="q-row"><td class="q-num">4</td><td><div class="q-name">Sum of Two Integers (no + operator)</div><div class="q-insight">a^b gives sum without carry. (a&b)<<1 gives carry. Repeat until carry=0.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/sum-of-two-integers/" target="_blank">↗ LC 371</a><a class="q-link neet" href="https://www.youtube.com/watch?v=gVUrDV4tZfY" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff med">Med</span></td></tr>
+      </table>
+    </div>
+    <div class="tab-panel" data-group="p13" id="panel-p13-code">
+<pre style="margin:0"><span class="cm">// Single Number — XOR trick, O(n) time O(1) space</span>
+<span class="kw">public int</span> singleNumber(<span class="kw">int</span>[] nums) {
+    <span class="kw">int</span> res = 0;
+    <span class="kw">for</span> (<span class="kw">int</span> n : nums) res ^= n; <span class="cm">// n^n=0, n^0=n</span>
+    <span class="kw">return</span> res;
+}
+
+<span class="cm">// Count bits — n&(n-1) clears lowest set bit</span>
+<span class="kw">public int</span> hammingWeight(<span class="kw">int</span> n) {
+    <span class="kw">int</span> count = 0;
+    <span class="kw">while</span> (n != 0) { n &= (n-1); count++; }
+    <span class="kw">return</span> count;
+}
+
+<span class="cm">// Bit tricks cheatsheet:
+// n & (n-1)  → clears lowest set bit
+// n & (-n)   → isolates lowest set bit  
+// n >> i & 1 → check bit i
+// n | (1<<i) → set bit i
+// n ^ (1<<i) → toggle bit i</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PATTERN 14: GREEDY ══ -->
+<div class="pattern-header" data-level="intermediate">
+  <div class="pattern-hd" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.chev').classList.toggle('open')">
+    <div class="chkbox" id="chk-p14" onclick="event.stopPropagation();dsaToggle('p14')" style="flex-shrink:0"></div>
+    <div class="sec-icon" style="background:var(--int-bg);width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">💰</div>
+    <div style="flex:1"><div style="font-size:13px;font-weight:600">14 · Greedy — Locally Optimal Choices</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Jump Game · Gas Station · Merge Intervals · Task Scheduler</div></div>
+    <span class="sec-lv lv-int">Medium</span><span class="chev open" style="font-size:10px;color:var(--text3);transition:transform .2s">▼</span>
+  </div>
+  <div class="pattern-body open">
+    <div class="tab-inner">
+      <div class="tab active" data-group="p14" id="tab-p14-cq" onclick="switchTab('p14','cq')">Concept Questions</div>
+      <div class="tab" data-group="p14" id="tab-p14-prob" onclick="switchTab('p14','prob')">Problems & Links</div>
+      <div class="tab" data-group="p14" id="tab-p14-code" onclick="switchTab('p14','code')">Key Code</div>
+    </div>
+    <div class="tab-panel active" data-group="p14" id="panel-p14-cq">
+      <div class="concept-block">
+        <div class="cq-title">Concept questions</div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>What makes greedy valid?</strong> Greedy works when a locally optimal choice at each step leads to a globally optimal solution. You need to prove (or argue) that you never need to reconsider a choice. If you can't prove this, use DP instead.</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>Greedy vs DP — how do you decide?</strong> Try greedy first: can you make a clear locally optimal choice? If yes, verify it doesn't require reconsidering. If choices depend on future decisions or you need to try all options → DP.</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>Merge Intervals strategy?</strong> Sort by start time. For each interval, if it overlaps the last merged (curr.start &lt;= last.end), merge by extending end. Otherwise add as new interval.</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>Jump Game — what's the greedy insight?</strong> Track maxReach = furthest index reachable so far. At each i, update maxReach = max(maxReach, i + nums[i]). If i ever exceeds maxReach, you're stuck.</span></div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="p14" id="panel-p14-prob">
+      <table class="q-table"><tr><th>#</th><th>Problem</th><th>Diff</th></tr>
+        <tr class="q-row"><td class="q-num">1</td><td><div class="q-name">Jump Game</div><div class="q-insight">Track max reachable index. If i > maxReach, return false.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/jump-game/" target="_blank">↗ LC 55</a><a class="q-link neet" href="https://www.youtube.com/watch?v=Yan0cv2cLy8" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff med">Med</span></td></tr>
+        <tr class="q-row"><td class="q-num">2</td><td><div class="q-name">Merge Intervals</div><div class="q-insight">Sort by start. Merge if overlap (curr.start &lt;= last.end). Extend end.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/merge-intervals/" target="_blank">↗ LC 56</a><a class="q-link neet" href="https://www.youtube.com/watch?v=44H3cEC2fFM" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff med">Med</span></td></tr>
+        <tr class="q-row"><td class="q-num">3</td><td><div class="q-name">Gas Station</div><div class="q-insight">If total gas &gt;= total cost, solution exists. Start where cumulative tank first goes negative.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/gas-station/" target="_blank">↗ LC 134</a><a class="q-link neet" href="https://www.youtube.com/watch?v=lJwbPZGo05A" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff med">Med</span></td></tr>
+        <tr class="q-row"><td class="q-num">4</td><td><div class="q-name">Task Scheduler</div><div class="q-insight">Most frequent task determines idle time. Result = max(tasks.length, (maxFreq-1)*(n+1) + countOfMaxFreq).</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/task-scheduler/" target="_blank">↗ LC 621</a><a class="q-link neet" href="https://www.youtube.com/watch?v=s8p8ukTyA2I" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff med">Med</span></td></tr>
+      </table>
+    </div>
+    <div class="tab-panel" data-group="p14" id="panel-p14-code">
+<pre style="margin:0"><span class="cm">// Jump Game — greedy max reach</span>
+<span class="kw">public boolean</span> canJump(<span class="kw">int</span>[] nums) {
+    <span class="kw">int</span> maxReach = 0;
+    <span class="kw">for</span> (<span class="kw">int</span> i = 0; i < nums.length; i++) {
+        <span class="kw">if</span> (i > maxReach) <span class="kw">return false</span>;
+        maxReach = Math.max(maxReach, i + nums[i]);
+    }
+    <span class="kw">return true</span>;
+}
+
+<span class="cm">// Merge Intervals</span>
+<span class="kw">public int</span>[][] merge(<span class="kw">int</span>[][] intervals) {
+    Arrays.sort(intervals, (a,b) -> a[0]-b[0]);
+    List&lt;<span class="kw">int</span>[]&gt; res = <span class="kw">new</span> ArrayList&lt;&gt;();
+    <span class="kw">for</span> (<span class="kw">int</span>[] iv : intervals) {
+        <span class="kw">if</span> (res.isEmpty() || res.get(res.size()-1)[1] < iv[0])
+            res.add(iv);
+        <span class="kw">else</span>
+            res.get(res.size()-1)[1] = Math.max(res.get(res.size()-1)[1], iv[1]);
+    }
+    <span class="kw">return</span> res.toArray(<span class="kw">new int</span>[0][]);
+}</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PATTERN 15: UNION FIND ══ -->
+<div class="pattern-header" data-level="advanced">
+  <div class="pattern-hd" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.chev').classList.toggle('open')">
+    <div class="chkbox" id="chk-p15" onclick="event.stopPropagation();dsaToggle('p15')" style="flex-shrink:0"></div>
+    <div class="sec-icon" style="background:var(--adv-bg);width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">🔗</div>
+    <div style="flex:1"><div style="font-size:13px;font-weight:600">15 · Union Find (Disjoint Set)</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Redundant Connection · Accounts Merge · Number of Provinces</div></div>
+    <span class="sec-lv lv-adv">Hard</span><span class="chev open" style="font-size:10px;color:var(--text3);transition:transform .2s">▼</span>
+  </div>
+  <div class="pattern-body open">
+    <div class="tab-inner">
+      <div class="tab active" data-group="p15" id="tab-p15-cq" onclick="switchTab('p15','cq')">Concept Questions</div>
+      <div class="tab" data-group="p15" id="tab-p15-prob" onclick="switchTab('p15','prob')">Problems & Links</div>
+      <div class="tab" data-group="p15" id="tab-p15-code" onclick="switchTab('p15','code')">Key Code</div>
+    </div>
+    <div class="tab-panel active" data-group="p15" id="panel-p15-cq">
+      <div class="concept-block">
+        <div class="cq-title">Concept questions</div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>When to use Union Find vs Graph DFS?</strong> Union Find is better when you repeatedly need to check if two nodes are connected or merge groups dynamically. DFS/BFS is better for traversal-based problems. Key signal: "are these connected?" + dynamic edge additions.</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>Path compression — what and why?</strong> After find(x), make every node on the path point directly to root. Subsequent finds are O(1). Without it, worst case O(n) per find.</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>Union by rank — what and why?</strong> Always attach smaller tree under larger. Keeps tree flat. Combined with path compression: O(α(n)) per operation, effectively O(1).</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>How to detect a cycle with Union Find?</strong> For each edge (u, v): if find(u) == find(v), they're already connected → adding this edge creates a cycle. Otherwise union them.</span></div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="p15" id="panel-p15-prob">
+      <table class="q-table"><tr><th>#</th><th>Problem</th><th>Diff</th></tr>
+        <tr class="q-row"><td class="q-num">1</td><td><div class="q-name">Number of Provinces</div><div class="q-insight">Union cities connected by roads. Count distinct roots = provinces.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/number-of-provinces/" target="_blank">↗ LC 547</a><a class="q-link neet" href="https://www.youtube.com/watch?v=CS4cn0GxGxM" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff med">Med</span></td></tr>
+        <tr class="q-row"><td class="q-num">2</td><td><div class="q-name">Redundant Connection</div><div class="q-insight">Process edges; if find(u)==find(v) before union → this edge is redundant (creates cycle).</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/redundant-connection/" target="_blank">↗ LC 684</a><a class="q-link neet" href="https://www.youtube.com/watch?v=FXWRE9XnAn4" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff med">Med</span></td></tr>
+        <tr class="q-row"><td class="q-num">3</td><td><div class="q-name">Accounts Merge</div><div class="q-insight">Union emails belonging to same account. Group by root → merge and sort.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/accounts-merge/" target="_blank">↗ LC 721</a><a class="q-link neet" href="https://www.youtube.com/watch?v=6st4IxEF-90" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff med">Med</span></td></tr>
+      </table>
+    </div>
+    <div class="tab-panel" data-group="p15" id="panel-p15-code">
+<pre style="margin:0"><span class="cm">// Union Find — path compression + union by rank</span>
+<span class="kw">class</span> UnionFind {
+    <span class="kw">int</span>[] parent, rank;
+    UnionFind(<span class="kw">int</span> n) {
+        parent = <span class="kw">new int</span>[n]; rank = <span class="kw">new int</span>[n];
+        <span class="kw">for</span> (<span class="kw">int</span> i=0;i<n;i++) parent[i]=i;
+    }
+    <span class="kw">int</span> find(<span class="kw">int</span> x) {
+        <span class="kw">if</span> (parent[x]!=x) parent[x]=find(parent[x]); <span class="cm">// path compression</span>
+        <span class="kw">return</span> parent[x];
+    }
+    <span class="kw">boolean</span> union(<span class="kw">int</span> x, <span class="kw">int</span> y) {
+        <span class="kw">int</span> px=find(x), py=find(y);
+        <span class="kw">if</span> (px==py) <span class="kw">return false</span>; <span class="cm">// already connected</span>
+        <span class="kw">if</span> (rank[px]<rank[py]) parent[px]=py;
+        <span class="kw">else if</span> (rank[px]>rank[py]) parent[py]=px;
+        <span class="kw">else</span> { parent[py]=px; rank[px]++; }
+        <span class="kw">return true</span>;
+    }
+}</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PATTERN 16: INTERVALS ══ -->
+<div class="pattern-header" data-level="intermediate">
+  <div class="pattern-hd" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.chev').classList.toggle('open')">
+    <div class="chkbox" id="chk-p16" onclick="event.stopPropagation();dsaToggle('p16')" style="flex-shrink:0"></div>
+    <div class="sec-icon" style="background:var(--int-bg);width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">📏</div>
+    <div style="flex:1"><div style="font-size:13px;font-weight:600">16 · Intervals — Overlapping & Scheduling</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Insert Interval · Non-overlapping Intervals · Meeting Rooms II</div></div>
+    <span class="sec-lv lv-int">Medium</span><span class="chev open" style="font-size:10px;color:var(--text3);transition:transform .2s">▼</span>
+  </div>
+  <div class="pattern-body open">
+    <div class="tab-inner">
+      <div class="tab active" data-group="p16" id="tab-p16-cq" onclick="switchTab('p16','cq')">Concept Questions</div>
+      <div class="tab" data-group="p16" id="tab-p16-prob" onclick="switchTab('p16','prob')">Problems & Links</div>
+      <div class="tab" data-group="p16" id="tab-p16-code" onclick="switchTab('p16','code')">Key Code</div>
+    </div>
+    <div class="tab-panel active" data-group="p16" id="panel-p16-cq">
+      <div class="concept-block">
+        <div class="cq-title">Concept questions</div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>How do you check if two intervals overlap?</strong> [a,b] and [c,d] overlap if a &lt;= d AND c &lt;= b. Non-overlap: b &lt; c OR d &lt; a. Merge condition: sort by start, then curr.start &lt;= last.end.</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>Meeting Rooms II — min conference rooms?</strong> Sort by start time. Use a min-heap of end times. If next meeting starts after earliest ending → reuse that room (pop and push new end). Otherwise add room (push new end). Heap size = rooms needed.</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>Insert Interval — 3 cases?</strong> (1) New interval ends before current starts → add current, done. (2) New interval starts after current ends → add current. (3) Overlap → merge (extend new interval). After loop, add the new interval.</span></div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="p16" id="panel-p16-prob">
+      <table class="q-table"><tr><th>#</th><th>Problem</th><th>Diff</th></tr>
+        <tr class="q-row"><td class="q-num">1</td><td><div class="q-name">Insert Interval</div><div class="q-insight">3 phases: before overlap (add all), during overlap (merge), after overlap (add rest + merged).</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/insert-interval/" target="_blank">↗ LC 57</a><a class="q-link neet" href="https://www.youtube.com/watch?v=A8NUOmlwOlM" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff med">Med</span></td></tr>
+        <tr class="q-row"><td class="q-num">2</td><td><div class="q-name">Non-Overlapping Intervals</div><div class="q-insight">Greedy: sort by end. Greedily keep intervals. When overlap, remove the one ending later (higher end = more conflicts).</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/non-overlapping-intervals/" target="_blank">↗ LC 435</a><a class="q-link neet" href="https://www.youtube.com/watch?v=nONCGxWoUfM" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff med">Med</span></td></tr>
+        <tr class="q-row"><td class="q-num">3</td><td><div class="q-name">Meeting Rooms II</div><div class="q-insight">Min-heap of end times. If next.start &gt;= heap.peek() reuse room (pop). Always push end time.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/meeting-rooms-ii/" target="_blank">↗ LC 253</a><a class="q-link neet" href="https://www.youtube.com/watch?v=FdzJmTx9v6s" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff med">Med</span></td></tr>
+      </table>
+    </div>
+    <div class="tab-panel" data-group="p16" id="panel-p16-code">
+<pre style="margin:0"><span class="cm">// Meeting Rooms II — min-heap of end times</span>
+<span class="kw">public int</span> minMeetingRooms(<span class="kw">int</span>[][] intervals) {
+    Arrays.sort(intervals, (a,b) -> a[0]-b[0]);
+    PriorityQueue&lt;Integer&gt; heap = <span class="kw">new</span> PriorityQueue&lt;&gt;(); <span class="cm">// min-heap of ends</span>
+    <span class="kw">for</span> (<span class="kw">int</span>[] iv : intervals) {
+        <span class="kw">if</span> (!heap.isEmpty() && heap.peek() <= iv[0])
+            heap.poll(); <span class="cm">// reuse room — meeting ended</span>
+        heap.offer(iv[1]); <span class="cm">// add end time</span>
+    }
+    <span class="kw">return</span> heap.size(); <span class="cm">// rooms in use = rooms needed</span>
+}</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PATTERN 17: MATH & STRINGS ══ -->
+<div class="pattern-header" data-level="beginner">
+  <div class="pattern-hd" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.chev').classList.toggle('open')">
+    <div class="chkbox" id="chk-p17" onclick="event.stopPropagation();dsaToggle('p17')" style="flex-shrink:0"></div>
+    <div class="sec-icon" style="background:var(--beg-bg);width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">🔤</div>
+    <div style="flex:1"><div style="font-size:13px;font-weight:600">17 · Strings & Math Patterns</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Palindrome · Anagram · String Encoding · Spiral Matrix</div></div>
+    <span class="sec-lv lv-beg">Easy/Med</span><span class="chev open" style="font-size:10px;color:var(--text3);transition:transform .2s">▼</span>
+  </div>
+  <div class="pattern-body open">
+    <div class="tab-inner">
+      <div class="tab active" data-group="p17" id="tab-p17-cq" onclick="switchTab('p17','cq')">Concept Questions</div>
+      <div class="tab" data-group="p17" id="tab-p17-prob" onclick="switchTab('p17','prob')">Problems & Links</div>
+      <div class="tab" data-group="p17" id="tab-p17-code" onclick="switchTab('p17','code')">Key Code</div>
+    </div>
+    <div class="tab-panel active" data-group="p17" id="panel-p17-cq">
+      <div class="concept-block">
+        <div class="cq-title">Common string interview patterns</div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>Is palindrome — two approaches?</strong> (1) Two pointers from ends, compare characters. O(n) time, O(1) space. (2) Reverse string, compare. Same time but O(n) space. Always prefer two pointers.</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>Anagram check — three approaches?</strong> (1) Sort both strings, compare — O(n log n). (2) Frequency array of 26 chars — O(n). (3) HashMap — O(n). The frequency array is fastest for lowercase alpha.</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>String encoding/decoding (LeetCode 271)?</strong> Encode length of each string + delimiter: "4#word". Delimiter won't conflict since we read the number first. Decode: read digits until #, then read that many characters.</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>Spiral Matrix — how to implement cleanly?</strong> Four boundaries: top, bottom, left, right. Process top row, right col, bottom row, left col. Shrink boundaries after each pass. Stop when top&gt;bottom or left&gt;right.</span></div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="p17" id="panel-p17-prob">
+      <table class="q-table"><tr><th>#</th><th>Problem</th><th>Diff</th></tr>
+        <tr class="q-row"><td class="q-num">1</td><td><div class="q-name">Valid Palindrome</div><div class="q-insight">Two pointers from ends. Skip non-alphanumeric. Compare lowercase chars.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/valid-palindrome/" target="_blank">↗ LC 125</a></div></td><td><span class="q-diff easy">Easy</span></td></tr>
+        <tr class="q-row"><td class="q-num">2</td><td><div class="q-name">Longest Palindromic Substring</div><div class="q-insight">Expand around center. For each i, expand odd (i,i) and even (i,i+1) and track max.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/longest-palindromic-substring/" target="_blank">↗ LC 5</a><a class="q-link neet" href="https://www.youtube.com/watch?v=XYQecbcd6_c" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff med">Med</span></td></tr>
+        <tr class="q-row"><td class="q-num">3</td><td><div class="q-name">Encode and Decode Strings</div><div class="q-insight">Encode: len + "#" + word. Decode: read until #, parse len, read that many chars.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/encode-and-decode-strings/" target="_blank">↗ LC 271</a><a class="q-link neet" href="https://www.youtube.com/watch?v=B1k_sxOSgv8" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff med">Med</span></td></tr>
+        <tr class="q-row"><td class="q-num">4</td><td><div class="q-name">Spiral Matrix</div><div class="q-insight">Four shrinking boundaries: top/bottom/left/right. Process each side, shrink boundary.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/spiral-matrix/" target="_blank">↗ LC 54</a><a class="q-link neet" href="https://www.youtube.com/watch?v=BJnMZNwUk1M" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff med">Med</span></td></tr>
+      </table>
+    </div>
+    <div class="tab-panel" data-group="p17" id="panel-p17-code">
+<pre style="margin:0"><span class="cm">// Longest Palindromic Substring — expand from center</span>
+<span class="kw">public</span> String longestPalindrome(String s) {
+    <span class="kw">int</span> start=0, maxLen=1;
+    <span class="kw">for</span> (<span class="kw">int</span> i=0; i<s.length(); i++) {
+        <span class="cm">// Odd length (single center)</span>
+        <span class="kw">int</span> l=i,r=i;
+        <span class="kw">while</span>(l>=0&&r<s.length()&&s.charAt(l)==s.charAt(r)){l--;r++;}
+        <span class="kw">if</span>(r-l-1>maxLen){start=l+1;maxLen=r-l-1;}
+        <span class="cm">// Even length (double center)</span>
+        l=i;r=i+1;
+        <span class="kw">while</span>(l>=0&&r<s.length()&&s.charAt(l)==s.charAt(r)){l--;r++;}
+        <span class="kw">if</span>(r-l-1>maxLen){start=l+1;maxLen=r-l-1;}
+    }
+    <span class="kw">return</span> s.substring(start,start+maxLen);
+}</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PATTERN 18: ADVANCED DP ══ -->
+<div class="pattern-header" data-level="advanced">
+  <div class="pattern-hd" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.chev').classList.toggle('open')">
+    <div class="chkbox" id="chk-p18" onclick="event.stopPropagation();dsaToggle('p18')" style="flex-shrink:0"></div>
+    <div class="sec-icon" style="background:var(--adv-bg);width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">🧩</div>
+    <div style="flex:1"><div style="font-size:13px;font-weight:600">18 · Advanced DP — 2D & Decision Trees</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Edit Distance · Unique Paths · Burst Balloons · Word Break</div></div>
+    <span class="sec-lv lv-adv">Hard</span><span class="chev open" style="font-size:10px;color:var(--text3);transition:transform .2s">▼</span>
+  </div>
+  <div class="pattern-body open">
+    <div class="tab-inner">
+      <div class="tab active" data-group="p18" id="tab-p18-cq" onclick="switchTab('p18','cq')">Concept Questions</div>
+      <div class="tab" data-group="p18" id="tab-p18-prob" onclick="switchTab('p18','prob')">Problems & Links</div>
+      <div class="tab" data-group="p18" id="tab-p18-code" onclick="switchTab('p18','code')">Key Code</div>
+    </div>
+    <div class="tab-panel active" data-group="p18" id="panel-p18-cq">
+      <div class="concept-block">
+        <div class="cq-title">Concept questions</div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>Edit Distance — define dp[i][j]?</strong> dp[i][j] = min operations to convert word1[0..i] to word2[0..j]. If chars match: dp[i][j] = dp[i-1][j-1]. Else: 1 + min(replace=dp[i-1][j-1], delete=dp[i-1][j], insert=dp[i][j-1]).</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>Unique Paths — why is this DP and not math?</strong> Both work. Math: C(m+n-2, m-1). DP: dp[i][j] = dp[i-1][j] + dp[i][j-1]. DP is safer in interviews as it generalises to obstacles (Unique Paths II — set dp[i][j]=0 at obstacles).</span></div>
+        <div class="cq-item"><div class="cq-dot"></div><span><strong>Word Break — DP approach?</strong> dp[i] = can we form s[0..i-1] from wordDict? For each i, check all j&lt;i: if dp[j] is true and s[j..i] is in dict → dp[i] = true. Use a HashSet for O(1) dict lookup.</span></div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="p18" id="panel-p18-prob">
+      <table class="q-table"><tr><th>#</th><th>Problem</th><th>Diff</th></tr>
+        <tr class="q-row"><td class="q-num">1</td><td><div class="q-name">Unique Paths</div><div class="q-insight">dp[i][j] = dp[i-1][j] + dp[i][j-1]. Base: row 0 and col 0 = 1.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/unique-paths/" target="_blank">↗ LC 62</a><a class="q-link neet" href="https://www.youtube.com/watch?v=IlEsdxuD4lY" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff med">Med</span></td></tr>
+        <tr class="q-row"><td class="q-num">2</td><td><div class="q-name">Word Break</div><div class="q-insight">dp[i] = true if any dp[j] true and s[j..i] in wordSet.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/word-break/" target="_blank">↗ LC 139</a><a class="q-link neet" href="https://www.youtube.com/watch?v=Sx9NNgInc3A" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff med">Med</span></td></tr>
+        <tr class="q-row"><td class="q-num">3</td><td><div class="q-name">Edit Distance</div><div class="q-insight">dp[i][j] min ops to convert. If chars equal: diagonal. Else: 1 + min(3 neighbours).</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/edit-distance/" target="_blank">↗ LC 72</a><a class="q-link neet" href="https://www.youtube.com/watch?v=XYi2-LPrwm4" target="_blank">▶ NeetCode</a></div></td><td><span class="q-diff hard">Hard</span></td></tr>
+        <tr class="q-row"><td class="q-num">4</td><td><div class="q-name">Climbing Stairs (Fibonacci DP)</div><div class="q-insight">dp[i] = dp[i-1] + dp[i-2]. Same recurrence as Fibonacci. Space-optimize to 2 vars.</div><div class="q-links"><a class="q-link" href="https://leetcode.com/problems/climbing-stairs/" target="_blank">↗ LC 70</a></div></td><td><span class="q-diff easy">Easy</span></td></tr>
+      </table>
+    </div>
+    <div class="tab-panel" data-group="p18" id="panel-p18-code">
+<pre style="margin:0"><span class="cm">// Edit Distance — 2D DP</span>
+<span class="kw">public int</span> minDistance(String w1, String w2) {
+    <span class="kw">int</span> m=w1.length(), n=w2.length();
+    <span class="kw">int</span>[][] dp = <span class="kw">new int</span>[m+1][n+1];
+    <span class="kw">for</span>(<span class="kw">int</span> i=0;i<=m;i++) dp[i][0]=i; <span class="cm">// delete all of w1</span>
+    <span class="kw">for</span>(<span class="kw">int</span> j=0;j<=n;j++) dp[0][j]=j; <span class="cm">// insert all of w2</span>
+    <span class="kw">for</span>(<span class="kw">int</span> i=1;i<=m;i++)
+        <span class="kw">for</span>(<span class="kw">int</span> j=1;j<=n;j++)
+            <span class="kw">if</span>(w1.charAt(i-1)==w2.charAt(j-1))
+                dp[i][j]=dp[i-1][j-1];
+            <span class="kw">else</span>
+                dp[i][j]=1+Math.min(dp[i-1][j-1],Math.min(dp[i-1][j],dp[i][j-1]));
+    <span class="kw">return</span> dp[m][n];
+}</pre>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════════════════════════════════════════════════════
      QUICK REFERENCE
      ══════════════════════════════════════════════════════════ -->
@@ -782,19 +1212,27 @@
   </div>
   <div class="sec-body open">
     <div style="padding:14px">
-      <div class="callout c-warn" style="margin-bottom:14px"><strong>5-minute rule:</strong> If you can't code a problem from scratch in 5 minutes, you don't own the pattern yet. Track which ones you're still slow on and drill those specifically before July 9.</div>
+      <div class="callout c-warn" style="margin-bottom:14px"><strong>5-minute rule:</strong> If you can't code a problem from scratch in 5 minutes, you don't own the pattern yet. Track which ones you're still slow on and drill those specifically.</div>
       <table class="ref-table">
         <tr><th>Pattern</th><th>Key Problems</th><th>Signal phrase</th><th>Complexity</th></tr>
-        <tr><td><strong>HashMap</strong></td><td>Two Sum, Group Anagrams, LRU Cache</td><td>"find pairs", "count frequency", "O(1) lookup"</td><td>O(n) time, O(n) space</td></tr>
-        <tr><td><strong>Sliding Window</strong></td><td>Longest Substring, Min Window</td><td>"subarray/substring", "contiguous", "at most K"</td><td>O(n) time</td></tr>
-        <tr><td><strong>Trees DFS/BFS</strong></td><td>Level Order, Validate BST, LCA</td><td>"depth", "level", "path", "BST property"</td><td>O(n) time, O(h) space</td></tr>
-        <tr><td><strong>Linked List</strong></td><td>Reverse, Cycle II, Remove Nth</td><td>"in-place", "cycle", "from end"</td><td>O(n) time, O(1) space</td></tr>
-        <tr><td><strong>Binary Search</strong></td><td>Koko Bananas, Rotated Array</td><td>"sorted", "minimum/maximum satisfying X", "O(log n)"</td><td>O(n log n) or O(log n)</td></tr>
-        <tr><td><strong>DP</strong></td><td>House Robber, Coin Change, LCS</td><td>"optimal", "count ways", "min/max", "overlapping"</td><td>O(n) or O(n²)</td></tr>
-        <tr><td><strong>Graphs</strong></td><td>Islands, Course Schedule, Clone</td><td>"connected components", "cycle", "dependencies"</td><td>O(V+E)</td></tr>
-        <tr><td><strong>Heap</strong></td><td>Kth Largest, Top K Frequent, Median</td><td>"top K", "kth largest/smallest", "streaming"</td><td>O(n log k)</td></tr>
-        <tr><td><strong>Stack</strong></td><td>Valid Parens, Daily Temps, Min Stack</td><td>"matching brackets", "next greater", "previous smaller"</td><td>O(n) time</td></tr>
-        <tr><td><strong>Backtracking</strong></td><td>Subsets, Permutations, Combination Sum</td><td>"all combinations", "all permutations", "generate all"</td><td>O(2ⁿ) or O(n!)</td></tr>
+        <tr><td><strong>1 HashMap</strong></td><td>Two Sum, Group Anagrams, LRU Cache</td><td>"find pairs", "count frequency"</td><td>O(n) / O(n)</td></tr>
+        <tr><td><strong>2 Sliding Window</strong></td><td>Longest Substring, Min Window</td><td>"subarray", "contiguous", "at most K"</td><td>O(n) / O(1)</td></tr>
+        <tr><td><strong>3 Trees</strong></td><td>Level Order, Validate BST, LCA</td><td>"depth", "level", "BST property"</td><td>O(n) / O(h)</td></tr>
+        <tr><td><strong>4 Linked List</strong></td><td>Reverse, Cycle II, Remove Nth</td><td>"in-place", "cycle", "from end"</td><td>O(n) / O(1)</td></tr>
+        <tr><td><strong>5 Binary Search</strong></td><td>Koko Bananas, Rotated Array</td><td>"sorted", "minimum satisfying X"</td><td>O(log n)</td></tr>
+        <tr><td><strong>6 DP 1D</strong></td><td>House Robber, Coin Change</td><td>"optimal substructure", "overlapping"</td><td>O(n) / O(n)</td></tr>
+        <tr><td><strong>7 Graphs</strong></td><td>Islands, Course Schedule</td><td>"connected components", "cycle"</td><td>O(V+E)</td></tr>
+        <tr><td><strong>8 Heap</strong></td><td>Kth Largest, Median Stream</td><td>"top K", "kth largest", "streaming"</td><td>O(n log k)</td></tr>
+        <tr><td><strong>9 Stack</strong></td><td>Valid Parens, Daily Temps</td><td>"matching brackets", "next greater"</td><td>O(n) / O(n)</td></tr>
+        <tr><td><strong>10 Backtracking</strong></td><td>Subsets, Permutations</td><td>"all combinations", "generate all"</td><td>O(2ⁿ) or O(n!)</td></tr>
+        <tr><td><strong>11 Two Pointers</strong></td><td>3Sum, Container, Rain Water</td><td>"sorted array", "pair/triplet sum"</td><td>O(n) / O(1)</td></tr>
+        <tr><td><strong>12 Trie</strong></td><td>Implement Trie, Word Search II</td><td>"prefix", "autocomplete", "dictionary"</td><td>O(L) per op</td></tr>
+        <tr><td><strong>13 Bit Manipulation</strong></td><td>Single Number, Missing Number</td><td>"XOR", "power of 2", "without extra space"</td><td>O(n) / O(1)</td></tr>
+        <tr><td><strong>14 Greedy</strong></td><td>Jump Game, Merge Intervals</td><td>"locally optimal", "minimum removals"</td><td>O(n log n)</td></tr>
+        <tr><td><strong>15 Union Find</strong></td><td>Redundant Connection, Accounts Merge</td><td>"connected?", "merge groups", "cycle in undirected"</td><td>O(α(n))</td></tr>
+        <tr><td><strong>16 Intervals</strong></td><td>Insert Interval, Meeting Rooms II</td><td>"overlapping", "scheduling", "merge"</td><td>O(n log n)</td></tr>
+        <tr><td><strong>17 Strings</strong></td><td>Palindrome, Spiral Matrix</td><td>"palindrome", "anagram", "spiral"</td><td>O(n) / O(1)</td></tr>
+        <tr><td><strong>18 Advanced DP</strong></td><td>Edit Distance, Word Break</td><td>"min operations", "can form string"</td><td>O(m×n)</td></tr>
       </table>
     </div>
   </div>
@@ -804,8 +1242,8 @@
 <script src="shared.js"></script>
 <script>
 buildNav('dsa');
-const dsaDone = initChecks('dsa-done', 10, 'dsa-done', 'dsa-pct', 'dsa-fill');
-function dsaToggle(id){ toggleCheck(id, dsaDone, 'dsa-done', 10, 'dsa-done', 'dsa-pct', 'dsa-fill'); }
+const dsaDone = initChecks('dsa-done', 18, 'dsa-done', 'dsa-pct', 'dsa-fill');
+function dsaToggle(id){ toggleCheck(id, dsaDone, 'dsa-done', 18, 'dsa-done', 'dsa-pct', 'dsa-fill'); }
 </script>
 </body>
 </html>

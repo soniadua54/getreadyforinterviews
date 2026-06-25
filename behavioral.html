@@ -36,18 +36,18 @@
       <div class="hero-sub">Staff-level scenarios · Influence · Cross-team decisions · Incident ownership</div>
     </div>
   </div>
-  <div class="hero-desc">This round was completely absent from your prep kit. At Staff level, the behavioral round carries as much weight as system design. The bar shifts from "did you build it" to "how did you drive it, align teams on it, and handle it going wrong." Agoda specifically probes for scope, ownership, and influence without authority. Prepared answers with your real examples — not generic STAR templates.</div>
-  <div class="callout c-gap" style="margin-top:10px"><strong>Gap flagged:</strong> Zero behavioral prep existed. A technically perfect system design round can still fail if the behavioral round reveals someone who can't operate at Staff scope — no cross-team examples, no "I was wrong" moments, no evidence of technical leadership beyond writing code.</div>
+  <div class="hero-desc">At Staff level, the behavioral round carries as much weight as system design. The bar shifts from "did you build it" to "how did you drive it, align teams on it, and handle it going wrong." Top companies — Google, Amazon, Meta, Agoda — probe for scope, ownership, and influence without authority. Prepared answers using real examples, not generic STAR templates.</div>
+  <div class="callout c-gap" style="margin-top:10px"><strong>Why this section matters:</strong> A technically perfect system design round can still fail if the behavioral round reveals someone who can't operate at Staff scope — no cross-team examples, no "I was wrong" moments, no evidence of technical leadership beyond writing code.</div>
 </div>
 
 <div class="stats">
   <div class="stat"><div class="stat-n" id="beh-done" style="color:var(--green)">0</div><div class="stat-l">Done</div></div>
-  <div class="stat"><div class="stat-n" style="color:var(--int)">8</div><div class="stat-l">Scenarios</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--int)">12</div><div class="stat-l">Scenarios</div></div>
   <div class="stat"><div class="stat-n" style="color:var(--orange)">2</div><div class="stat-l">Frameworks</div></div>
   <div class="stat"><div class="stat-n" style="color:var(--purple)">1h</div><div class="stat-l">Typical round</div></div>
 </div>
 <div class="prog-wrap">
-  <div class="prog-label"><span>Progress — answers prepared</span><span id="beh-pct">0 / 8</span></div>
+  <div class="prog-label"><span>Progress — answers prepared</span><span id="beh-pct">0 / 12</span></div>
   <div class="prog-bar"><div class="prog-fill" id="beh-fill" style="width:0%"></div></div>
 </div>
 
@@ -332,6 +332,119 @@ I committed to. Now is the natural time to make the move."</span></pre>
   </div>
 </div>
 
+<!-- SCENARIO 9 -->
+<div class="story-card">
+  <div class="story-hd" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.chev').classList.toggle('open')">
+    <div style="flex:1"><div class="story-q">Tell me about a time you had to make a decision with incomplete information. What happened and what did you learn?</div><div style="font-size:11px;color:var(--text3);margin-top:3px">Judgment under uncertainty · Decision frameworks</div></div>
+    <span class="story-tag b-int">Judgment</span><span class="chev" style="font-size:10px;color:var(--text3);transition:transform .2s;margin-top:3px">▼</span>
+  </div>
+  <div class="story-body">
+    <div class="star-block">
+      <div class="star-label">What they're actually testing</div>
+      <p style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:10px">Can you act decisively without complete information? Do you know when you have enough data to decide vs when you need more? Do you course-correct based on new information?</p>
+      <div class="star-label">Your answer structure</div>
+      <div class="star-row"><span class="star-key star-s">S</span><span>The season-ahead demand forecast for June-July 2026. You had no IBM actual data for the forecast period (it doesn't exist yet), and the deadline for SLDC submission was fixed.</span></div>
+      <div class="star-row"><span class="star-key star-t">T</span><span>Needed a defensible forecast without ground truth for the target period. Decision: use El Niño analog data from 2024 as a proxy, knowing it's imperfect but bounded.</span></div>
+      <div class="star-row"><span class="star-key star-a">A</span><span>Explain the decision criteria: "I needed enough confidence to defend the methodology to SLDC, not perfect data. I assessed three options — extrapolation from recent trends, climatological average, El Niño analog. Analog had the strongest precedent and the most interpretable uncertainty bounds. I documented the assumption explicitly in the submission."</span></div>
+      <div class="star-row"><span class="star-key star-r">R</span><span>Delivered on time. The documented assumption gave SLDC something to validate against. Learning: "I should have established the data strategy earlier in the project rather than discovering the gap at T-2 weeks."</span></div>
+    </div>
+    <div class="staff-signal"><div class="signal-label">🎯 Staff signal</div>You named your decision criteria explicitly and documented your uncertainty. Junior engineers either freeze waiting for more data, or charge ahead without acknowledging what they don't know. Staff engineers decide with documented assumptions.</div>
+  </div>
+</div>
+
+<!-- SCENARIO 10 -->
+<div class="story-card">
+  <div class="story-hd" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.chev').classList.toggle('open')">
+    <div style="flex:1"><div class="story-q">How do you handle it when a senior stakeholder is wrong about a technical direction?</div><div style="font-size:11px;color:var(--text3);margin-top:3px">Managing up · Constructive influence</div></div>
+    <span class="story-tag b-adv">Managing up</span><span class="chev" style="font-size:10px;color:var(--text3);transition:transform .2s;margin-top:3px">▼</span>
+  </div>
+  <div class="story-body">
+    <div class="star-block">
+      <div class="star-label">The framework they want to hear</div>
+<pre style="font-size:11.5px;background:var(--bg3);padding:10px;border-radius:6px;margin:0 0 12px">Step 1: Make sure YOU are not wrong.
+        Steel-man their position. What's the best version of their argument?
+        What do they know that you don't?
+
+Step 2: Understand their constraints.
+        Are they optimising for something you can't see? (political, budget, timeline)
+        Is this actually a technical question or a business priority?
+
+Step 3: Find the data.
+        "I could be wrong — here's how we could test this with minimal risk."
+        Spike, prototype, or find prior evidence.
+
+Step 4: Present, don't lobby.
+        One clear writeup with trade-offs. Not repeated hallway conversations.
+        Give them a way to update their view without losing face.
+
+Step 5: If they still disagree — disagree and commit.
+        State your disagreement once, clearly. Then execute their decision fully.</pre>
+      <div class="star-row"><span class="star-key star-a">A</span><span>Give a concrete example: "My manager wanted to use a polling approach for real-time availability updates. I disagreed — at our request volume it would hammer the DB. I wrote a one-page comparison with load estimates. He had a concern I hadn't considered (WebSocket infrastructure we didn't own). We landed on SSE as a middle ground. The key was I didn't lobby repeatedly — I gave him one clear document and let him decide."</span></div>
+    </div>
+    <div class="staff-signal"><div class="signal-label">🎯 Staff signal</div>You treat the stakeholder as an intelligent person with different context, not an obstacle. You find the correct answer together, not win an argument.</div>
+  </div>
+</div>
+
+<!-- SCENARIO 11 -->
+<div class="story-card">
+  <div class="story-hd" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.chev').classList.toggle('open')">
+    <div style="flex:1"><div class="story-q">Describe your approach to onboarding into a new codebase or team. What do you do in the first 30-60-90 days?</div><div style="font-size:11px;color:var(--text3);margin-top:3px">Ramp-up speed · Self-direction · Systematic thinking</div></div>
+    <span class="story-tag b-beg">Onboarding</span><span class="chev" style="font-size:10px;color:var(--text3);transition:transform .2s;margin-top:3px">▼</span>
+  </div>
+  <div class="story-body">
+    <div class="star-block">
+      <div class="star-label">The 30-60-90 framework</div>
+<pre style="font-size:11.5px;background:var(--bg3);padding:10px;border-radius:6px;margin:0 0 12px">Day 1-30: UNDERSTAND (don't build yet)
+  - Read the architecture docs, not the code. Understand the system first.
+  - Set up and run everything locally. Note every friction point.
+  - Read the last 6 months of postmortem/incident reports. Tells you what's fragile.
+  - Ask: "What keeps this team up at night?" 
+  - 1:1s with every team member — understand their pain points.
+  - Small, low-risk PR to understand the dev cycle. Not to prove yourself.
+
+Day 31-60: CONTRIBUTE
+  - Pick up a real ticket. Ask for the least-glamorous but impactful one.
+  - Fix the friction points you found in week 1 (dev setup, docs, tests).
+  - Start to identify where you can add unique value.
+
+Day 61-90: LEAD
+  - Propose one improvement with a writeup and get buy-in.
+  - Take ownership of one area, not necessarily the most visible one.
+  - Identify one person to start mentoring informally.</pre>
+      <div class="star-row"><span class="star-key star-s">S</span><span>You can reference joining UKG or BRPL — new codebase, no existing context, needed to ramp fast without creating noise.</span></div>
+    </div>
+    <div class="staff-signal"><div class="signal-label">🎯 Staff signal</div>"I don't optimise for being visibly busy in month 1. I optimise for understanding deeply, then contributing with leverage." This shows patience and systems thinking — not junior "prove myself" energy.</div>
+  </div>
+</div>
+
+<!-- SCENARIO 12 -->
+<div class="story-card">
+  <div class="story-hd" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.chev').classList.toggle('open')">
+    <div style="flex:1"><div class="story-q">Tell me about a time you had to balance multiple competing priorities. How did you decide what to work on?</div><div style="font-size:11px;color:var(--text3);margin-top:3px">Prioritisation · Focus · Trade-offs</div></div>
+    <span class="story-tag b-int">Prioritisation</span><span class="chev" style="font-size:10px;color:var(--text3);transition:transform .2s;margin-top:3px">▼</span>
+  </div>
+  <div class="story-body">
+    <div class="star-block">
+      <div class="star-label">Prioritisation framework to articulate</div>
+<pre style="font-size:11.5px;background:var(--bg3);padding:10px;border-radius:6px;margin:0 0 12px">Not all work is equal. Classify by:
+  P0: Production broken / data at risk → drop everything
+  P1: Blocks other engineers or committed deliverable → do today
+  P2: High-leverage improvement, low urgency → schedule this sprint
+  P3: Nice to have → backlog or delegate
+
+When everything is "urgent":
+  1. Clarify actual deadlines, not assumed ones
+  2. Make trade-offs explicit and visible — don't silently de-prioritise
+  3. Ask: "Which one would you be most upset about if I deprioritised?"
+  4. Time-box parallel work: 2h focus blocks, not context-switching every 30min</pre>
+      <div class="star-row"><span class="star-key star-s">S</span><span>At BRPL: simultaneously managing the weather-store refactor (committed for the next forecast cycle), a broken MAPE report affecting a board-level review, and a new RAG chatbot feature request.</span></div>
+      <div class="star-row"><span class="star-key star-a">A</span><span>"I triaged: MAPE report was P1 (board review in 2 days, blocking). Weather-store was P1 (committed, unblocked my own work). RAG chatbot was P3 (no deadline). I communicated the trade-off to the manager explicitly — 'I can do A and B this week but C moves to next sprint. Confirm?' Got alignment, then executed."</span></div>
+      <div class="star-row"><span class="star-key star-r">R</span><span>Both P1s delivered. No surprises. The key: I made the trade-off visible rather than silently dropping things and hoping no one notices.</span></div>
+    </div>
+    <div class="staff-signal"><div class="signal-label">🎯 Staff signal</div>You make trade-offs <em>visible</em> and get explicit alignment rather than silently making someone else's decision for them. This protects you and ensures stakeholders have the information they need.</div>
+  </div>
+</div>
+
 <!-- CHECKLIST -->
 <div class="section" data-level="beginner">
   <div class="sec-hd" onclick="toggleSec(this)">
@@ -348,7 +461,11 @@ I committed to. Now is the natural time to make the move."</span></pre>
       <li class="chk-item"><div class="chkbox" id="chk-b5" onclick="behToggle('b5')"></div><div class="chk-text" id="txt-b5">Mentoring story — specific person, specific skill gap, measurable outcome after?</div></li>
       <li class="chk-item"><div class="chkbox" id="chk-b6" onclick="behToggle('b6')"></div><div class="chk-text" id="txt-b6">Ambiguity story — can you explain what you resolved yourself vs surfaced to stakeholders?</div></li>
       <li class="chk-item"><div class="chkbox" id="chk-b7" onclick="behToggle('b7')"></div><div class="chk-text" id="txt-b7">Architecture decision story — tradeoff explained clearly, "what I'd do differently" included?</div></li>
-      <li class="chk-item"><div class="chkbox" id="chk-b8" onclick="behToggle('b8')"></div><div class="chk-text" id="txt-b8">Why Agoda / why now — can you say it in 90 seconds without mentioning compensation?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-b8" onclick="behToggle('b8')"></div><div class="chk-text" id="txt-b8">Why this company / why now — can you say it in 90 seconds without mentioning compensation?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-b9" onclick="behToggle('b9')"></div><div class="chk-text" id="txt-b9">Decision under uncertainty — can you name your decision criteria and document your assumptions?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-b10" onclick="behToggle('b10')"></div><div class="chk-text" id="txt-b10">Managing up — do you have a story where you pushed back and found a third option?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-b11" onclick="behToggle('b11')"></div><div class="chk-text" id="txt-b11">Onboarding story — can you articulate your 30-60-90 approach in under 2 minutes?</div></li>
+      <li class="chk-item"><div class="chkbox" id="chk-b12" onclick="behToggle('b12')"></div><div class="chk-text" id="txt-b12">Prioritisation — do you make trade-offs visible and get explicit alignment vs silently deprioritising?</div></li>
     </ul>
     <div class="callout c-warn" style="margin:0 14px 14px"><strong>Practice requirement:</strong> Say each answer out loud, not just read it. Behavioral answers practiced only in your head sound robotic when spoken. Record yourself once for the incident and cross-team stories — the two highest-signal questions.</div>
   </div>
@@ -358,8 +475,8 @@ I committed to. Now is the natural time to make the move."</span></pre>
 <script src="shared.js"></script>
 <script>
 buildNav('behavioral');
-const behDone = initChecks('behavioral-done', 8, 'beh-done', 'beh-pct', 'beh-fill');
-function behToggle(id){ toggleCheck(id, behDone, 'behavioral-done', 8, 'beh-done', 'beh-pct', 'beh-fill'); }
+const behDone = initChecks('behavioral-done', 12, 'beh-done', 'beh-pct', 'beh-fill');
+function behToggle(id){ toggleCheck(id, behDone, 'behavioral-done', 12, 'beh-done', 'beh-pct', 'beh-fill'); }
 </script>
 </body>
 </html>
