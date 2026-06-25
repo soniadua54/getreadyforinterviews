@@ -2,486 +2,496 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Platform Round — Agoda Prep</title>
-<link rel="stylesheet" href="shared.css">
+<title>Interview Prep — Platform Round</title>
+<style>
+:root{--bg:#0f1117;--bg2:#1a1d27;--bg3:#222536;--bg4:#2a2d3e;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);--text:#e8eaf0;--text2:#9498b0;--text3:#5a5f7a;--accent:#6c63ff;--accent2:#a5a0ff;--tag:#ff6b4a;--tag-bg:rgba(255,107,74,0.12);--must:#ff4d6d;--must-bg:rgba(255,77,109,0.12);--green:#10b981;--green-bg:rgba(16,185,129,0.1);--blue:#38bdf8;--blue-bg:rgba(56,189,248,0.1);--warn:#f59e0b;--warn-bg:rgba(245,158,11,0.1);--r:8px;--rl:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.6;min-height:100vh}
+a{color:inherit;text-decoration:none}
+.topnav{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;height:50px;position:sticky;top:0;z-index:100;gap:8px}
+.nav-brand{font-size:14px;font-weight:700;white-space:nowrap;flex-shrink:0}.nav-brand span{color:var(--accent2)}
+.nav-links{display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex:1}.nav-links::-webkit-scrollbar{display:none}
+.nav-link{padding:6px 10px;border-radius:var(--r);font-size:12px;color:var(--text2);white-space:nowrap;flex-shrink:0}
+.nav-link.active{background:rgba(108,99,255,0.15);color:var(--accent2);font-weight:500}
+.countdown{background:var(--tag-bg);border:1px solid rgba(255,107,74,0.3);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--tag);font-weight:600;white-space:nowrap;flex-shrink:0}
+.page{padding:16px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px}
+.stat-n{font-size:20px;font-weight:700;line-height:1}.stat-l{font-size:10px;color:var(--text3);margin-top:3px}
+.section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);margin-bottom:10px;overflow:hidden}
+.sec-hd{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;user-select:none}
+.sec-hd:active{background:var(--bg3)}
+.sec-icon{width:30px;height:30px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.ph1 .sec-icon{background:rgba(108,99,255,0.15)}.ph2 .sec-icon{background:rgba(16,185,129,0.15)}.ph3 .sec-icon{background:rgba(245,158,11,0.15)}.ph4 .sec-icon{background:rgba(255,77,109,0.15)}
+.sec-title{font-size:13px;font-weight:600;flex:1;line-height:1.3}
+.chev{font-size:10px;color:var(--text3);margin-left:4px;transition:transform .2s;flex-shrink:0}.chev.open{transform:rotate(180deg)}
+.sec-body{display:none;border-top:1px solid var(--border)}.sec-body.open{display:block}
+.sec-sum{font-size:12px;color:var(--text2);padding:10px 14px 4px;line-height:1.6}
+.block{padding:14px;border-top:1px solid var(--border)}
+.block-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.block-desc{font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:10px}
+pre{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px;font-family:'Fira Code',monospace;font-size:11.5px;line-height:1.7;overflow-x:auto;-webkit-overflow-scrolling:touch;margin:8px 0;white-space:pre}
+.kw{color:#c084fc}.fn{color:#60a5fa}.str{color:#4ade80}.cm{color:var(--text3);font-style:italic}.nu{color:#fb923c}.cl{color:#f472b6}
+.callout{border-radius:var(--r);padding:10px 12px;margin:8px 0;font-size:12px;line-height:1.6;border-left:3px solid}
+.c-info{background:var(--blue-bg);border-color:var(--blue);color:var(--text2)}.c-warn{background:var(--warn-bg);border-color:var(--warn);color:var(--text2)}.c-good{background:var(--green-bg);border-color:var(--green);color:var(--text2)}.c-tag{background:var(--tag-bg);border-color:var(--tag);color:var(--text2)}
+.callout strong{color:var(--text)}
+.badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600}
+.b-tag{background:var(--tag-bg);color:var(--tag);border:1px solid rgba(255,107,74,0.25)}
+.b-must{background:var(--must-bg);color:var(--must);border:1px solid rgba(255,77,109,0.25)}
+.b-info{background:var(--blue-bg);color:var(--blue)}
+.chk-list{list-style:none}
+.chk-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.chk-item:last-child{border-bottom:none}
+.chk{width:18px;height:18px;min-width:18px;border:1.5px solid var(--border2);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px;flex-shrink:0;transition:all .12s}
+.chk.done{background:var(--green);border-color:var(--green)}.chk.done::after{content:"✓";font-size:11px;color:#fff;font-weight:700}
+.chk-text{flex:1;color:var(--text2);line-height:1.5;font-size:12px}.chk-text.done{color:var(--text3);text-decoration:line-through}
+.dot{width:6px;height:6px;min-width:6px;border-radius:50%;margin-top:6px;flex-shrink:0}
+.prog-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px;margin-bottom:16px}
+.prog-label{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:8px}
+.prog-bar{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:2px;transition:width .3s}
+@media(max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}.stat-n{font-size:18px}pre{font-size:11px;padding:10px}}
+</style>
 </head>
 <body>
-<nav class="topnav" id="topnav"></nav>
-<div class="shell">
-<nav class="sidebar">
-  <div class="sidebar-section">Sections</div>
-  <div class="sidebar-item" onclick="scrollTo('what')">📋 What is it</div>
-  <div class="sidebar-item" onclick="scrollTo('lld')">🧱 LLD Patterns</div>
-  <div class="sidebar-item" onclick="scrollTo('codereview')">🔍 Code Review</div>
-  <div class="sidebar-item" onclick="scrollTo('agoda')">🏨 Agoda Scenarios</div>
-  <div class="sidebar-item" onclick="scrollTo('java')">☕ Java Internals</div>
-  <div class="sidebar-item" onclick="scrollTo('checklist')">✅ Prep Checklist</div>
-  <div class="sidebar-section" style="margin-top:auto;padding-top:16px">Navigate</div>
-  <a class="sidebar-item" href="index.html">← DSA</a>
-  <a class="sidebar-item" href="sysdesign.html">→ System Design</a>
+<nav class="topnav">
+  <div class="nav-brand">Prep<span>Kit</span></div>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">⌨ DSA</a>
+    <a href="platform.html" class="nav-link active">⚙ Platform</a>
+    <a href="sysdesign.html" class="nav-link">🏗 System Design</a>
+  </div>
+  <div class="countdown" id="cd">...</div>
 </nav>
-<div class="main">
-  <div class="page-header">
-    <div class="header-row"><h2>Platform Round Prep</h2></div>
-    <p style="font-size:13px;color:var(--text2)">LLD · code review · Agoda-specific scenarios · Java internals</p>
+
+<div class="page">
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="plat-done" style="color:var(--tag)">0</div><div class="stat-l">Checked off</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--accent2)">12</div><div class="stat-l">Total topics</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--warn)">45m</div><div class="stat-l">Avg round</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--green)">2d</div><div class="stat-l">To prep</div></div>
   </div>
 
-  <div class="stats-row">
-    <div class="stat-card"><div class="stat-num" style="color:var(--agoda)" id="plat-done">0</div><div class="stat-label">Topics checked</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--accent2)">6</div><div class="stat-label">Topic areas</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--med)">45m</div><div class="stat-label">Avg round length</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--success)">2</div><div class="stat-label">Days needed</div></div>
+  <div class="prog-wrap">
+    <div class="prog-label"><span>Checklist progress</span><span id="plat-pct">0 / 12</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="plat-fill" style="width:0%"></div></div>
   </div>
 
-  <div class="sections" style="margin-top:8px">
-
-    <!-- WHAT IS THE PLATFORM ROUND -->
-    <div class="section ph1" id="sec-what">
-      <div class="sec-header" onclick="toggleSec(this)">
-        <div class="sec-icon">📋</div>
-        <div class="sec-title">What is the platform round</div>
-        <span class="sec-meta">Read this first</span>
-        <span class="sec-chevron open">▼</span>
+  <!-- WHAT IS IT -->
+  <div class="section ph1">
+    <div class="sec-hd" onclick="toggleSec(this)">
+      <div class="sec-icon">📋</div>
+      <div class="sec-title">What is the platform round</div>
+      <span class="chev open">▼</span>
+    </div>
+    <div class="sec-body open">
+      <div class="sec-sum">The most misunderstood round. Not pure system design. Not just coding. It is LLD + practical backend thinking + code review — all in a real product context.</div>
+      <div class="block">
+        <div class="block-title">Three things evaluated simultaneously</div>
+        <div class="callout c-tag"><strong>1. End-to-end feature design</strong> — Given a feature, can you think through API, business logic, data model, and failure handling without being prompted?</div>
+        <div class="callout c-info" style="margin-top:8px"><strong>2. Code review</strong> — They show you a snippet. What's wrong? What would you change?</div>
+        <div class="callout c-good" style="margin-top:8px"><strong>3. Systems thinking</strong> — Do you think about caching, idempotency, error handling, observability? Or just the happy path?</div>
       </div>
-      <div class="sec-body open">
-        <div class="sec-summary">The most misunderstood round. Not pure system design. Not just coding. It is: LLD + practical backend thinking + code review — all set in Agoda's real product context.</div>
-        <div class="content-block">
-          <div class="block-title">What interviewers actually test</div>
-          <div class="block-desc">Three things evaluated simultaneously in 45 minutes:</div>
-          <div class="callout callout-agoda"><strong>1. Can you design a feature end-to-end?</strong> Given a booking/payment feature, can you think through the API, business logic, data model, and failure handling without being prompted at every step?</div>
-          <div class="callout callout-info" style="margin-top:8px"><strong>2. Can you read and improve existing code?</strong> They show you a code snippet — often buggy or poorly structured — and ask what's wrong and how you'd fix it.</div>
-          <div class="callout callout-success" style="margin-top:8px"><strong>3. Do you think in systems, not just functions?</strong> They want to see you mention caching, idempotency, error handling, observability — not just the happy path.</div>
-        </div>
-        <div class="content-block">
-          <div class="block-title">Real Agoda platform round prompts (reported)</div>
-          <ul class="checklist">
-            <li class="check-item"><div style="width:6px;height:6px;min-width:6px;background:var(--agoda);border-radius:50%;margin-top:6px"></div><div class="check-text">Design a coupon/discount system for Agoda's booking flow</div></li>
-            <li class="check-item"><div style="width:6px;height:6px;min-width:6px;background:var(--agoda);border-radius:50%;margin-top:6px"></div><div class="check-text">Given an existing hotel search backend, how would you improve performance for peak traffic?</div></li>
-            <li class="check-item"><div style="width:6px;height:6px;min-width:6px;background:var(--agoda);border-radius:50%;margin-top:6px"></div><div class="check-text">Review this code snippet — what's wrong, what would you change?</div></li>
-            <li class="check-item"><div style="width:6px;height:6px;min-width:6px;background:var(--agoda);border-radius:50%;margin-top:6px"></div><div class="check-text">Design an API for vendors to query their bookings on Agoda</div></li>
-            <li class="check-item"><div style="width:6px;height:6px;min-width:6px;background:var(--agoda);border-radius:50%;margin-top:6px"></div><div class="check-text">Implement and explain a data structure (given abstract class, you implement)</div></li>
-          </ul>
-          <div class="callout callout-warn" style="margin-top:10px"><strong>The trap:</strong> If your resume lists Kubernetes, Spring Boot, Auth0 — they will ask you specifics. "I used it at work" is not an answer. Know one concrete thing you did with each technology.</div>
-        </div>
+      <div class="block">
+        <div class="block-title">Commonly reported platform prompts</div>
+        <ul class="chk-list">
+          <li class="chk-item"><div class="dot" style="background:var(--tag)"></div><div class="chk-text">Design a coupon/discount system for the booking flow</div></li>
+          <li class="chk-item"><div class="dot" style="background:var(--tag)"></div><div class="chk-text">Given an existing hotel search backend — improve performance for peak traffic</div></li>
+          <li class="chk-item"><div class="dot" style="background:var(--tag)"></div><div class="chk-text">Review this code snippet — what's wrong, what would you change?</div></li>
+          <li class="chk-item"><div class="dot" style="background:var(--tag)"></div><div class="chk-text">Design an API for vendors to query their own booking data</div></li>
+          <li class="chk-item"><div class="dot" style="background:var(--tag)"></div><div class="chk-text">Implement a data structure (given abstract class, fill in the implementation)</div></li>
+        </ul>
+        <div class="callout c-warn" style="margin-top:10px"><strong>The resume trap:</strong> If your resume lists Kubernetes, Spring Boot, Redis — they will ask specifics. "I used it at work" is not enough. Have one concrete story per technology: what you built, what broke, what you fixed.</div>
       </div>
     </div>
+  </div>
 
-    <!-- LLD PATTERNS -->
-    <div class="section ph2" id="sec-lld">
-      <div class="sec-header" onclick="toggleSec(this)">
-        <div class="sec-icon">🧱</div>
-        <div class="sec-title">LLD patterns you must know</div>
-        <span class="sec-meta">Design patterns for backend systems</span>
-        <span class="sec-chevron open">▼</span>
-      </div>
-      <div class="sec-body open">
-        <div class="content-block">
-          <div class="block-title">Strategy pattern <span class="badge b-ag">★ Agoda</span></div>
-          <div class="block-desc">Use when behavior needs to swap at runtime. Agoda has 40+ payment methods across markets — this is exactly how you'd support them cleanly.</div>
+  <!-- LLD PATTERNS -->
+  <div class="section ph2">
+    <div class="sec-hd" onclick="toggleSec(this)">
+      <div class="sec-icon">🧱</div>
+      <div class="sec-title">LLD design patterns</div>
+      <span class="chev open">▼</span>
+    </div>
+    <div class="sec-body open">
+      <div class="block">
+        <div class="block-title">Strategy pattern <span class="badge b-tag">★ Company</span></div>
+        <div class="block-desc">When behavior needs to swap at runtime. Classic example: multiple payment methods, each with different logic. Without strategy pattern you'd have a giant if-else chain that grows with every new payment method.</div>
 <pre><span class="kw">interface</span> <span class="cl">PaymentStrategy</span> {
     <span class="kw">boolean</span> <span class="fn">pay</span>(<span class="kw">double</span> amount);
 }
-
 <span class="kw">class</span> <span class="cl">WalletPayment</span> <span class="kw">implements</span> <span class="cl">PaymentStrategy</span> {
     <span class="kw">private double</span> balance;
     <span class="kw">public boolean</span> <span class="fn">pay</span>(<span class="kw">double</span> amount) {
         <span class="kw">if</span> (balance &lt; amount) <span class="kw">return false</span>;
-        balance -= amount;
-        <span class="kw">return true</span>;
+        balance -= amount; <span class="kw">return true</span>;
     }
 }
-
 <span class="kw">class</span> <span class="cl">BookingService</span> {
     <span class="kw">private</span> <span class="cl">PaymentStrategy</span> strategy;
-
-    <span class="kw">public</span> <span class="cl">BookingService</span>(<span class="cl">PaymentStrategy</span> strategy) {
-        <span class="kw">this</span>.strategy = strategy;
-    }
-
+    <span class="kw">public</span> <span class="cl">BookingService</span>(<span class="cl">PaymentStrategy</span> s) { <span class="kw">this</span>.strategy = s; }
     <span class="kw">public boolean</span> <span class="fn">checkout</span>(<span class="kw">double</span> amount) {
-        <span class="kw">return</span> strategy.<span class="fn">pay</span>(amount); <span class="cm">// delegates to concrete strategy</span>
+        <span class="kw">return</span> strategy.<span class="fn">pay</span>(amount); <span class="cm">// delegates to concrete impl</span>
     }
 }</pre>
-        </div>
-        <div class="content-block">
-          <div class="block-title">Observer pattern <span class="badge b-info">generic</span></div>
-          <div class="block-desc">When a booking is confirmed, multiple things need to happen: send email, update analytics, trigger loyalty points. Observer decouples them — the booking service doesn't know about any of them.</div>
-<pre><span class="kw">interface</span> <span class="cl">BookingObserver</span> {
-    <span class="kw">void</span> <span class="fn">onBookingConfirmed</span>(<span class="cl">Booking</span> booking);
-}
+        <div class="callout c-good">New payment method? Just add a new class implementing PaymentStrategy. Zero changes to BookingService. This is Open/Closed principle.</div>
+      </div>
+      <div class="block">
+        <div class="block-title">Observer pattern <span class="badge b-info">generic</span></div>
+        <div class="block-desc">When one event triggers multiple actions. When a booking is confirmed: send email, update analytics, trigger loyalty points. Observer decouples the booking service from all these concerns.</div>
+<pre><span class="kw">interface</span> <span class="cl">BookingObserver</span> { <span class="kw">void</span> <span class="fn">onBookingConfirmed</span>(<span class="cl">Booking</span> b); }
 
 <span class="kw">class</span> <span class="cl">BookingService</span> {
     <span class="kw">private</span> List&lt;<span class="cl">BookingObserver</span>&gt; observers = <span class="kw">new</span> ArrayList&lt;&gt;();
-
-    <span class="kw">public void</span> <span class="fn">addObserver</span>(<span class="cl">BookingObserver</span> o) { observers.<span class="fn">add</span>(o); }
-
+    <span class="kw">public void</span> <span class="fn">subscribe</span>(<span class="cl">BookingObserver</span> o) { observers.<span class="fn">add</span>(o); }
     <span class="kw">public void</span> <span class="fn">confirmBooking</span>(<span class="cl">Booking</span> b) {
-        <span class="cm">// ... save booking ...</span>
+        <span class="cm">// ... save to DB ...</span>
         observers.<span class="fn">forEach</span>(o -> o.<span class="fn">onBookingConfirmed</span>(b)); <span class="cm">// notify all</span>
     }
 }
-
 <span class="kw">class</span> <span class="cl">EmailNotifier</span> <span class="kw">implements</span> <span class="cl">BookingObserver</span> {
     <span class="kw">public void</span> <span class="fn">onBookingConfirmed</span>(<span class="cl">Booking</span> b) {
-        emailService.<span class="fn">send</span>(b.getUserEmail(), <span class="str">"Your booking is confirmed"</span>);
+        emailService.<span class="fn">send</span>(b.<span class="fn">getUserEmail</span>(), <span class="str">"Booking confirmed!"</span>);
     }
 }</pre>
-        </div>
-        <div class="content-block">
-          <div class="block-title">Idempotency pattern <span class="badge b-ag">★ Agoda</span></div>
-          <div class="block-desc">The #1 correctness concern in payment and booking systems. If a network retry causes a double-charge — that's a critical incident. Idempotency keys prevent this.</div>
+      </div>
+      <div class="block">
+        <div class="block-title">Idempotency pattern <span class="badge b-tag">★ Company</span></div>
+        <div class="block-desc">Network request fails. Client retries. Should the operation happen twice? For payments — absolutely not. Idempotency key ensures each logical operation executes exactly once regardless of retries.</div>
 <pre><span class="kw">public class</span> <span class="cl">BookingService</span> {
-    <span class="cm">// In production: Redis with TTL. Here: in-memory for concept.</span>
+    <span class="cm">// Production: Redis with 24h TTL. This is the concept.</span>
     <span class="kw">private</span> Map&lt;String, <span class="cl">BookingResult</span>&gt; processed = <span class="kw">new</span> ConcurrentHashMap&lt;&gt;();
 
     <span class="kw">public</span> <span class="cl">BookingResult</span> <span class="fn">createBooking</span>(String idempotencyKey, <span class="cl">BookingRequest</span> req) {
-        <span class="cm">// Return cached result if already processed</span>
-        <span class="kw">if</span> (processed.<span class="fn">containsKey</span>(idempotencyKey)) {
+        <span class="cm">// Already processed? Return cached result — no side effects</span>
+        <span class="kw">if</span> (processed.<span class="fn">containsKey</span>(idempotencyKey))
             <span class="kw">return</span> processed.<span class="fn">get</span>(idempotencyKey);
-        }
+
         <span class="cl">BookingResult</span> result = <span class="fn">processBooking</span>(req);
         processed.<span class="fn">put</span>(idempotencyKey, result);
         <span class="kw">return</span> result;
     }
 }
-<span class="cm">// Client sends: POST /bookings with header Idempotency-Key: uuid-v4
-// On retry, same key → same result returned, no double booking</span></pre>
-          <div class="callout callout-info">In production: store idempotency key in Redis with a 24h TTL. The key maps to the result JSON. On retry, Redis hit → return cached result, skip all business logic.</div>
-        </div>
-        <div class="content-block">
-          <div class="block-title">Repository pattern <span class="badge b-generic">generic</span></div>
-          <div class="block-desc">Separates data access logic from business logic. Makes testing easier (mock the repository, not the DB). Standard in Spring Boot applications.</div>
-<pre><span class="kw">interface</span> <span class="cl">HotelRepository</span> {
-    <span class="cl">Hotel</span> <span class="fn">findById</span>(Long id);
-    List&lt;<span class="cl">Hotel</span>&gt; <span class="fn">findByCity</span>(String city);
-    <span class="cl">Hotel</span> <span class="fn">save</span>(<span class="cl">Hotel</span> hotel);
-}
-
-<span class="cm">// Business logic doesn't know if data comes from MySQL, Redis, or mock</span>
-<span class="kw">class</span> <span class="cl">HotelService</span> {
-    <span class="kw">private final</span> <span class="cl">HotelRepository</span> repo;
-
-    <span class="kw">public</span> List&lt;<span class="cl">Hotel</span>&gt; <span class="fn">searchHotels</span>(String city) {
-        <span class="kw">return</span> repo.<span class="fn">findByCity</span>(city);
-    }
-}</pre>
-        </div>
-        <div class="content-block">
-          <div class="block-title">Circuit breaker pattern <span class="badge b-ag">★ Agoda</span></div>
-          <div class="block-desc">If payment gateway fails 5 times in 10 seconds, stop calling it for 30 seconds (fail fast). Prevents cascading failures. Java library: Resilience4j.</div>
-<pre><span class="cm">// Using Resilience4j</span>
-<span class="kw">@CircuitBreaker</span>(name = <span class="str">"paymentGateway"</span>, fallbackMethod = <span class="str">"fallback"</span>)
+<span class="cm">// Client: POST /bookings  header: Idempotency-Key: {client-generated-uuid}
+// On retry: same key → same result returned, no double booking</span></pre>
+        <div class="callout c-info"><strong>Production implementation:</strong> Redis SET key result EX 86400 NX. The NX flag means "only set if not exists" — atomically handles the check-and-set in one Redis command.</div>
+      </div>
+      <div class="block">
+        <div class="block-title">Circuit breaker <span class="badge b-tag">★ Company</span></div>
+        <div class="block-desc">If payment gateway fails 5 times in 10 seconds, stop calling it for 30 seconds. Fail fast. Prevents cascading failures where one slow service takes down your whole system.</div>
+<pre><span class="cm">// States: CLOSED (normal) → OPEN (stop calling) → HALF_OPEN (test recovery)</span>
+<span class="kw">@CircuitBreaker</span>(name=<span class="str">"payment"</span>, fallbackMethod=<span class="str">"fallback"</span>)
 <span class="kw">public</span> <span class="cl">PaymentResult</span> <span class="fn">charge</span>(<span class="cl">PaymentRequest</span> req) {
-    <span class="kw">return</span> externalPaymentGateway.<span class="fn">charge</span>(req);
+    <span class="kw">return</span> externalGateway.<span class="fn">charge</span>(req);
 }
-
-<span class="kw">public</span> <span class="cl">PaymentResult</span> <span class="fn">fallback</span>(<span class="cl">PaymentRequest</span> req, Exception ex) {
-    <span class="cm">// Circuit is open — don't even try the gateway</span>
-    <span class="kw">return</span> <span class="cl">PaymentResult</span>.<span class="fn">failed</span>(<span class="str">"Payment service temporarily unavailable"</span>);
+<span class="kw">public</span> <span class="cl">PaymentResult</span> <span class="fn">fallback</span>(<span class="cl">PaymentRequest</span> req, Exception e) {
+    <span class="kw">return</span> <span class="cl">PaymentResult</span>.<span class="fn">failed</span>(<span class="str">"Payment temporarily unavailable, please retry"</span>);
 }
-<span class="cm">// States: CLOSED (normal) → OPEN (failing) → HALF_OPEN (testing recovery)</span></pre>
-        </div>
+<span class="cm">// Library: Resilience4j (Java). Config: failureRateThreshold=50,
+// waitDurationInOpenState=30s, permittedCallsInHalfOpenState=3</span></pre>
       </div>
-    </div>
-
-    <!-- CODE REVIEW -->
-    <div class="section ph2" id="sec-codereview">
-      <div class="sec-header" onclick="toggleSec(this)">
-        <div class="sec-icon">🔍</div>
-        <div class="sec-title">Code review — what to look for</div>
-        <span class="sec-meta">They will show you broken code</span>
-        <span class="sec-chevron open">▼</span>
-      </div>
-      <div class="sec-body open">
-        <div class="sec-summary">When they give you a code snippet, don't just look at logic. Scan for these categories in order.</div>
-        <div class="content-block">
-          <div class="block-title">Bug 1: Null pointer</div>
-<pre><span class="cm">// BAD — NPE if hotel is null</span>
-<span class="kw">public</span> String <span class="fn">getHotelName</span>(<span class="cl">Hotel</span> hotel) {
-    <span class="kw">return</span> hotel.<span class="fn">getName</span>();
-}
-
-<span class="cm">// FIXED</span>
-<span class="kw">public</span> String <span class="fn">getHotelName</span>(<span class="cl">Hotel</span> hotel) {
-    <span class="kw">if</span> (hotel == <span class="kw">null</span>) <span class="kw">throw new</span> <span class="cl">IllegalArgumentException</span>(<span class="str">"hotel cannot be null"</span>);
-    <span class="kw">return</span> hotel.<span class="fn">getName</span>();
-}</pre>
-        </div>
-        <div class="content-block">
-          <div class="block-title">Bug 2: Race condition <span class="badge b-ag">★ Agoda</span></div>
-<pre><span class="cm">// BAD — not atomic, race condition under concurrent access</span>
-<span class="kw">private int</span> bookingCount = <span class="nu">0</span>;
-<span class="kw">public void</span> <span class="fn">increment</span>() { bookingCount++; }
-
-<span class="cm">// FIXED — AtomicInteger is thread-safe</span>
-<span class="kw">private</span> <span class="cl">AtomicInteger</span> bookingCount = <span class="kw">new</span> <span class="cl">AtomicInteger</span>(<span class="nu">0</span>);
-<span class="kw">public void</span> <span class="fn">increment</span>() { bookingCount.<span class="fn">incrementAndGet</span>(); }</pre>
-        </div>
-        <div class="content-block">
-          <div class="block-title">Bug 3: Resource leak</div>
-<pre><span class="cm">// BAD — stream never closed if exception thrown</span>
-<span class="kw">public void</span> <span class="fn">processFile</span>(String path) <span class="kw">throws</span> <span class="cl">IOException</span> {
-    <span class="cl">FileInputStream</span> fis = <span class="kw">new</span> <span class="cl">FileInputStream</span>(path);
-    <span class="cm">// process...</span>
-}
-
-<span class="cm">// FIXED — try-with-resources auto-closes</span>
-<span class="kw">public void</span> <span class="fn">processFile</span>(String path) <span class="kw">throws</span> <span class="cl">IOException</span> {
-    <span class="kw">try</span> (<span class="cl">FileInputStream</span> fis = <span class="kw">new</span> <span class="cl">FileInputStream</span>(path)) {
-        <span class="cm">// process...</span>
-    }
-}</pre>
-        </div>
-        <div class="content-block">
-          <div class="block-title">Bug 4: Swallowed exception</div>
-<pre><span class="cm">// BAD — exception eaten silently, debugging impossible</span>
-<span class="kw">try</span> {
-    <span class="fn">processPayment</span>(req);
-} <span class="kw">catch</span> (<span class="cl">Exception</span> e) {
-    <span class="cm">// nothing here — you'll never know what failed</span>
-}
-
-<span class="cm">// FIXED — log and re-throw or handle specifically</span>
-<span class="kw">try</span> {
-    <span class="fn">processPayment</span>(req);
-} <span class="kw">catch</span> (<span class="cl">PaymentGatewayException</span> e) {
-    log.<span class="fn">error</span>(<span class="str">"Payment gateway error for bookingId={}"</span>, req.<span class="fn">getBookingId</span>(), e);
-    <span class="kw">throw new</span> <span class="cl">BookingException</span>(<span class="str">"Payment failed"</span>, e);
-}</pre>
-        </div>
-        <div class="content-block">
-          <div class="block-title">Bug 5: N+1 query <span class="badge b-ag">★ Agoda</span></div>
-<pre><span class="cm">// BAD — 1 query to get hotels + N queries for rooms = N+1 total</span>
-<span class="kw">for</span> (<span class="cl">Hotel</span> hotel : hotels) {
-    List&lt;<span class="cl">Room</span>&gt; rooms = roomRepo.<span class="fn">findByHotelId</span>(hotel.<span class="fn">getId</span>());
-}
-
-<span class="cm">// FIXED — 1 query to get all rooms for all hotel IDs</span>
-List&lt;Long&gt; hotelIds = hotels.<span class="fn">stream</span>().<span class="fn">map</span>(<span class="cl">Hotel</span>::<span class="fn">getId</span>).<span class="fn">collect</span>(<span class="fn">toList</span>());
-Map&lt;Long, List&lt;<span class="cl">Room</span>&gt;&gt; roomsByHotel = roomRepo.<span class="fn">findByHotelIdIn</span>(hotelIds)
-    .<span class="fn">stream</span>().<span class="fn">collect</span>(<span class="fn">groupingBy</span>(<span class="cl">Room</span>::<span class="fn">getHotelId</span>));</pre>
-        </div>
-        <div class="content-block">
-          <div class="block-title">Bug 6: Wrong collection for concurrency</div>
-<pre><span class="cm">// BAD — HashMap is not thread-safe</span>
-<span class="kw">private</span> Map&lt;String, <span class="cl">Session</span>&gt; sessions = <span class="kw">new</span> <span class="cl">HashMap</span>&lt;&gt;();
-
-<span class="cm">// FIXED — ConcurrentHashMap for concurrent read/write</span>
-<span class="kw">private</span> Map&lt;String, <span class="cl">Session</span>&gt; sessions = <span class="kw">new</span> <span class="cl">ConcurrentHashMap</span>&lt;&gt;();</pre>
-          <div class="callout callout-warn" style="margin-top:8px"><strong>Code review checklist:</strong> NPE → race conditions → resource leaks → swallowed exceptions → N+1 queries → wrong concurrency primitives → missing input validation → hardcoded values.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- AGODA SCENARIOS -->
-    <div class="section ph3" id="sec-agoda">
-      <div class="sec-header" onclick="toggleSec(this)">
-        <div class="sec-icon">🏨</div>
-        <div class="sec-title">Agoda-specific platform scenarios</div>
-        <span class="sec-meta">Practice these before July 9</span>
-        <span class="sec-chevron open">▼</span>
-      </div>
-      <div class="sec-body open">
-        <div class="content-block">
-          <div class="block-title">Scenario: Design a coupon system <span class="badge b-ag">★ Agoda</span></div>
-          <div class="block-desc">Most likely platform round prompt. Think through every layer before coding anything.</div>
-          <div class="block-label">Your answer structure</div>
-          <div class="callout callout-info"><strong>API layer:</strong> POST /coupons/validate {code, userId, bookingAmount} → {valid, discountAmount, finalAmount}<br><br><strong>Business rules:</strong> one-time vs multi-use, expiry date, minimum spend, applicable hotel categories, per-user limit<br><br><strong>Data model:</strong> Coupon(id, code, type, discountType, value, expiresAt, maxUses, usedCount), CouponUsage(couponId, userId, bookingId, usedAt)<br><br><strong>Race condition:</strong> Two users redeem last use simultaneously → Redis atomic INCR on usedCount with check. If usedCount > maxUses → reject.</div>
-<pre><span class="cm">// Atomic coupon redemption with Redis</span>
-<span class="kw">public boolean</span> <span class="fn">redeemCoupon</span>(String code, Long userId) {
-    String key = <span class="str">"coupon:uses:"</span> + code;
-    Long uses = redisTemplate.<span class="fn">opsForValue</span>().<span class="fn">increment</span>(key);
-    <span class="kw">if</span> (uses > coupon.<span class="fn">getMaxUses</span>()) {
-        redisTemplate.<span class="fn">opsForValue</span>().<span class="fn">decrement</span>(key); <span class="cm">// rollback</span>
-        <span class="kw">return false</span>;
-    }
-    <span class="cm">// persist usage to DB async</span>
-    <span class="kw">return true</span>;
-}</pre>
-        </div>
-        <div class="content-block">
-          <div class="block-title">Scenario: Improve hotel search performance <span class="badge b-ag">★ Agoda</span></div>
-          <div class="block-desc">Given: hotel search is slow during peak booking season. What do you do?</div>
-          <div class="callout callout-agoda">
-            <strong>Step 1 — Profile first.</strong> What's slow? DB query? Serialization? Network? Don't guess.<br><br>
-            <strong>Step 2 — Caching.</strong> Redis cache on search results keyed by (city, checkIn, checkOut, guestCount). TTL = 5 minutes. Cache invalidation: when hotel updates availability, evict relevant keys.<br><br>
-            <strong>Step 3 — DB optimization.</strong> Composite index on (city, available, price). Read replica for search queries — don't hit the write primary.<br><br>
-            <strong>Step 4 — Async logging.</strong> Don't let analytics logging block the API response. Push to Kafka, process offline.<br><br>
-            <strong>Step 5 — Rate limiting.</strong> Bucket4j + Redis. 100 searches/minute per user. Prevents scraping from killing search infra.
-          </div>
-        </div>
-        <div class="content-block">
-          <div class="block-title">Scenario: Vendor booking API <span class="badge b-ag">★ Agoda</span></div>
-          <div class="block-desc">Design an API for hotel vendors to query their own booking data on Agoda.</div>
-<pre><span class="cm">// REST API design</span>
-GET /v1/vendor/bookings?checkIn=2026-07-01&checkOut=2026-07-07&status=CONFIRMED
-Authorization: Bearer {vendor-api-token}
-
-<span class="cm">// Response</span>
-{
-  "bookings": [...],
-  "pagination": { "page": 1, "pageSize": 50, "total": 243, "cursor": "eyJ..." }
-}
-
-<span class="cm">// Key design decisions to mention:</span>
-<span class="cm">// 1. Cursor-based pagination (not offset) — stable under new insertions</span>
-<span class="cm">// 2. Vendor scoping — JWT contains vendorId, all queries filtered by it</span>
-<span class="cm">// 3. Rate limiting — 1000 req/hour per vendor API key</span>
-<span class="cm">// 4. Webhook for real-time — vendors register a URL, Agoda POSTs on booking events</span></pre>
-        </div>
-        <div class="content-block">
-          <div class="block-title">Scenario: Implement LRU Cache <span class="badge b-mu">must</span></div>
-          <div class="block-desc">Extremely common at Staff level. They may ask you to implement it live, or ask you to make it thread-safe.</div>
+      <div class="block">
+        <div class="block-title">LRU Cache implementation <span class="badge b-must">must</span></div>
+        <div class="block-desc">Least Recently Used cache. When capacity is full, evict the item that was accessed longest ago. HashMap for O(1) lookup + Doubly Linked List for O(1) eviction order maintenance.</div>
 <pre><span class="kw">class</span> <span class="cl">LRUCache</span> {
     <span class="kw">private final int</span> capacity;
+    <span class="cm">// LinkedHashMap with accessOrder=true maintains LRU order automatically</span>
     <span class="kw">private final</span> <span class="cl">LinkedHashMap</span>&lt;Integer, Integer&gt; map;
 
     <span class="kw">public</span> <span class="cl">LRUCache</span>(<span class="kw">int</span> capacity) {
         <span class="kw">this</span>.capacity = capacity;
-        <span class="cm">// accessOrder=true maintains LRU order automatically</span>
-        map = <span class="kw">new</span> <span class="cl">LinkedHashMap</span>&lt;&gt;(capacity, <span class="nu">0.75f</span>, <span class="kw">true</span>) {
+        map = <span class="kw">new</span> <span class="cl">LinkedHashMap</span>&lt;&gt;(capacity, 0.75f, <span class="kw">true</span>) {
             <span class="kw">protected boolean</span> <span class="fn">removeEldestEntry</span>(Map.Entry e) {
-                <span class="kw">return</span> size() > capacity;
+                <span class="kw">return</span> size() > capacity; <span class="cm">// auto-evict when over capacity</span>
             }
         };
     }
+    <span class="kw">public int</span> <span class="fn">get</span>(<span class="kw">int</span> key) { <span class="kw">return</span> map.<span class="fn">getOrDefault</span>(key, -<span class="nu">1</span>); }
+    <span class="kw">public void</span> <span class="fn">put</span>(<span class="kw">int</span> key, <span class="kw">int</span> val) { map.<span class="fn">put</span>(key, val); }
+}
+<span class="cm">// Thread-safe version: wrap get/put in synchronized blocks</span></pre>
+      </div>
+    </div>
+  </div>
 
-    <span class="kw">public int</span> <span class="fn">get</span>(<span class="kw">int</span> key) {
-        <span class="kw">return</span> map.<span class="fn">getOrDefault</span>(key, -<span class="nu">1</span>);
-    }
+  <!-- CODE REVIEW -->
+  <div class="section ph2">
+    <div class="sec-hd" onclick="toggleSec(this)">
+      <div class="sec-icon">🔍</div>
+      <div class="sec-title">Code review — bug patterns to find</div>
+      <span class="chev open">▼</span>
+    </div>
+    <div class="sec-body open">
+      <div class="sec-sum">When they show you code, scan in this order: NPE → race condition → resource leak → swallowed exception → N+1 query → wrong collection for concurrency.</div>
+      <div class="block">
+        <div class="block-title">Bug 1: Null pointer exception</div>
+<pre><span class="cm">// BAD — NPE if hotel is null</span>
+<span class="kw">public</span> String <span class="fn">getHotelName</span>(<span class="cl">Hotel</span> hotel) {
+    <span class="kw">return</span> hotel.<span class="fn">getName</span>(); <span class="cm">// throws NullPointerException</span>
+}
+<span class="cm">// FIXED</span>
+<span class="kw">public</span> String <span class="fn">getHotelName</span>(<span class="cl">Hotel</span> hotel) {
+    Objects.<span class="fn">requireNonNull</span>(hotel, <span class="str">"hotel cannot be null"</span>);
+    <span class="kw">return</span> hotel.<span class="fn">getName</span>();
+}
+<span class="cm">// Or return Optional: Optional.ofNullable(hotel).map(Hotel::getName)</span></pre>
+      </div>
+      <div class="block">
+        <div class="block-title">Bug 2: Race condition <span class="badge b-tag">★ Company</span></div>
+<pre><span class="cm">// BAD — not atomic. Read-modify-write is 3 operations, not 1</span>
+<span class="kw">private int</span> bookingCount = <span class="nu">0</span>;
+<span class="kw">public void</span> <span class="fn">increment</span>() { bookingCount++; } <span class="cm">// RACE CONDITION</span>
 
-    <span class="kw">public void</span> <span class="fn">put</span>(<span class="kw">int</span> key, <span class="kw">int</span> value) {
-        map.<span class="fn">put</span>(key, value);
+<span class="cm">// FIXED — AtomicInteger uses CAS (compare-and-swap), lock-free</span>
+<span class="kw">private</span> <span class="cl">AtomicInteger</span> bookingCount = <span class="kw">new</span> <span class="cl">AtomicInteger</span>(<span class="nu">0</span>);
+<span class="kw">public void</span> <span class="fn">increment</span>() { bookingCount.<span class="fn">incrementAndGet</span>(); }</pre>
+      </div>
+      <div class="block">
+        <div class="block-title">Bug 3: Resource leak</div>
+<pre><span class="cm">// BAD — if exception thrown before close(), stream leaks</span>
+<span class="kw">public void</span> <span class="fn">processFile</span>(String path) <span class="kw">throws</span> IOException {
+    <span class="cl">FileInputStream</span> fis = <span class="kw">new</span> <span class="cl">FileInputStream</span>(path);
+    <span class="cm">// process...</span>
+    fis.<span class="fn">close</span>(); <span class="cm">// never reached on exception!</span>
+}
+<span class="cm">// FIXED — try-with-resources guarantees close() is always called</span>
+<span class="kw">public void</span> <span class="fn">processFile</span>(String path) <span class="kw">throws</span> IOException {
+    <span class="kw">try</span> (<span class="cl">FileInputStream</span> fis = <span class="kw">new</span> <span class="cl">FileInputStream</span>(path)) {
+        <span class="cm">// process — fis.close() called automatically</span>
     }
+}</pre>
+      </div>
+      <div class="block">
+        <div class="block-title">Bug 4: Swallowed exception</div>
+<pre><span class="cm">// BAD — exception disappears silently. You'll never know what failed.</span>
+<span class="kw">try</span> { <span class="fn">processPayment</span>(req); } <span class="kw">catch</span> (Exception e) { }
+
+<span class="cm">// FIXED — log with context, rethrow or handle specifically</span>
+<span class="kw">try</span> {
+    <span class="fn">processPayment</span>(req);
+} <span class="kw">catch</span> (<span class="cl">PaymentException</span> e) {
+    log.<span class="fn">error</span>(<span class="str">"Payment failed bookingId={} userId={}"</span>,
+        req.<span class="fn">getBookingId</span>(), req.<span class="fn">getUserId</span>(), e);
+    <span class="kw">throw new</span> <span class="cl">BookingException</span>(<span class="str">"Payment failed"</span>, e);
+}</pre>
+      </div>
+      <div class="block">
+        <div class="block-title">Bug 5: N+1 query <span class="badge b-tag">★ Company</span></div>
+<pre><span class="cm">// BAD — 1 query to get hotels + N queries for rooms = N+1 total</span>
+<span class="kw">for</span> (<span class="cl">Hotel</span> h : hotels) {
+    List&lt;<span class="cl">Room</span>&gt; rooms = roomRepo.<span class="fn">findByHotelId</span>(h.<span class="fn">getId</span>()); <span class="cm">// N queries!</span>
+    h.<span class="fn">setRooms</span>(rooms);
 }
 
-<span class="cm">// Thread-safe version: wrap get/put in synchronized blocks
-// Or use Collections.synchronizedMap() wrapper</span></pre>
-        </div>
+<span class="cm">// FIXED — 1 query for ALL rooms, then group by hotelId in memory</span>
+List&lt;Long&gt; ids = hotels.<span class="fn">stream</span>().<span class="fn">map</span>(Hotel::getId).<span class="fn">collect</span>(toList());
+Map&lt;Long, List&lt;Room&gt;&gt; byHotel = roomRepo.<span class="fn">findByHotelIdIn</span>(ids) <span class="cm">// 1 query</span>
+    .<span class="fn">stream</span>().<span class="fn">collect</span>(groupingBy(Room::getHotelId));
+hotels.<span class="fn">forEach</span>(h -> h.<span class="fn">setRooms</span>(byHotel.<span class="fn">getOrDefault</span>(h.<span class="fn">getId</span>(), emptyList())));</pre>
+      </div>
+      <div class="block">
+        <div class="block-title">Bug 6: HashMap used in concurrent context</div>
+<pre><span class="cm">// BAD — HashMap is NOT thread-safe. Can corrupt under concurrent access.</span>
+<span class="kw">private</span> Map&lt;String, Session&gt; sessions = <span class="kw">new</span> HashMap&lt;&gt;();
+
+<span class="cm">// FIXED — ConcurrentHashMap: thread-safe, no full-map lock</span>
+<span class="kw">private</span> Map&lt;String, Session&gt; sessions = <span class="kw">new</span> ConcurrentHashMap&lt;&gt;();</pre>
+        <div class="callout c-warn"><strong>Know these cold:</strong> HashMap → not thread-safe. Hashtable → thread-safe but locks whole map (slow). ConcurrentHashMap → thread-safe, segment-level locking (fast). ArrayList → not thread-safe. CopyOnWriteArrayList → thread-safe reads, expensive writes.</div>
       </div>
     </div>
+  </div>
 
-    <!-- JAVA INTERNALS -->
-    <div class="section ph3" id="sec-java">
-      <div class="sec-header" onclick="toggleSec(this)">
-        <div class="sec-icon">☕</div>
-        <div class="sec-title">Java internals — Staff level depth</div>
-        <span class="sec-meta">What they ask beyond the code</span>
-        <span class="sec-chevron open">▼</span>
-      </div>
-      <div class="sec-body open">
-        <div class="content-block">
-          <div class="block-title">Collections complexity — know cold</div>
-<pre><span class="cm">// ArrayList</span>
-get(i)     → O(1)   | add(end)  → O(1) amortized | add(mid) → O(n)
-<span class="cm">// LinkedList</span>
-get(i)     → O(n)   | add(end)  → O(1)            | add(front) → O(1)
-<span class="cm">// HashMap</span>
-get/put    → O(1) avg | O(n) worst (all keys same hash bucket)
-<span class="cm">// TreeMap (sorted keys)</span>
-get/put    → O(log n) | <span class="fn">floorKey</span>/<span class="fn">ceilingKey</span> → O(log n)
-<span class="cm">// PriorityQueue (min-heap)</span>
-peek       → O(1)   | poll/offer → O(log n)
-<span class="cm">// ArrayDeque (stack + queue)</span>
-push/pop/poll/offer → O(1)  <span class="cm">← use this, NOT Stack class</span></pre>
-        </div>
-        <div class="content-block">
-          <div class="block-title">String vs StringBuilder vs StringBuffer</div>
-<pre><span class="cm">// String — immutable, thread-safe, creates new object on every concat</span>
-String s = <span class="str">"hello"</span>;
-s = s + <span class="str">" world"</span>; <span class="cm">// creates NEW String object — O(n) each time!</span>
-
-<span class="cm">// StringBuilder — mutable, NOT thread-safe, fast</span>
-<span class="cl">StringBuilder</span> sb = <span class="kw">new</span> <span class="cl">StringBuilder</span>();
-sb.<span class="fn">append</span>(<span class="str">"hello"</span>).<span class="fn">append</span>(<span class="str">" world"</span>); <span class="cm">// O(1) amortized</span>
-
-<span class="cm">// StringBuffer — mutable, thread-safe, slow (synchronized)
-// Use StringBuilder in interviews unless thread-safety is mentioned</span></pre>
-        </div>
-        <div class="content-block">
-          <div class="block-title">Java memory model basics <span class="badge b-ag">★ Agoda</span></div>
-<pre><span class="cm">// volatile — ensures visibility across threads
-// Does NOT guarantee atomicity</span>
+  <!-- JAVA INTERNALS -->
+  <div class="section ph3">
+    <div class="sec-hd" onclick="toggleSec(this)">
+      <div class="sec-icon">☕</div>
+      <div class="sec-title">Java internals — what gets asked</div>
+      <span class="chev open">▼</span>
+    </div>
+    <div class="sec-body open">
+      <div class="block">
+        <div class="block-title">Thread safety primitives <span class="badge b-tag">★ Company</span></div>
+<pre><span class="cm">// volatile — guarantees VISIBILITY, NOT atomicity
+// Use for: flags, status variables read by multiple threads</span>
 <span class="kw">private volatile boolean</span> running = <span class="kw">true</span>;
-<span class="cm">// One thread writes running=false, other thread sees it immediately</span>
 
-<span class="cm">// synchronized — mutual exclusion + visibility</span>
-<span class="kw">public synchronized void</span> <span class="fn">increment</span>() { count++; } <span class="cm">// only one thread at a time</span>
+<span class="cm">// synchronized — mutual exclusion + visibility
+// Use for: compound operations that must be atomic</span>
+<span class="kw">public synchronized void</span> <span class="fn">transfer</span>(<span class="kw">double</span> amount) {
+    balance -= amount; <span class="cm">// read + modify + write is atomic</span>
+}
 
-<span class="cm">// AtomicInteger — lock-free, better than synchronized for single variable</span>
-<span class="kw">private</span> <span class="cl">AtomicInteger</span> count = <span class="kw">new</span> <span class="cl">AtomicInteger</span>(<span class="nu">0</span>);
-count.<span class="fn">incrementAndGet</span>(); <span class="cm">// atomic read-modify-write, no lock</span>
+<span class="cm">// AtomicInteger — lock-free CAS operations
+// Use for: counters, accumulators</span>
+<span class="kw">private</span> AtomicInteger count = <span class="kw">new</span> AtomicInteger(<span class="nu">0</span>);
+count.<span class="fn">incrementAndGet</span>();     <span class="cm">// atomic ++</span>
+count.<span class="fn">compareAndSet</span>(<span class="nu">5</span>, <span class="nu">10</span>); <span class="cm">// set to 10 only if currently 5</span>
 
-<span class="cm">// ReentrantLock — explicit lock with tryLock timeout</span>
-<span class="kw">if</span> (lock.<span class="fn">tryLock</span>(<span class="nu">100</span>, <span class="cl">TimeUnit</span>.MILLISECONDS)) {
-    <span class="kw">try</span> { <span class="cm">// do work</span> } <span class="kw">finally</span> { lock.<span class="fn">unlock</span>(); }
+<span class="cm">// ReentrantLock — explicit lock with timeout
+// Use for: tryLock, interruptible waiting</span>
+<span class="kw">if</span> (lock.<span class="fn">tryLock</span>(<span class="nu">100</span>, TimeUnit.MILLISECONDS)) {
+    <span class="kw">try</span> { <span class="cm">/* critical section */</span> } <span class="kw">finally</span> { lock.<span class="fn">unlock</span>(); }
 }</pre>
-        </div>
-        <div class="content-block">
-          <div class="block-title">Spring Boot annotations you must explain</div>
-<pre><span class="kw">@Transactional</span>                    <span class="cm">// ACID transaction — all or nothing</span>
-<span class="kw">@Transactional</span>(readOnly = <span class="kw">true</span>)   <span class="cm">// optimized for reads, no write lock</span>
-<span class="kw">@Transactional</span>(propagation = <span class="cl">Propagation</span>.REQUIRES_NEW)  <span class="cm">// new tx always</span>
+      </div>
+      <div class="block">
+        <div class="block-title">Collections complexity — know cold</div>
+<pre>ArrayList:     get O(1) | add-end O(1) amortized | add-mid O(n)
+LinkedList:    get O(n) | add-front O(1)          | add-end O(1)
+HashMap:       get/put O(1) avg  | worst O(n) all same bucket
+TreeMap:       get/put O(log n)  | sorted iteration | floor/ceiling
+PriorityQueue: peek O(1)  | poll/offer O(log n)
+ArrayDeque:    push/pop/offer/poll all O(1)  ← use instead of Stack</pre>
+      </div>
+      <div class="block">
+        <div class="block-title">Spring Boot annotations</div>
+<pre><span class="kw">@Transactional</span>                      <span class="cm">// ACID — all or nothing</span>
+<span class="kw">@Transactional</span>(readOnly=<span class="kw">true</span>)       <span class="cm">// no write lock, faster reads</span>
+<span class="kw">@Transactional</span>(propagation=REQUIRES_NEW) <span class="cm">// always creates new tx</span>
 
-<span class="kw">@Cacheable</span>(<span class="str">"hotels"</span>)             <span class="cm">// cache result, skip method on cache hit</span>
-<span class="kw">@CacheEvict</span>(<span class="str">"hotels"</span>)            <span class="cm">// remove from cache (on update/delete)</span>
+<span class="kw">@Cacheable</span>(<span class="str">"hotels"</span>)               <span class="cm">// cache result, skip method on hit</span>
+<span class="kw">@CacheEvict</span>(<span class="str">"hotels"</span>)              <span class="cm">// remove from cache on update</span>
+<span class="kw">@Async</span>                              <span class="cm">// run in separate thread pool</span>
+<span class="kw">@Scheduled</span>(cron=<span class="str">"0 0 * * * *"</span>)   <span class="cm">// run every hour</span>
 
-<span class="kw">@Async</span>                            <span class="cm">// run in thread pool, returns CompletableFuture</span>
-<span class="kw">@Scheduled</span>(cron = <span class="str">"0 0 * * * *"</span>) <span class="cm">// cron job every hour</span>
+<span class="cm">// PROPAGATION quick reference:
+// REQUIRED (default): join existing tx or create new
+// REQUIRES_NEW: always new tx, suspends outer if exists
+// SUPPORTS: join if exists, proceed without tx if not
+// MANDATORY: must have existing tx, throw if not</span></pre>
+      </div>
+      <div class="block">
+        <div class="block-title">String vs StringBuilder</div>
+<pre><span class="cm">// String — immutable. Every concat creates a NEW object.</span>
+String s = <span class="str">""</span>;
+<span class="kw">for</span> (<span class="kw">int</span> i=<span class="nu">0</span>; i<<span class="nu">1000</span>; i++) s += i; <span class="cm">// creates 1000 String objects! O(n²)</span>
 
-<span class="kw">@RestController</span>   <span class="cm">// = @Controller + @ResponseBody</span>
-<span class="kw">@RequestMapping</span>(<span class="str">"/api/v1/hotels"</span>)
-<span class="kw">@GetMapping</span>(<span class="str">"/{id}"</span>)
-<span class="kw">public</span> <span class="cl">Hotel</span> <span class="fn">getHotel</span>(<span class="kw">@PathVariable</span> Long id) { ... }</pre>
+<span class="cm">// StringBuilder — mutable, NOT thread-safe. Use in single thread.</span>
+<span class="cl">StringBuilder</span> sb = <span class="kw">new</span> <span class="cl">StringBuilder</span>();
+<span class="kw">for</span> (<span class="kw">int</span> i=<span class="nu">0</span>; i<<span class="nu">1000</span>; i++) sb.<span class="fn">append</span>(i); <span class="cm">// O(n), one object</span>
+String result = sb.<span class="fn">toString</span>();
+
+<span class="cm">// StringBuffer — mutable, thread-safe (synchronized). Slow.
+// Use StringBuilder unless sharing across threads.</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENARIO PRACTICE -->
+  <div class="section ph3">
+    <div class="sec-hd" onclick="toggleSec(this)">
+      <div class="sec-icon">🎯</div>
+      <div class="sec-title">Scenario: coupon system design</div>
+      <span class="chev open">▼</span>
+    </div>
+    <div class="sec-body open">
+      <div class="sec-sum">The most commonly reported platform prompt. Walk through every layer before writing any code.</div>
+      <div class="block">
+        <div class="block-title">API design</div>
+<pre><span class="cm">// Validate a coupon before applying it to a booking</span>
+POST /v1/coupons/validate
+Body: { "code": "SUMMER20", "userId": 123, "bookingAmount": 150.00 }
+Response: { "valid": true, "discountType": "PERCENT", "value": 20,
+            "discountAmount": 30.00, "finalAmount": 120.00 }
+
+<span class="cm">// Apply coupon (idempotent — use booking ID as idempotency key)</span>
+POST /v1/coupons/redeem
+Header: Idempotency-Key: booking-{bookingId}
+Body: { "code": "SUMMER20", "userId": 123, "bookingId": 456 }</pre>
+      </div>
+      <div class="block">
+        <div class="block-title">Data model</div>
+<pre>Coupon(id, code, discountType, value, minSpend, maxUses, usedCount,
+       applicableCategories, expiresAt, createdAt)
+
+CouponUsage(id, couponId, userId, bookingId, discountAmount, usedAt)
+
+<span class="cm">Indexes:
+  UNIQUE(code) — fast lookup by code
+  INDEX(userId) on CouponUsage — "has this user used this coupon?"</span></pre>
+      </div>
+      <div class="block">
+        <div class="block-title">Race condition: two users redeem last use simultaneously</div>
+<pre><span class="cm">// Naive: SELECT usedCount, then UPDATE — race condition!</span>
+<span class="cm">// Fixed: atomic increment with Redis, then validate</span>
+
+<span class="kw">public boolean</span> <span class="fn">redeemCoupon</span>(String code, Long userId, Long bookingId) {
+    String key = <span class="str">"coupon:uses:"</span> + code;
+
+    <span class="cm">// Atomic increment — only one thread gets each value</span>
+    Long uses = redis.<span class="fn">increment</span>(key);
+
+    <span class="kw">if</span> (uses > coupon.<span class="fn">getMaxUses</span>()) {
+        redis.<span class="fn">decrement</span>(key); <span class="cm">// rollback — we over-counted</span>
+        <span class="kw">throw new</span> <span class="cl">CouponExhaustedException</span>(<span class="str">"Coupon fully redeemed"</span>);
+    }
+
+    <span class="cm">// Persist usage to DB (can be async via queue)</span>
+    couponUsageRepo.<span class="fn">save</span>(<span class="kw">new</span> CouponUsage(code, userId, bookingId));
+    <span class="kw">return true</span>;
+}</pre>
+        <div class="callout c-info"><strong>Why Redis INCR?</strong> Redis is single-threaded — INCR is atomic. No two threads can get the same value. If value &gt; maxUses, we DECR to roll back and reject.</div>
+      </div>
+      <div class="block">
+        <div class="block-title">Business rules to mention</div>
+        <div class="callout c-tag">
+          One-time vs multi-use coupons · Expiry date check · Minimum spend threshold · Per-user usage limit (CouponUsage table) · Category restrictions (only for flights, only for hotels) · Stackable vs non-stackable (can two coupons be applied at once?)
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- PREP CHECKLIST -->
-    <div class="section ph4" id="sec-checklist">
-      <div class="sec-header" onclick="toggleSec(this)">
-        <div class="sec-icon">✅</div>
-        <div class="sec-title">Platform round prep checklist</div>
-        <span class="sec-meta">Track your readiness</span>
-        <span class="sec-chevron open">▼</span>
-      </div>
-      <div class="sec-body open">
-        <div class="content-block">
-          <div class="block-title">Concepts to be able to explain verbally</div>
-          <ul class="checklist" id="plat-checklist">
-            <li class="check-item"><div class="chk" id="chk-p1" onclick="platTgl('p1')"></div><div class="check-text" id="txt-p1">Strategy, Observer, Repository patterns — give a booking domain example for each</div></li>
-            <li class="check-item"><div class="chk" id="chk-p2" onclick="platTgl('p2')"></div><div class="check-text" id="txt-p2">Idempotency key pattern — why needed, how to implement with Redis</div></li>
-            <li class="check-item"><div class="chk" id="chk-p3" onclick="platTgl('p3')"></div><div class="check-text" id="txt-p3">Circuit breaker — three states, Resilience4j usage, fallback method</div></li>
-            <li class="check-item"><div class="chk" id="chk-p4" onclick="platTgl('p4')"></div><div class="check-text" id="txt-p4">LRU Cache implementation — both HashMap+DLL and LinkedHashMap approaches</div></li>
-            <li class="check-item"><div class="chk" id="chk-p5" onclick="platTgl('p5')"></div><div class="check-text" id="txt-p5">Thread safety: volatile vs synchronized vs AtomicInteger — when to use each</div></li>
-            <li class="check-item"><div class="chk" id="chk-p6" onclick="platTgl('p6')"></div><div class="check-text" id="txt-p6">@Transactional propagation types — explain REQUIRED vs REQUIRES_NEW</div></li>
-            <li class="check-item"><div class="chk" id="chk-p7" onclick="platTgl('p7')"></div><div class="check-text" id="txt-p7">N+1 query — identify it in code, fix with batch query or JOIN</div></li>
-            <li class="check-item"><div class="chk" id="chk-p8" onclick="platTgl('p8')"></div><div class="check-text" id="txt-p8">Redis caching with Spring — @Cacheable, cache key design, TTL, eviction</div></li>
-            <li class="check-item"><div class="chk" id="chk-p9" onclick="platTgl('p9')"></div><div class="check-text" id="txt-p9">Rate limiting — token bucket algorithm, Bucket4j + Redis implementation</div></li>
-            <li class="check-item"><div class="chk" id="chk-p10" onclick="platTgl('p10')"></div><div class="check-text" id="txt-p10">Cursor-based vs offset-based pagination — why cursor is better for large datasets</div></li>
-            <li class="check-item"><div class="chk" id="chk-p11" onclick="platTgl('p11')"></div><div class="check-text" id="txt-p11">Kubernetes: know what you did — pod autoscaling, memory limits, CrashLoopBackoff debug</div></li>
-            <li class="check-item"><div class="chk" id="chk-p12" onclick="platTgl('p12')"></div><div class="check-text" id="txt-p12">Prometheus alerting — what metrics you set up, what thresholds, what triggered</div></li>
-          </ul>
-        </div>
-        <div class="callout callout-agoda" style="margin:16px 18px"><strong>Resume defense rule:</strong> For every technology on your resume, prepare one concrete story: what you built, what broke, what you learned. They will ask. Vague answers here fail the platform round even if your code is perfect.</div>
-      </div>
+  <!-- PREP CHECKLIST -->
+  <div class="section ph4">
+    <div class="sec-hd" onclick="toggleSec(this)">
+      <div class="sec-icon">✅</div>
+      <div class="sec-title">Readiness checklist</div>
+      <span class="chev open">▼</span>
     </div>
-
+    <div class="sec-body open">
+      <div class="block">
+        <div class="block-title">Can you explain these without notes?</div>
+        <ul class="chk-list">
+          <li class="chk-item"><div class="chk" id="chk-p1" onclick="platTgl('p1')"></div><div class="chk-text" id="txt-p1">Strategy, Observer, Repository patterns — give a booking domain example for each</div></li>
+          <li class="chk-item"><div class="chk" id="chk-p2" onclick="platTgl('p2')"></div><div class="chk-text" id="txt-p2">Idempotency key pattern — why needed, how Redis NX flag implements it</div></li>
+          <li class="chk-item"><div class="chk" id="chk-p3" onclick="platTgl('p3')"></div><div class="chk-text" id="txt-p3">Circuit breaker — three states (CLOSED, OPEN, HALF_OPEN), Resilience4j config</div></li>
+          <li class="chk-item"><div class="chk" id="chk-p4" onclick="platTgl('p4')"></div><div class="chk-text" id="txt-p4">LRU Cache — implement with LinkedHashMap, explain why accessOrder=true</div></li>
+          <li class="chk-item"><div class="chk" id="chk-p5" onclick="platTgl('p5')"></div><div class="chk-text" id="txt-p5">volatile vs synchronized vs AtomicInteger — exact use case for each</div></li>
+          <li class="chk-item"><div class="chk" id="chk-p6" onclick="platTgl('p6')"></div><div class="chk-text" id="txt-p6">@Transactional propagation — REQUIRED vs REQUIRES_NEW, give a real example</div></li>
+          <li class="chk-item"><div class="chk" id="chk-p7" onclick="platTgl('p7')"></div><div class="chk-text" id="txt-p7">N+1 query — spot it in code, explain why it's bad, fix with batch query</div></li>
+          <li class="chk-item"><div class="chk" id="chk-p8" onclick="platTgl('p8')"></div><div class="chk-text" id="txt-p8">Redis caching — @Cacheable, cache key design, TTL strategy, eviction</div></li>
+          <li class="chk-item"><div class="chk" id="chk-p9" onclick="platTgl('p9')"></div><div class="chk-text" id="txt-p9">Rate limiting — token bucket algorithm, Redis INCR with TTL implementation</div></li>
+          <li class="chk-item"><div class="chk" id="chk-p10" onclick="platTgl('p10')"></div><div class="chk-text" id="txt-p10">Cursor-based vs offset pagination — why cursor wins for large datasets</div></li>
+          <li class="chk-item"><div class="chk" id="chk-p11" onclick="platTgl('p11')"></div><div class="chk-text" id="txt-p11">One concrete Kubernetes story from your work — a config you set, a bug you debugged</div></li>
+          <li class="chk-item"><div class="chk" id="chk-p12" onclick="platTgl('p12')"></div><div class="chk-text" id="txt-p12">One concrete Prometheus story — a metric you set up, an alert that fired</div></li>
+        </ul>
+      </div>
+      <div class="callout c-warn" style="margin:0 14px 14px"><strong>Resume defense:</strong> Every technology you've listed → prepare one story: what you built, what broke, what you learned. Vague answers here fail the platform round.</div>
+    </div>
   </div>
 </div>
-</div>
 
-<script src="shared.js"></script>
 <script>
-function scrollTo(id){document.getElementById('sec-'+id).scrollIntoView({behavior:'smooth'})}
+function toggleSec(hd){const body=hd.nextElementSibling;const chev=hd.querySelector('.chev');body.classList.toggle('open');chev.classList.toggle('open')}
 
-const platDone = loadChecks('plat-done');
-let platCount = platDone.size;
+const platDone=new Set(JSON.parse(localStorage.getItem('plat-done')||'[]'));
+const TOTAL_PLAT=12;
+
+function updatePlatStats(){
+  const n=platDone.size;
+  document.getElementById('plat-done').textContent=n;
+  document.getElementById('plat-pct').textContent=`${n} / ${TOTAL_PLAT}`;
+  document.getElementById('plat-fill').style.width=Math.round(n/TOTAL_PLAT*100)+'%';
+}
 
 function platTgl(id){
-  const store = toggleCheck(id,'plat-done');
-  platDone.clear();store.forEach(x=>platDone.add(x));
-  document.getElementById('plat-done').textContent = platDone.size;
+  if(platDone.has(id))platDone.delete(id);else platDone.add(id);
+  localStorage.setItem('plat-done',JSON.stringify([...platDone]));
+  const chk=document.getElementById('chk-'+id);
+  const txt=document.getElementById('txt-'+id);
+  if(chk)chk.classList.toggle('done',platDone.has(id));
+  if(txt)txt.classList.toggle('done',platDone.has(id));
+  updatePlatStats();
 }
 
 platDone.forEach(id=>{
@@ -489,9 +499,16 @@ platDone.forEach(id=>{
   const txt=document.getElementById('txt-'+id);
   if(chk){chk.classList.add('done');if(txt)txt.classList.add('done');}
 });
-document.getElementById('plat-done').textContent = platDone.size;
+updatePlatStats();
 
-buildTopNav('platform');
+function updateCd(){
+  const diff=new Date('2026-07-09T09:00:00')-new Date();
+  const el=document.getElementById('cd');
+  if(!el)return;
+  if(diff<=0){el.textContent='Interview day!';return;}
+  el.textContent=`${Math.floor(diff/864e5)}d ${Math.floor((diff%864e5)/36e5)}h left`;
+}
+updateCd();setInterval(updateCd,60000);
 </script>
 </body>
 </html>
