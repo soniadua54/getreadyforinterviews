@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>DSA & Coding — Agoda Prep</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav class="topnav" id="topnav"></nav>
+<div class="shell">
+<nav class="sidebar">
+  <div class="sidebar-progress">
+    <div class="sidebar-progress-label"><span>DSA progress</span><span id="sb-pct">0%</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="sb-fill" style="width:0%"></div></div>
+  </div>
+  <div class="sidebar-section">Topics</div>
+  <div id="sidebar-links"></div>
+  <div class="sidebar-section" style="margin-top:auto;padding-top:16px">Resources</div>
+  <a class="sidebar-item" href="https://leetcode.com" target="_blank">↗ LeetCode</a>
+  <a class="sidebar-item" href="https://neetcode.io" target="_blank">↗ NeetCode</a>
+  <a class="sidebar-item" href="platform.html">→ Platform Round</a>
+  <a class="sidebar-item" href="sysdesign.html">→ System Design</a>
+</nav>
+<div class="main">
+  <div class="page-header">
+    <div class="header-row">
+      <h2>DSA & Coding Round</h2>
+    </div>
+    <div class="search-wrap">
+      <svg class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
+      <input type="text" id="srch" placeholder="Search questions or topics..." oninput="render()">
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num" id="st-total" style="color:var(--accent2)">—</div><div class="stat-label">Total questions</div></div>
+    <div class="stat-card"><div class="stat-num" id="st-agoda" style="color:var(--agoda)">—</div><div class="stat-label">Agoda-critical</div></div>
+    <div class="stat-card"><div class="stat-num" id="st-done" style="color:var(--success)">0</div><div class="stat-label">Completed</div></div>
+    <div class="stat-card"><div class="stat-num" id="st-rem">—</div><div class="stat-label">Remaining</div></div>
+  </div>
+  <div class="filters" id="filter-row"></div>
+  <div class="legend">
+    <div class="legend-item"><span class="badge b-ag">★ Agoda</span>&nbsp;high probability</div>
+    <div class="legend-item"><span class="badge b-mu">must</span>&nbsp;solve before any interview</div>
+    <div class="legend-item"><span class="badge b-e">easy</span>&nbsp;<span class="badge b-m">med</span>&nbsp;<span class="badge b-h">hard</span></div>
+  </div>
+  <div class="sections" id="sections"></div>
+  <div class="no-res" id="no-res" style="display:none">No questions match.</div>
+</div>
+</div>
+<script src="shared.js"></script>
+<script>
+const SLUGS={1:'two-sum',3:'longest-substring-without-repeating-characters',5:'longest-palindromic-substring',8:'string-to-integer-atoi',11:'container-with-most-water',13:'roman-to-integer',15:'3sum',17:'letter-combinations-of-a-phone-number',18:'4sum',19:'remove-nth-node-from-end-of-list',20:'valid-parentheses',21:'merge-two-sorted-lists',22:'generate-parentheses',23:'merge-k-sorted-lists',28:'find-the-index-of-the-first-occurrence-in-a-string',31:'next-permutation',33:'search-in-rotated-sorted-array',35:'search-insert-position',37:'sudoku-solver',39:'combination-sum',42:'trapping-rain-water',45:'jump-game-ii',46:'permutations',47:'permutations-ii',49:'group-anagrams',51:'n-queens',53:'maximum-subarray',55:'jump-game',56:'merge-intervals',57:'insert-interval',62:'unique-paths',64:'minimum-path-sum',70:'climbing-stairs',72:'edit-distance',74:'search-a-2d-matrix',75:'sort-colors',76:'minimum-window-substring',77:'combinations',78:'subsets',79:'word-search',84:'largest-rectangle-in-histogram',90:'subsets-ii',91:'decode-ways',92:'reverse-linked-list-ii',94:'binary-tree-inorder-traversal',98:'validate-binary-search-tree',100:'same-tree',101:'symmetric-tree',102:'binary-tree-level-order-traversal',103:'binary-tree-zigzag-level-order-traversal',104:'maximum-depth-of-binary-tree',105:'construct-binary-tree-from-preorder-and-inorder-traversal',110:'balanced-binary-tree',112:'path-sum',114:'flatten-binary-tree-to-linked-list',124:'binary-tree-maximum-path-sum',125:'valid-palindrome',128:'longest-consecutive-sequence',133:'clone-graph',138:'copy-list-with-random-pointer',139:'word-break',141:'linked-list-cycle',142:'linked-list-cycle-ii',143:'reorder-list',144:'binary-tree-preorder-traversal',145:'binary-tree-postorder-traversal',146:'lru-cache',150:'evaluate-reverse-polish-notation',151:'reverse-words-in-a-string',153:'find-minimum-in-rotated-sorted-array',155:'min-stack',162:'find-peak-element',169:'majority-element',198:'house-robber',199:'binary-tree-right-side-view',200:'number-of-islands',202:'happy-number',205:'isomorphic-strings',206:'reverse-linked-list',207:'course-schedule',209:'minimum-size-subarray-sum',210:'course-schedule-ii',213:'house-robber-ii',215:'kth-largest-element-in-an-array',217:'contains-duplicate',227:'basic-calculator-ii',230:'kth-smallest-element-in-a-bst',232:'implement-queue-using-stacks',235:'lowest-common-ancestor-of-a-binary-search-tree',238:'product-of-array-except-self',239:'sliding-window-maximum',240:'search-a-2d-matrix-ii',242:'valid-anagram',253:'meeting-rooms-ii',271:'encode-and-decode-strings',278:'first-bad-version',286:'walls-and-gates',290:'word-pattern',295:'find-median-from-data-stream',297:'serialize-and-deserialize-binary-tree',300:'longest-increasing-subsequence',303:'range-sum-query-immutable',322:'coin-change',344:'reverse-string',347:'top-k-frequent-elements',349:'intersection-of-two-arrays',373:'find-k-pairs-with-smallest-sums',378:'kth-smallest-element-in-a-sorted-matrix',387:'first-unique-character-in-a-string',394:'decode-string',410:'split-array-largest-sum',416:'partition-equal-subset-sum',417:'pacific-atlantic-water-flow',435:'non-overlapping-intervals',438:'find-all-anagrams-in-a-string',450:'delete-node-in-a-bst',451:'sort-characters-by-frequency',459:'repeated-substring-pattern',460:'lfu-cache',496:'next-greater-element-i',503:'next-greater-element-ii',509:'fibonacci-number',523:'continuous-subarray-sum',525:'contiguous-array',542:'01-matrix',543:'diameter-of-binary-tree',547:'number-of-provinces',560:'subarray-sum-equals-k',567:'permutation-in-string',621:'task-scheduler',622:'design-circular-queue',637:'average-of-levels-in-binary-tree',643:'maximum-average-subarray-i',647:'palindromic-substrings',662:'maximum-width-of-binary-tree',684:'redundant-connection',692:'top-k-frequent-words',695:'max-area-of-island',700:'search-in-a-binary-search-tree',701:'insert-into-a-binary-search-tree',703:'kth-largest-element-in-a-stream',704:'binary-search',721:'accounts-merge',739:'daily-temperatures',743:'network-delay-time',746:'min-cost-climbing-stairs',767:'reorganize-string',787:'cheapest-flights-within-k-stops',875:'koko-eating-bananas',876:'middle-of-the-linked-list',907:'sum-of-subarray-minimums',973:'k-closest-points-to-origin',974:'subarray-sums-divisible-by-k',981:'time-based-key-value-store',994:'rotting-oranges',1004:'max-consecutive-ones-iii',1011:'capacity-to-ship-packages-within-d-days',1091:'shortest-path-in-binary-matrix',1114:'print-in-order',1115:'print-foobar-alternately',1116:'print-zero-even-odd',1117:'building-h2o',1143:'longest-common-subsequence',1188:'design-bounded-blocking-queue',1242:'web-crawler-multithreaded',1319:'number-of-operations-to-make-network-connected',1631:'path-with-minimum-effort',1971:'find-if-path-exists-in-graph',2461:'maximum-sum-of-distinct-subarrays-with-length-k'};
+function lcUrl(n){return SLUGS[n]?'https://leetcode.com/problems/'+SLUGS[n]:'https://leetcode.com/problemset/';}
+
+const DSA=[
+  {id:'arrays',ph:1,icon:'▦',title:'1. Arrays & Sliding Window',phase:'Phase 1 — Foundation (weeks 1-2)',summary:'Nearly every Agoda coding problem has an array at its core. Sliding window is the most tested pattern.',concepts:[
+    {t:'Two pointer',d:'Two indices moving toward each other or same direction. Reduces O(n²) to O(n) on sorted data.',qs:[{tx:'Two Sum II – sorted array',lc:167,d:'easy',ag:true,mu:true},{tx:'Three Sum',lc:15,d:'med',ag:true,mu:true},{tx:'Container With Most Water',lc:11,d:'med',ag:true,mu:true},{tx:'Trapping Rain Water',lc:42,d:'hard',ag:true},{tx:'Four Sum',lc:18,d:'med'}]},
+    {t:'Sliding window – variable size',d:'Expand right, shrink left when constraint violated.',qs:[{tx:'Longest Substring Without Repeating Characters',lc:3,d:'med',ag:true,mu:true},{tx:'Minimum Window Substring',lc:76,d:'hard',ag:true},{tx:'Longest Repeating Character Replacement',lc:424,d:'med',ag:true},{tx:'Minimum Size Subarray Sum',lc:209,d:'med',mu:true},{tx:'Max Consecutive Ones III',lc:1004,d:'med'}]},
+    {t:'Prefix sums',d:'prefix[r] - prefix[l-1] gives range sum in O(1). Combine with HashMap for target sums.',qs:[{tx:'Subarray Sum Equals K',lc:560,d:'med',ag:true,mu:true},{tx:'Continuous Subarray Sum',lc:523,d:'med',ag:true},{tx:'Product of Array Except Self',lc:238,d:'med',ag:true,mu:true},{tx:'Subarray Sums Divisible by K',lc:974,d:'med'},{tx:'Range Sum Query Immutable',lc:303,d:'easy',mu:true}]},
+    {t:'Sorting-based',d:'Many problems trivial after sorting. Know when O(n log n) is acceptable.',qs:[{tx:'Merge Intervals',lc:56,d:'med',ag:true,mu:true},{tx:'Insert Interval',lc:57,d:'med',ag:true},{tx:'Meeting Rooms II',lc:253,d:'med',ag:true},{tx:'Sort Colors – Dutch flag',lc:75,d:'med',mu:true},{tx:'Non-overlapping Intervals',lc:435,d:'med'}]}
+  ]},
+  {id:'strings',ph:1,icon:'Aa',title:'2. Strings',phase:'Phase 1 — Foundation (weeks 1-2)',summary:'Strings are char arrays. Most problems reduce to sliding window + HashMap.',concepts:[
+    {t:'Anagram & frequency',d:'Use int[26] for lowercase letters — faster than HashMap for char counts.',qs:[{tx:'Valid Anagram',lc:242,d:'easy',mu:true},{tx:'Group Anagrams',lc:49,d:'med',ag:true,mu:true},{tx:'Find All Anagrams in a String',lc:438,d:'med',ag:true},{tx:'Permutation in String',lc:567,d:'med'}]},
+    {t:'Pattern & palindromes',d:'Expand-around-center for palindromes O(n). KMP for O(n+m) substring search.',qs:[{tx:'Longest Palindromic Substring',lc:5,d:'med',ag:true,mu:true},{tx:'Palindromic Substrings count',lc:647,d:'med'},{tx:'Implement strStr',lc:28,d:'easy',mu:true}]},
+    {t:'Encoding & parsing',d:'URL encoding, JSON parsing, tokenization — relevant to Agoda backend.',qs:[{tx:'Encode and Decode Strings',lc:271,d:'med',ag:true},{tx:'Decode Ways',lc:91,d:'med',ag:true},{tx:'Roman to Integer',lc:13,d:'easy',mu:true},{tx:'Basic Calculator II',lc:227,d:'med'}]}
+  ]},
+  {id:'hashmap',ph:1,icon:'#',title:'3. HashMap & HashSet',phase:'Phase 1 — Foundation (weeks 1-2)',summary:'The most useful interview data structure. Trade memory for O(1) lookup.',concepts:[
+    {t:'Frequency & counting',d:'getOrDefault(k,0)+1 is the building block of 30% of interview problems.',qs:[{tx:'Two Sum',lc:1,d:'easy',ag:true,mu:true},{tx:'Top K Frequent Elements',lc:347,d:'med',ag:true,mu:true},{tx:'First Unique Character in String',lc:387,d:'easy',mu:true},{tx:'Majority Element',lc:169,d:'easy',mu:true}]},
+    {t:'Existence & deduplication',d:'HashSet for O(1) contains(). When you only care about existence, not count.',qs:[{tx:'Contains Duplicate',lc:217,d:'easy',mu:true},{tx:'Longest Consecutive Sequence',lc:128,d:'med',ag:true,mu:true},{tx:'Happy Number',lc:202,d:'easy'}]},
+    {t:'Index mapping',d:'Store index as value. map[value]=index lets you find complements in O(1).',qs:[{tx:'Subarray Sum Equals K',lc:560,d:'med',ag:true,mu:true},{tx:'Contiguous Array',lc:525,d:'med',ag:true},{tx:'Word Pattern',lc:290,d:'easy'}]}
+  ]},
+  {id:'stack',ph:1,icon:'≡',title:'4. Stack & Queue',phase:'Phase 1 — Foundation (weeks 1-2)',summary:'Stack for most-recent lookups. Queue for BFS. Monotonic stack — very common at Staff level.',concepts:[
+    {t:'Stack basics',d:'LIFO. Use ArrayDeque in Java — not the legacy Stack class.',qs:[{tx:'Valid Parentheses',lc:20,d:'easy',ag:true,mu:true},{tx:'Min Stack',lc:155,d:'med',mu:true},{tx:'Decode String',lc:394,d:'med',mu:true},{tx:'Generate Parentheses',lc:22,d:'med',ag:true}]},
+    {t:'Monotonic stack',d:'Stack maintaining order. For "next greater/smaller element" problems.',qs:[{tx:'Daily Temperatures',lc:739,d:'med',ag:true,mu:true},{tx:'Next Greater Element I',lc:496,d:'easy',mu:true},{tx:'Largest Rectangle in Histogram',lc:84,d:'hard',ag:true},{tx:'Sum of Subarray Minimums',lc:907,d:'med'}]},
+    {t:'Queue & Deque',d:'FIFO. Sliding window max uses monotonic deque. BFS always uses a queue.',qs:[{tx:'Implement Queue Using Stacks',lc:232,d:'easy',mu:true},{tx:'Sliding Window Maximum',lc:239,d:'hard',ag:true}]}
+  ]},
+  {id:'linked',ph:2,icon:'⬡',title:'5. Linked Lists',phase:'Phase 2 — Core DS (weeks 3-4)',summary:'Fast/slow pointer is the key pattern. LRU Cache is the #1 Staff-level problem.',concepts:[
+    {t:'Pointer manipulation',d:'Always draw it out. Track prev, curr, next.',qs:[{tx:'Reverse Linked List',lc:206,d:'easy',ag:true,mu:true},{tx:'Merge Two Sorted Lists',lc:21,d:'easy',mu:true},{tx:'Remove Nth Node From End',lc:19,d:'med',mu:true},{tx:'Merge K Sorted Lists',lc:23,d:'hard',ag:true}]},
+    {t:'Fast/slow pointers',d:'Fast=2 steps, slow=1. They meeting → cycle. Fast at end → slow at middle.',qs:[{tx:'Linked List Cycle',lc:141,d:'easy',mu:true},{tx:'Linked List Cycle II',lc:142,d:'med',ag:true},{tx:'Middle of the Linked List',lc:876,d:'easy',mu:true},{tx:'Reorder List',lc:143,d:'med',ag:true}]},
+    {t:'Advanced',d:'LRU Cache is the most commonly asked linked list + hashmap combo at Staff level.',qs:[{tx:'LRU Cache',lc:146,d:'med',ag:true,mu:true},{tx:'LFU Cache',lc:460,d:'hard'},{tx:'Copy List with Random Pointer',lc:138,d:'med'}]}
+  ]},
+  {id:'trees',ph:2,icon:'⊕',title:'6. Trees & BST',phase:'Phase 2 — Core DS (weeks 3-4)',summary:'Most common topic at mid-to-senior level. Master the 4 traversals.',concepts:[
+    {t:'DFS traversals',d:'Inorder (L→root→R), Preorder (root→L→R), Postorder (L→R→root).',qs:[{tx:'Binary Tree Inorder Traversal',lc:94,d:'easy',mu:true},{tx:'Binary Tree Preorder Traversal',lc:144,d:'easy',mu:true},{tx:'Binary Tree Postorder Traversal',lc:145,d:'easy',mu:true}]},
+    {t:'BFS / Level order',d:'Queue + capture levelSize before inner loop to separate levels.',qs:[{tx:'Binary Tree Level Order Traversal',lc:102,d:'med',ag:true,mu:true},{tx:'Binary Tree Zigzag Level Order',lc:103,d:'med',ag:true},{tx:'Right Side View of Binary Tree',lc:199,d:'med',ag:true,mu:true},{tx:'Average of Levels in Binary Tree',lc:637,d:'easy',mu:true}]},
+    {t:'Properties & recursion',d:'Left answer + right answer + current node = every tree problem.',qs:[{tx:'Maximum Depth of Binary Tree',lc:104,d:'easy',ag:true,mu:true},{tx:'Diameter of Binary Tree',lc:543,d:'easy',ag:true,mu:true},{tx:'Balanced Binary Tree',lc:110,d:'easy',mu:true},{tx:'Same Tree',lc:100,d:'easy',mu:true},{tx:'Binary Tree Maximum Path Sum',lc:124,d:'hard',ag:true}]},
+    {t:'BST operations',d:'BST: left < node < right at EVERY node. Inorder traversal → sorted output.',qs:[{tx:'Validate Binary Search Tree',lc:98,d:'med',ag:true,mu:true},{tx:'Kth Smallest in BST',lc:230,d:'med',ag:true},{tx:'Lowest Common Ancestor of BST',lc:235,d:'med',mu:true},{tx:'Insert into BST',lc:701,d:'med',mu:true}]},
+    {t:'Construction & serialization',d:'Build from traversal arrays. Serialize/deserialize — hotel category hierarchy.',qs:[{tx:'Construct Tree from Preorder and Inorder',lc:105,d:'med',ag:true,mu:true},{tx:'Serialize and Deserialize Binary Tree',lc:297,d:'hard',ag:true},{tx:'Flatten Binary Tree to Linked List',lc:114,d:'med'}]}
+  ]},
+  {id:'graphs',ph:3,icon:'◎',title:'7. Graphs & BFS/DFS',phase:'Phase 3 — Advanced (weeks 5-7)',summary:"Agoda's highest-priority topic. Hotel hierarchies, routing, connectivity — all graphs.",concepts:[
+    {t:'BFS on grid',d:'Grid = implicit graph. Mark visited WHEN enqueued. BFS gives shortest path.',qs:[{tx:'Number of Islands',lc:200,d:'med',ag:true,mu:true},{tx:'Rotting Oranges',lc:994,d:'med',ag:true,mu:true},{tx:'Shortest Path in Binary Matrix',lc:1091,d:'med',ag:true,mu:true},{tx:'01 Matrix',lc:542,d:'med',mu:true},{tx:'Walls and Gates',lc:286,d:'med',ag:true}]},
+    {t:'DFS & connected components',d:'DFS for connectivity, cycle detection, topological sort.',qs:[{tx:'Clone Graph',lc:133,d:'med',mu:true},{tx:'Max Area of Island',lc:695,d:'med',mu:true},{tx:'Course Schedule',lc:207,d:'med',ag:true,mu:true},{tx:'Course Schedule II',lc:210,d:'med',ag:true},{tx:'Number of Provinces',lc:547,d:'med',mu:true}]},
+    {t:'Dijkstra shortest path',d:'Min-heap PriorityQueue. Weighted graphs only — use BFS for unweighted.',qs:[{tx:'Network Delay Time',lc:743,d:'med',ag:true,mu:true},{tx:'Path With Minimum Effort',lc:1631,d:'med',ag:true},{tx:'Cheapest Flights Within K Stops',lc:787,d:'med',ag:true}]},
+    {t:'Union Find',d:'path compression + union by rank = near O(1). For dynamic connectivity.',qs:[{tx:'Redundant Connection',lc:684,d:'med',mu:true},{tx:'Accounts Merge',lc:721,d:'med',ag:true}]}
+  ]},
+  {id:'binary',ph:3,icon:'⟨⟩',title:'8. Binary Search',phase:'Phase 3 — Advanced (weeks 5-7)',summary:'Beyond sorted arrays: binary search on the ANSWER. Define a monotonic condition, then search.',concepts:[
+    {t:'Classic binary search',d:'lo=0, hi=n-1. mid=lo+(hi-lo)/2 avoids overflow.',qs:[{tx:'Binary Search',lc:704,d:'easy',mu:true},{tx:'Find Minimum in Rotated Sorted Array',lc:153,d:'med',ag:true,mu:true},{tx:'Search in Rotated Sorted Array',lc:33,d:'med',ag:true,mu:true},{tx:'Find Peak Element',lc:162,d:'med',mu:true}]},
+    {t:'Binary search on answer',d:'Search the answer range. Min/max X such that condition holds.',qs:[{tx:'Koko Eating Bananas',lc:875,d:'med',ag:true,mu:true},{tx:'Capacity To Ship Packages Within D Days',lc:1011,d:'med',ag:true},{tx:'Split Array Largest Sum',lc:410,d:'hard',ag:true},{tx:'Time Based Key-Value Store',lc:981,d:'med',ag:true}]},
+    {t:'Binary search on 2D',d:'Treat matrix as 1D sorted array. Or search row-by-row.',qs:[{tx:'Search a 2D Matrix',lc:74,d:'med',mu:true},{tx:'Search a 2D Matrix II',lc:240,d:'med',ag:true},{tx:'First Bad Version',lc:278,d:'easy',mu:true}]}
+  ]},
+  {id:'heap',ph:3,icon:'△',title:'9. Heap / Priority Queue',phase:'Phase 3 — Advanced (weeks 5-7)',summary:'PriorityQueue in Java — min-heap by default. Critical for Top-K and Dijkstra.',concepts:[
+    {t:'Top-K pattern',d:'Keep min-heap of size K. O(n log K) beats O(n log n).',qs:[{tx:'Kth Largest Element in an Array',lc:215,d:'med',ag:true,mu:true},{tx:'Top K Frequent Elements',lc:347,d:'med',ag:true,mu:true},{tx:'K Closest Points to Origin',lc:973,d:'med',ag:true,mu:true},{tx:'Kth Largest in a Stream',lc:703,d:'easy',mu:true}]},
+    {t:'K-way merge',d:'Merge K sorted lists with min-heap. Pop min, add next from same list.',qs:[{tx:'Merge K Sorted Lists',lc:23,d:'hard',ag:true,mu:true},{tx:'Kth Smallest in Sorted Matrix',lc:378,d:'med',ag:true}]},
+    {t:'Median & streams',d:'Two heaps: max-heap for lower half, min-heap for upper. Median in O(1).',qs:[{tx:'Find Median from Data Stream',lc:295,d:'hard',ag:true,mu:true},{tx:'Task Scheduler',lc:621,d:'med',ag:true}]}
+  ]},
+  {id:'recursion',ph:3,icon:'↺',title:'10. Backtracking',phase:'Phase 3 — Advanced (weeks 5-7)',summary:'Pattern: choose → explore → unchoose. For all generate-all problems.',concepts:[
+    {t:'Subsets & combinations',d:'Include or exclude each element. Use start index to avoid duplicates.',qs:[{tx:'Subsets',lc:78,d:'med',mu:true},{tx:'Combination Sum',lc:39,d:'med',ag:true,mu:true},{tx:'Combinations',lc:77,d:'med',mu:true},{tx:'Letter Combinations of Phone Number',lc:17,d:'med',ag:true,mu:true}]},
+    {t:'Permutations',d:'All orderings. Use visited boolean array to track current path.',qs:[{tx:'Permutations',lc:46,d:'med',mu:true},{tx:'Next Permutation',lc:31,d:'med',ag:true}]},
+    {t:'Grid backtracking',d:'Mark cell visited before recursing, unmark after.',qs:[{tx:'Word Search',lc:79,d:'med',ag:true,mu:true},{tx:'N-Queens',lc:51,d:'hard'},{tx:'Sudoku Solver',lc:37,d:'hard'}]}
+  ]},
+  {id:'dp',ph:4,icon:'◈',title:'11. Dynamic Programming',phase:'Phase 4 — DP (weeks 8-12)',summary:'Define dp[i] clearly before writing any code. Everything else follows.',concepts:[
+    {t:'1D DP – linear',d:'dp[i] depends on dp[i-1] or dp[i-2].',qs:[{tx:'Climbing Stairs',lc:70,d:'easy',ag:true,mu:true},{tx:'House Robber',lc:198,d:'med',mu:true},{tx:'Min Cost Climbing Stairs',lc:746,d:'easy',mu:true}]},
+    {t:'1D DP – array decisions',d:'dp[i] = optimal answer ending at i. LIS is canonical.',qs:[{tx:'Longest Increasing Subsequence',lc:300,d:'med',ag:true,mu:true},{tx:'Maximum Subarray – Kadane',lc:53,d:'med',ag:true,mu:true},{tx:'Jump Game',lc:55,d:'med',mu:true},{tx:'Jump Game II',lc:45,d:'med',ag:true}]},
+    {t:'2D DP',d:'dp[i][j] depends on dp[i-1][j] and dp[i][j-1]. Fill row by row.',qs:[{tx:'Unique Paths',lc:62,d:'med',mu:true},{tx:'Edit Distance',lc:72,d:'hard',ag:true,mu:true},{tx:'Longest Common Subsequence',lc:1143,d:'med',ag:true,mu:true},{tx:'Coin Change',lc:322,d:'med',ag:true,mu:true},{tx:'Word Break',lc:139,d:'med',ag:true,mu:true}]}
+  ]},
+  {id:'concurrency',ph:4,icon:'⚙',title:'12. Concurrency & Java Internals',phase:'Phase 4 — Java Depth (weeks 8-12)',summary:'Critical for Staff-level at Agoda. Asked in Platform round. Thread safety and Java memory model.',concepts:[
+    {t:'Thread safety',d:'Race conditions when threads share state without sync. Use synchronized, volatile, AtomicInteger.',qs:[{tx:'Print in Order',lc:1114,d:'easy',ag:true,mu:true},{tx:'Print FooBar Alternately',lc:1115,d:'med',ag:true,mu:true},{tx:'Print Zero Even Odd',lc:1116,d:'med',ag:true},{tx:'Building H2O',lc:1117,d:'med',ag:true}]},
+    {t:'Concurrent data structures',d:'ConcurrentHashMap, AtomicInteger, BlockingQueue. HashMap is NOT thread-safe.',qs:[{tx:'LRU Cache thread-safe',lc:146,d:'med',ag:true,mu:true},{tx:'Design Bounded Blocking Queue',lc:1188,d:'med',ag:true},{tx:'Web Crawler Multithreaded',lc:1242,d:'med',ag:true}]}
+  ]}
+];
+
+const FILTERS=[{k:'all',l:'All'},{k:'agoda',l:'★ Agoda only'},{k:'must',l:'Must-solve'},{k:'arrays',l:'Arrays'},{k:'strings',l:'Strings'},{k:'hashmap',l:'HashMap'},{k:'stack',l:'Stack'},{k:'linked',l:'Linked list'},{k:'trees',l:'Trees'},{k:'graphs',l:'Graphs'},{k:'binary',l:'Binary search'},{k:'heap',l:'Heap'},{k:'recursion',l:'Backtracking'},{k:'dp',l:'DP'},{k:'concurrency',l:'Concurrency'}];
+
+let activeF='all';
+const done=loadChecks('dsa-done');
+
+function totalQ(){return DSA.reduce((a,s)=>a+s.concepts.reduce((b,c)=>b+c.qs.length,0),0)}
+function agodaQ(){return DSA.reduce((a,s)=>a+s.concepts.reduce((b,c)=>b+c.qs.filter(q=>q.ag).length,0),0)}
+function qId(sid,ci,qi){return sid+'-'+ci+'-'+qi}
+
+function updateStats(){
+  const total=totalQ(),d=done.size;
+  document.getElementById('st-total').textContent=total;
+  document.getElementById('st-agoda').textContent=agodaQ();
+  document.getElementById('st-done').textContent=d;
+  document.getElementById('st-rem').textContent=total-d;
+  const pct=total?Math.round(d/total*100):0;
+  document.getElementById('sb-fill').style.width=pct+'%';
+  document.getElementById('sb-pct').textContent=pct+'%';
+}
+
+function tgl(id){
+  const store=toggleCheck(id,'dsa-done');
+  done.clear();store.forEach(x=>done.add(x));
+  updateStats();
+}
+
+function buildSidebar(){
+  document.getElementById('sidebar-links').innerHTML=DSA.map(s=>
+    `<div class="sidebar-item" onclick="document.getElementById('sec-${s.id}').scrollIntoView({behavior:'smooth'})">${s.icon} ${s.title.replace(/^\d+\.\s*/,'')}</div>`
+  ).join('');
+}
+
+function buildFilters(){
+  document.getElementById('filter-row').innerHTML=FILTERS.map(f=>
+    `<button class="filter-btn${f.k===activeF?' on':''}" onclick="setF('${f.k}',this)">${f.l}</button>`
+  ).join('');
+}
+
+function setF(k,btn){
+  activeF=k;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');render();
+}
+
+function phClass(ph){return['','ph1','ph2','ph3','ph4'][ph]||'ph1'}
+
+function render(){
+  const srch=document.getElementById('srch').value.toLowerCase();
+  const container=document.getElementById('sections');
+  container.innerHTML='';let any=false;
+
+  DSA.forEach(sec=>{
+    if(activeF!=='all'&&activeF!=='agoda'&&activeF!=='must'&&sec.id!==activeF)return;
+    const filtC=sec.concepts.map((c,ci)=>{
+      const fqs=c.qs.filter(q=>{
+        const fm=activeF==='all'?true:activeF==='agoda'?q.ag:activeF==='must'?q.mu:true;
+        const sm=srch===''?true:(q.tx.toLowerCase().includes(srch)||c.t.toLowerCase().includes(srch)||sec.title.toLowerCase().includes(srch));
+        return fm&&sm;
+      });
+      return{...c,qs:fqs,ci};
+    }).filter(c=>c.qs.length>0);
+    if(!filtC.length)return;any=true;
+
+    const totalS=filtC.reduce((a,c)=>a+c.qs.length,0);
+    const agS=filtC.reduce((a,c)=>a+c.qs.filter(q=>q.ag).length,0);
+    const el=document.createElement('div');
+    el.className='section '+phClass(sec.ph);el.id='sec-'+sec.id;
+
+    el.innerHTML=`
+      <div class="sec-header" onclick="toggleSec(this)">
+        <div class="sec-icon">${sec.icon}</div>
+        <div class="sec-title">${sec.title}</div>
+        <span class="sec-meta">${totalS} questions · ${agS} Agoda</span>
+        <span class="sec-chevron open">▼</span>
+      </div>
+      <div class="sec-body open">
+        <div class="phase-tag">${sec.phase}</div>
+        <div class="sec-summary">${sec.summary}</div>
+        ${filtC.map(c=>`
+          <div class="content-block">
+            <div class="block-title">${c.t} <span style="font-size:10px;color:var(--text3);background:var(--bg4);padding:1px 7px;border-radius:10px;font-weight:500">${c.qs.length}</span></div>
+            <div class="block-desc">${c.d}</div>
+            <ul class="checklist">
+              ${c.qs.map((q,qi)=>{
+                const id=qId(sec.id,c.ci,qi);
+                const isDone=done.has(id);
+                return`<li class="check-item">
+                  <div class="chk${isDone?' done':''}" id="chk-${id}" onclick="tgl('${id}')"></div>
+                  <div style="flex:1">
+                    <div class="check-text${isDone?' done':''}" id="txt-${id}">LC ${q.lc} — ${q.tx}</div>
+                    <div class="check-sub">
+                      ${q.ag?'<span class="badge b-ag">★ Agoda</span>':''}
+                      ${q.mu?'<span class="badge b-mu">must</span>':''}
+                      <span class="badge ${q.d==='easy'?'b-e':q.d==='hard'?'b-h':'b-m'}">${q.d}</span>
+                      <a href="${lcUrl(q.lc)}" target="_blank" style="font-size:11px;color:var(--text3);background:var(--bg4);padding:1px 8px;border-radius:4px;border:1px solid var(--border);text-decoration:none" onmouseover="this.style.color='var(--accent2)'" onmouseout="this.style.color='var(--text3)'">↗ LeetCode</a>
+                    </div>
+                  </div>
+                </li>`;
+              }).join('')}
+            </ul>
+          </div>`).join('')}
+      </div>`;
+    container.appendChild(el);
+  });
+
+  document.getElementById('no-res').style.display=any?'none':'block';
+  updateStats();
+}
+
+buildTopNav('dsa');
+buildSidebar();
+buildFilters();
+render();
+</script>
+</body>
+</html>

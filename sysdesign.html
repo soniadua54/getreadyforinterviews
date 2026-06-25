@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>System Design — Agoda Prep</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav class="topnav" id="topnav"></nav>
+<div class="shell">
+<nav class="sidebar">
+  <div class="sidebar-section">Sections</div>
+  <div class="sidebar-item" onclick="scrollTo('framework')">📐 Framework</div>
+  <div class="sidebar-item" onclick="scrollTo('concepts')">🧠 Core Concepts</div>
+  <div class="sidebar-item" onclick="scrollTo('hotel')">🏨 Hotel Booking</div>
+  <div class="sidebar-item" onclick="scrollTo('search')">🔍 Search System</div>
+  <div class="sidebar-item" onclick="scrollTo('payment')">💳 Payment / Wallet</div>
+  <div class="sidebar-item" onclick="scrollTo('notification')">🔔 Notifications</div>
+  <div class="sidebar-item" onclick="scrollTo('ratelimit')">🚦 Rate Limiter</div>
+  <div class="sidebar-item" onclick="scrollTo('generic')">🌐 Generic Designs</div>
+  <div class="sidebar-item" onclick="scrollTo('checklist')">✅ Checklist</div>
+  <div class="sidebar-section" style="margin-top:auto;padding-top:16px">Navigate</div>
+  <a class="sidebar-item" href="index.html">← DSA</a>
+  <a class="sidebar-item" href="platform.html">← Platform</a>
+</nav>
+<div class="main">
+  <div class="page-header">
+    <div class="header-row"><h2>System Design</h2></div>
+    <p style="font-size:13px;color:var(--text2)">Core concepts · Agoda travel domain designs · Generic HLD patterns</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num" style="color:var(--accent2)">8</div><div class="stat-label">Design problems</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--agoda)">5</div><div class="stat-label">Agoda-domain</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--success)" id="sd-done">0</div><div class="stat-label">Topics checked</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--med)">60m</div><div class="stat-label">Avg round length</div></div>
+  </div>
+
+  <div class="sections" style="margin-top:8px">
+
+    <!-- FRAMEWORK -->
+    <div class="section ph1" id="sec-framework">
+      <div class="sec-header" onclick="toggleSec(this)">
+        <div class="sec-icon">📐</div>
+        <div class="sec-title">The framework — use every time</div>
+        <span class="sec-meta">Structure every answer with this</span>
+        <span class="sec-chevron open">▼</span>
+      </div>
+      <div class="sec-body open">
+        <div class="sec-summary">Every system design answer follows the same structure. Interviewers expect you to drive it. If they have to ask "but what about scale?" — you already failed that part.</div>
+        <div class="content-block">
+          <div class="block-title">The 5-step template</div>
+          <div class="callout callout-info">
+            <strong>1. Clarify requirements (2 min)</strong><br>
+            Functional: what the system must do (book a hotel, search, pay)<br>
+            Non-functional: scale (req/sec, users), latency target (&lt;200ms?), consistency (strong or eventual ok?), availability (99.9% or 99.99%?)<br><br>
+            <strong>2. Capacity estimation (2 min)</strong><br>
+            DAU × requests/user = req/day → req/sec. Storage: (record size × writes/day × days). Read:write ratio. This tells you where bottlenecks are.<br><br>
+            <strong>3. High-level design (5 min)</strong><br>
+            Draw boxes first: Client → Load Balancer → API Gateway → Services → DB/Cache → Message Queue. No details yet.<br><br>
+            <strong>4. Data model (5 min)</strong><br>
+            Key tables/documents, primary key, important indexes, relationships. Don't skip this — it's where most candidates get caught.<br><br>
+            <strong>5. Deep dive on the hardest part (15 min)</strong><br>
+            Usually: concurrency (double booking), caching strategy, failure handling, consistency guarantees. This is where Staff-level is differentiated from Senior.
+          </div>
+        </div>
+        <div class="content-block">
+          <div class="block-title">Staff-level vs Senior-level answers</div>
+          <div class="callout callout-warn">
+            <strong>Senior answer:</strong> "I'd use a relational DB with a unique constraint on (roomId, checkIn) to prevent double bookings."<br><br>
+            <strong>Staff answer:</strong> "For the double-booking problem: at low scale, a DB-level unique constraint works. At Agoda's scale with high concurrent writes, I'd add a Redis distributed lock (SETNX with 30s TTL) as the first gate, then do optimistic locking with a version column in the DB as a second guard. If version mismatch on update → retry. For the ~0.1% race that passes both — the unique constraint at DB level is the final backstop. Three layers, each handles a different load range."
+          </div>
+          <div class="callout callout-success" style="margin-top:8px"><strong>The pattern:</strong> Always give trade-offs. Never just say "use Kafka" — say "Kafka for at-least-once delivery with offset management, but adds latency and operational complexity. SQS is simpler if you don't need ordering. Given this use case I'd choose X because Y."</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CORE CONCEPTS -->
+    <div class="section ph1" id="sec-concepts">
+      <div class="sec-header" onclick="toggleSec(this)">
+        <div class="sec-icon">🧠</div>
+        <div class="sec-title">Core concepts — know these cold</div>
+        <span class="sec-meta">Building blocks for every design</span>
+        <span class="sec-chevron open">▼</span>
+      </div>
+      <div class="sec-body open">
+        <div class="content-block">
+          <div class="block-title">CAP theorem</div>
+          <div class="block-desc">A distributed system can only guarantee 2 of 3: Consistency, Availability, Partition tolerance. Since network partitions happen — you choose CP or AP.</div>
+          <div class="callout callout-agoda"><strong>Booking/payment → CP.</strong> You'd rather show "room unavailable" than double-book. Correctness over availability.<br><br><strong>Hotel search rankings, review counts → AP.</strong> Stale data for a few seconds is fine. Availability wins.</div>
+        </div>
+        <div class="content-block">
+          <div class="block-title">Consistency models</div>
+<pre><span class="cm">Strong consistency:    Read always sees the latest write. Expensive. (RDBMS default)
+Eventual consistency: Read may see stale data, but will converge. Fast. (DynamoDB, Cassandra)
+Read-your-writes:     After you write, you always read your own write.
+Monotonic reads:      Once you read value X, you never read older value Y.</span></pre>
+        </div>
+        <div class="content-block">
+          <div class="block-title">Caching strategies</div>
+<pre><span class="cm">Cache-aside (lazy):   App checks cache first. Miss → load from DB → populate cache.
+                      Most common. App owns cache management.
+
+Write-through:        Write to cache AND DB simultaneously. Always consistent.
+                      Slower writes. Good for read-heavy, update-heavy data.
+
+Write-behind:         Write to cache only. Async flush to DB later. Fast writes.
+                      Risk: data loss if cache goes down before flush.
+
+Read-through:         Cache sits in front of DB. App only talks to cache.
+                      Cache handles DB reads on miss transparently.
+
+TTL design:           Short TTL (5m) for availability data. Long TTL (24h) for hotel metadata.
+Cache key:            search:{city}:{checkIn}:{checkOut}:{guests} → deterministic, evictable</span></pre>
+        </div>
+        <div class="content-block">
+          <div class="block-title">Database choices</div>
+          <div class="callout callout-info">
+            <strong>PostgreSQL / MySQL:</strong> Transactional data (bookings, payments). ACID guarantees. Foreign keys. Use when correctness matters more than scale.<br><br>
+            <strong>MongoDB / DynamoDB:</strong> Flexible schema, horizontal scale. Hotel catalog (different hotels have different attributes). Read-heavy with predictable access patterns.<br><br>
+            <strong>Redis:</strong> Cache, sessions, rate limiting, distributed locks, leaderboards. Sub-millisecond reads. Data fits in memory.<br><br>
+            <strong>Elasticsearch:</strong> Full-text search, faceted filtering. Hotel search by name, amenities, location radius. Not for transactional data.<br><br>
+            <strong>Cassandra:</strong> Write-heavy, time-series, globally distributed. Booking events log, analytics. Wide column store.
+          </div>
+        </div>
+        <div class="content-block">
+          <div class="block-title">Message queues</div>
+<pre><span class="cm">Kafka:  High throughput, durable, replay-able, ordered within partition.
+        Consumer groups for parallel processing. Retention-based (not ack-based).
+        Use for: event streaming, audit logs, notification fanout, analytics.
+
+SQS:    Managed, simpler, at-least-once, no ordering guarantee (FIFO queue exists).
+        Auto-scales. Use for: task queues, async processing, simple decoupling.
+
+RabbitMQ: Message broker, routing, exchanges, dead-letter queues.
+          Ack-based deletion. Use for: task distribution, priority queues.</span></pre>
+          <div class="callout callout-agoda" style="margin-top:8px"><strong>Agoda uses Kafka</strong> for their messaging pipeline. Mentioning Kafka for notification fanout and event streaming aligns with their tech stack.</div>
+        </div>
+        <div class="content-block">
+          <div class="block-title">Horizontal scaling patterns</div>
+<pre><span class="cm">Stateless services:    No session on server. State in DB/Redis. Each request to any pod.
+Load balancing:        Round-robin, least connections, consistent hashing (for cache affinity).
+Database sharding:     Horizontal partitioning. Shard by userId, hotelId, or geographic region.
+Read replicas:         Route all reads to replicas. Write to primary only.
+CQRS:                  Command (write) and Query (read) models separated. Different DBs allowed.
+Event sourcing:        Store events, not state. Reconstruct state by replaying events.</span></pre>
+        </div>
+        <div class="content-block">
+          <div class="block-title">Key numbers to know</div>
+<pre><span class="cm">L1 cache:         0.5 ns    | L2 cache:       7 ns
+RAM read:         100 ns    | SSD read:       150 µs
+Network (same DC):500 µs    | HDD seek:       10 ms
+Network (cross DC):150 ms   | Packet CA→NL:   150 ms
+
+1 million req/day  → ~12 req/sec
+10 million req/day → ~120 req/sec
+1 billion req/day  → ~12,000 req/sec
+
+Single DB:        ~1,000 write QPS | with replicas: ~10,000 read QPS
+Redis:            ~100,000 ops/sec
+Kafka:            ~1,000,000 msg/sec (cluster)</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOTEL BOOKING -->
+    <div class="section ph2" id="sec-hotel">
+      <div class="sec-header" onclick="toggleSec(this)">
+        <div class="sec-icon">🏨</div>
+        <div class="sec-title">Design: hotel booking system <span class="badge b-ag" style="font-size:11px;margin-left:4px">★ Agoda</span></div>
+        <span class="sec-meta">Highest probability question</span>
+        <span class="sec-chevron open">▼</span>
+      </div>
+      <div class="sec-body open">
+        <div class="sec-summary">Agoda's core product. Very likely to appear in either platform or system design round. Know every layer.</div>
+        <div class="content-block">
+          <div class="block-title">Requirements to state upfront</div>
+          <div class="callout callout-info">
+            <strong>Functional:</strong> Search hotels by city/dates/guests. View room availability. Book a room. Cancel booking. View booking history.<br><br>
+            <strong>Non-functional:</strong> 10M DAU, 100K concurrent searches, 1K bookings/sec at peak. Search latency &lt;200ms. Booking latency &lt;2s. No double booking (strong consistency on inventory). 99.99% availability.
+          </div>
+        </div>
+        <div class="content-block">
+          <div class="block-title">Data model</div>
+<pre>Hotel      (id, name, city, country, star_rating, lat, lng, amenities)
+Room       (id, hotel_id, type, max_guests, price_per_night, total_count)
+Inventory  (room_id, date, available_count, booked_count)  ← key table
+Booking    (id, user_id, room_id, check_in, check_out, status, total_price,
+            idempotency_key, created_at)
+Payment    (id, booking_id, amount, currency, status, gateway_txn_id)
+
+<span class="cm">-- Index design (critical to mention)
+-- Hotel search: INDEX (city, star_rating) + geospatial index on (lat, lng)
+-- Availability check: INDEX (room_id, date) on Inventory
+-- User bookings: INDEX (user_id, created_at DESC)</span></pre>
+        </div>
+        <div class="content-block">
+          <div class="block-title">The hardest part: preventing double booking</div>
+          <div class="callout callout-agoda"><strong>Problem:</strong> 500 users request the last room simultaneously. All see available_count = 1. All proceed to book. Result: 500 bookings for 1 room.</div>
+<pre><span class="cm">-- Option 1: DB-level pessimistic lock (simple, slow)</span>
+BEGIN TRANSACTION;
+SELECT available_count FROM inventory
+WHERE room_id = ? AND date = ? FOR UPDATE; <span class="cm">-- row-level lock</span>
+<span class="cm">-- check count > 0, then decrement</span>
+COMMIT;
+
+<span class="cm">-- Option 2: Optimistic locking (faster, handles low contention)</span>
+UPDATE inventory
+SET available_count = available_count - 1, version = version + 1
+WHERE room_id = ? AND date = ? AND available_count > 0 AND version = ?;
+<span class="cm">-- If 0 rows affected → someone else got it → retry or fail</span>
+
+<span class="cm">-- Option 3: Redis distributed lock (best for high concurrency)</span>
+SET lock:room:123:2026-07-01 {userId} NX PX 30000
+<span class="cm">-- NX = only set if not exists → only one thread acquires lock
+-- PX 30000 = auto-expire in 30s (prevents deadlock)
+-- If nil returned → room taken → return "sold out"</span></pre>
+          <div class="callout callout-success" style="margin-top:8px"><strong>Production answer:</strong> Redis lock as first gate (fast rejection) + optimistic locking in DB as second guard + DB unique constraint as backstop. Three layers.</div>
+        </div>
+        <div class="content-block">
+          <div class="block-title">High-level architecture</div>
+<pre>Client → CDN → Load Balancer → API Gateway (auth, rate limit)
+                                        ↓
+                          ┌─────────────┴──────────────┐
+                    Search Service              Booking Service
+                          ↓                          ↓
+                    Elasticsearch           PostgreSQL (write)
+                    Redis (cache)           Redis (distributed lock)
+                    Hotel Service           Payment Service
+                                                  ↓
+                                          Payment Gateway
+                                          Kafka → Notification Service
+                                                  → Email/SMS/Push</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="section ph2" id="sec-search">
+      <div class="sec-header" onclick="toggleSec(this)">
+        <div class="sec-icon">🔍</div>
+        <div class="sec-title">Design: hotel search system <span class="badge b-ag" style="font-size:11px;margin-left:4px">★ Agoda</span></div>
+        <span class="sec-meta">Scale + relevance + speed</span>
+        <span class="sec-chevron open">▼</span>
+      </div>
+      <div class="sec-body open">
+        <div class="content-block">
+          <div class="block-title">The core challenge</div>
+          <div class="block-desc">Search must handle: text queries ("Marriott Bangkok"), filters (star rating, price, amenities), geo-radius (hotels within 5km of airport), availability check (only show hotels with rooms on those dates), ranking (relevance × review score × price × commission).</div>
+          <div class="callout callout-info">
+            <strong>Why not just SQL?</strong> Full-text search in SQL is slow. Geo queries need specialized indexes. Faceted filtering (count of results per filter value) is expensive. Ranking across multiple signals doesn't fit relational model well.<br><br>
+            <strong>Answer: Elasticsearch for search + Redis for availability + PostgreSQL for bookings.</strong>
+          </div>
+        </div>
+        <div class="content-block">
+          <div class="block-title">Search architecture</div>
+<pre>User search query
+      ↓
+Search Service
+      ↓ (1) query Elasticsearch
+Elasticsearch index (hotel metadata, amenities, location, review scores)
+      ↓ returns hotel IDs with scores
+      ↓ (2) filter by availability
+Redis (availability bitmap per room per date)
+      ↓ returns available hotel IDs
+      ↓ (3) merge, rank, paginate
+      ↓ (4) cache result
+Redis search cache (key: city:dates:filters, TTL: 5 min)
+      ↓
+Response to user
+
+<span class="cm">Elasticsearch index design:
+{
+  hotel_id, name, city, country,
+  location: { lat, lng },        ← geo_point type
+  star_rating, review_score, price_min,
+  amenities: ["wifi","pool","gym"],  ← keyword array, filterable
+  tags: ["beachfront","city-center"] ← for text search
+}</span></pre>
+        </div>
+        <div class="content-block">
+          <div class="block-title">Keeping search index fresh</div>
+<pre><span class="cm">Hotel updates → Kafka topic "hotel.updated"
+                     ↓
+              Indexer Service (consumer)
+                     ↓
+              Elasticsearch update (partial)
+
+Availability changes → do NOT index in ES (too frequent)
+                    → availability stored in Redis bitmaps
+                    → post-search filter step (fast O(1) per hotel)</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAYMENT -->
+    <div class="section ph2" id="sec-payment">
+      <div class="sec-header" onclick="toggleSec(this)">
+        <div class="sec-icon">💳</div>
+        <div class="sec-title">Design: payment / wallet system <span class="badge b-ag" style="font-size:11px;margin-left:4px">★ Agoda</span></div>
+        <span class="sec-meta">Correctness is everything</span>
+        <span class="sec-chevron open">▼</span>
+      </div>
+      <div class="sec-body open">
+        <div class="content-block">
+          <div class="block-title">Core requirements</div>
+          <div class="callout callout-agoda">
+            Agoda processes payments in 70+ countries, 40+ payment methods. Key constraints: <strong>no double charges, no lost payments, full audit trail, cross-currency support, PCI compliance.</strong>
+          </div>
+        </div>
+        <div class="content-block">
+          <div class="block-title">Data model</div>
+<pre>Wallet     (id, user_id, currency, balance, version)  ← version for optimistic lock
+Transaction(id, wallet_id, type, amount, currency, status,
+            reference_id, idempotency_key, created_at)
+           type: CREDIT | DEBIT | REFUND | FEE
+           status: PENDING | COMPLETED | FAILED | REVERSED
+
+Payment    (id, booking_id, amount, currency, method, gateway,
+            gateway_txn_id, status, idempotency_key)</pre>
+        </div>
+        <div class="content-block">
+          <div class="block-title">The double-debit problem</div>
+<pre><span class="cm">Scenario: User pays. Request times out. Client retries. Payment charged twice.</span>
+
+<span class="cm">-- Solution: idempotency key (client-generated UUID per payment attempt)</span>
+<span class="cm">-- Server checks: has this idempotency_key been processed?</span>
+<span class="cm">-- Yes → return cached result (same response as original)</span>
+<span class="cm">-- No → process payment, store result against key</span>
+
+<span class="cm">-- Also: outbox pattern for exactly-once event publishing</span>
+BEGIN TRANSACTION;
+  UPDATE wallet SET balance = balance - amount WHERE id = ?;
+  INSERT INTO outbox (event_type, payload) VALUES ('PAYMENT_PROCESSED', ?);
+COMMIT;
+<span class="cm">-- Separate process reads outbox, publishes to Kafka, deletes row
+-- Guarantees: payment and event published atomically</span></pre>
+        </div>
+        <div class="content-block">
+          <div class="block-title">Refund flow</div>
+<pre><span class="cm">Refund is NOT a reversal — it's a new credit transaction.
+This maintains a complete audit trail.</span>
+
+Refund request → validate (booking cancelled? refund policy?)
+              → create REFUND transaction (PENDING)
+              → call payment gateway refund API
+              → on success: update to COMPLETED, credit wallet
+              → on failure: mark FAILED, alert, manual review queue
+              → publish RefundCompleted event → email notification</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATION -->
+    <div class="section ph3" id="sec-notification">
+      <div class="sec-header" onclick="toggleSec(this)">
+        <div class="sec-icon">🔔</div>
+        <div class="sec-title">Design: notification system <span class="badge b-ag" style="font-size:11px;margin-left:4px">★ Agoda</span></div>
+        <span class="sec-meta">Async, multi-channel, at-scale</span>
+        <span class="sec-chevron open">▼</span>
+      </div>
+      <div class="sec-body open">
+        <div class="content-block">
+          <div class="block-title">Key insight: notifications are async</div>
+          <div class="block-desc">Never make the booking API wait for email/SMS to send. A slow email provider would make every booking slow. Decouple using Kafka.</div>
+<pre>Booking Service → Kafka topic "booking.events"
+                          ↓
+                 Notification Service (consumer)
+                 reads event type → routes to channel
+                          ↓
+              ┌───────────┼──────────────┐
+         Email Service  SMS Service  Push Service
+         (SendGrid)     (Twilio)     (FCM/APNs)
+              ↓               ↓            ↓
+         User email      User phone   User app</pre>
+        </div>
+        <div class="content-block">
+          <div class="block-title">Reliability: what if email service is down?</div>
+<pre><span class="cm">Kafka retains messages. Consumer fails → messages stay in partition.
+When email service recovers → picks up from last committed offset.
+
+Dead letter queue (DLQ): after 3 retries with exponential backoff,
+move to DLQ topic. Alert on-call. Manual review.
+
+Exponential backoff:
+  Retry 1: wait 10s
+  Retry 2: wait 30s
+  Retry 3: wait 90s
+  Then → DLQ</span></pre>
+        </div>
+        <div class="content-block">
+          <div class="block-title">User preferences</div>
+<pre>NotificationPreference (user_id, channel, event_type, enabled)
+<span class="cm">-- Before sending: check preferences
+-- User opted out of SMS for booking confirmations? Skip SMS.
+-- User in quiet hours (23:00-07:00)? Defer push, not email.</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- RATE LIMITER -->
+    <div class="section ph3" id="sec-ratelimit">
+      <div class="sec-header" onclick="toggleSec(this)">
+        <div class="sec-icon">🚦</div>
+        <div class="sec-title">Design: rate limiter <span class="badge b-generic" style="font-size:11px;margin-left:4px">generic</span></div>
+        <span class="sec-meta">Very commonly asked</span>
+        <span class="sec-chevron open">▼</span>
+      </div>
+      <div class="sec-body open">
+        <div class="content-block">
+          <div class="block-title">Algorithms — know all four</div>
+<pre><span class="cm">Token Bucket:   Bucket holds max N tokens. Refill at rate R/sec.
+                Each request consumes 1 token. If empty → reject 429.
+                Allows burst up to bucket size. Most common.
+
+Leaking Bucket: Queue of requests processed at fixed rate.
+                Smooth output. Excess dropped. Good for APIs with
+                strict throughput guarantees.
+
+Fixed Window:   Count requests in current time window (1 min).
+                Problem: burst at window boundary — 2× allowed in 1 second.
+
+Sliding Window: More accurate. Weight recent counts.
+                More complex. Redis ZSET with timestamps.</span></pre>
+        </div>
+        <div class="content-block">
+          <div class="block-title">Distributed rate limiter with Redis</div>
+<pre><span class="cm">-- Token bucket in Redis (atomic with Lua script)</span>
+local tokens = redis.call('GET', key)
+if tokens == nil then tokens = MAX_TOKENS end
+if tokens > 0 then
+  redis.call('DECR', key)
+  redis.call('EXPIRE', key, WINDOW_SECONDS)
+  return 1  <span class="cm">-- allowed</span>
+else
+  return 0  <span class="cm">-- rejected 429</span>
+end
+
+<span class="cm">-- Sliding window with sorted set</span>
+ZADD user:123:requests {timestamp} {uuid}
+ZREMRANGEBYSCORE user:123:requests 0 {timestamp - windowMs}
+count = ZCARD user:123:requests
+if count > limit then reject else allow
+
+<span class="cm">-- Rate limit keys: by userId, by IP, by API key, by endpoint
+-- Headers to return: X-RateLimit-Limit, X-RateLimit-Remaining, Retry-After</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- GENERIC DESIGNS -->
+    <div class="section ph3" id="sec-generic">
+      <div class="sec-header" onclick="toggleSec(this)">
+        <div class="sec-icon">🌐</div>
+        <div class="sec-title">Generic designs — cover the basics</div>
+        <span class="sec-meta">URL shortener · Feed system · Chat</span>
+        <span class="sec-chevron open">▼</span>
+      </div>
+      <div class="sec-body open">
+        <div class="content-block">
+          <div class="block-title">URL shortener (TinyURL)</div>
+<pre><span class="cm">Key decisions:
+  Short code: 6 chars from [a-zA-Z0-9] = 62^6 = 56 billion combinations
+  Generation: Base62 encode auto-increment ID (avoids collision entirely)
+  Storage: (short_code → original_url, user_id, created_at, expires_at)
+  Redirect: HTTP 301 (permanent, browser caches) vs 302 (temporary, we track)
+            Use 302 to track click analytics
+  Scale: Read-heavy (1000:1). Cache top short URLs in Redis (LRU).</span></pre>
+        </div>
+        <div class="content-block">
+          <div class="block-title">News feed / activity feed</div>
+<pre><span class="cm">Fan-out on write (push):  When user posts, immediately push to all followers' feeds.
+                          Fast reads. Slow writes. Bad for celebrities (10M followers).
+
+Fan-out on read (pull):   On feed load, fetch posts from all followees. Merge sort by time.
+                          Slow reads. Good for celebrities.
+
+Hybrid:                   Push for regular users. Pull for celebrity accounts (&gt;1M followers).
+                          Agoda-equivalent: push hotel deals to subscribed users.</span>
+
+Feed table: (user_id, post_id, created_at) ← one row per user per feed item
+Served from Redis sorted set: ZADD feed:{userId} {timestamp} {postId}</pre>
+        </div>
+        <div class="content-block">
+          <div class="block-title">Chat system (WhatsApp-style)</div>
+<pre><span class="cm">WebSocket for real-time: persistent connection, server pushes messages.
+  HTTP polling: inefficient, creates many connections.
+  Long polling: better, but still many connections.
+  WebSocket: best, bidirectional, one connection per user.
+
+Message delivery guarantee:
+  1. Client sends message → server ACKs receipt (single tick)
+  2. Server stores in DB, delivers to recipient
+  3. Recipient device ACKs receipt (double tick)
+  4. Recipient reads → read receipt (blue ticks)
+
+Storage: messages in Cassandra (write-heavy, time-series friendly)
+Presence (online/offline): Redis with TTL on user:online:{userId}</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHECKLIST -->
+    <div class="section ph4" id="sec-checklist">
+      <div class="sec-header" onclick="toggleSec(this)">
+        <div class="sec-icon">✅</div>
+        <div class="sec-title">System design readiness checklist</div>
+        <span class="sec-meta">Track what you can confidently answer</span>
+        <span class="sec-chevron open">▼</span>
+      </div>
+      <div class="sec-body open">
+        <div class="content-block">
+          <div class="block-title">Can you answer these without notes?</div>
+          <ul class="checklist">
+            <li class="check-item"><div class="chk" id="chk-s1" onclick="sdTgl('s1')"></div><div class="check-text" id="txt-s1">Explain CAP theorem and which side Agoda's booking system should pick</div></li>
+            <li class="check-item"><div class="chk" id="chk-s2" onclick="sdTgl('s2')"></div><div class="check-text" id="txt-s2">Walk through hotel booking system design in under 10 minutes</div></li>
+            <li class="check-item"><div class="chk" id="chk-s3" onclick="sdTgl('s3')"></div><div class="check-text" id="txt-s3">Explain three approaches to prevent double booking and their trade-offs</div></li>
+            <li class="check-item"><div class="chk" id="chk-s4" onclick="sdTgl('s4')"></div><div class="check-text" id="txt-s4">Design notification system end-to-end: what happens when booking is confirmed?</div></li>
+            <li class="check-item"><div class="chk" id="chk-s5" onclick="sdTgl('s5')"></div><div class="check-text" id="txt-s5">Explain idempotency key pattern and why it matters for payment systems</div></li>
+            <li class="check-item"><div class="chk" id="chk-s6" onclick="sdTgl('s6')"></div><div class="check-text" id="txt-s6">Token bucket algorithm — explain and implement in Redis</div></li>
+            <li class="check-item"><div class="chk" id="chk-s7" onclick="sdTgl('s7')"></div><div class="check-text" id="txt-s7">When to use Kafka vs SQS vs RabbitMQ — give concrete examples</div></li>
+            <li class="check-item"><div class="chk" id="chk-s8" onclick="sdTgl('s8')"></div><div class="check-text" id="txt-s8">Elasticsearch for hotel search: what do you index, what stays in Redis?</div></li>
+            <li class="check-item"><div class="chk" id="chk-s9" onclick="sdTgl('s9')"></div><div class="check-text" id="txt-s9">Explain cache-aside vs write-through vs write-behind with examples</div></li>
+            <li class="check-item"><div class="chk" id="chk-s10" onclick="sdTgl('s10')"></div><div class="check-text" id="txt-s10">Design a URL shortener — base62 encoding, redirect type, scale considerations</div></li>
+            <li class="check-item"><div class="chk" id="chk-s11" onclick="sdTgl('s11')"></div><div class="check-text" id="txt-s11">When would you choose Cassandra over PostgreSQL? Give a specific Agoda scenario.</div></li>
+            <li class="check-item"><div class="chk" id="chk-s12" onclick="sdTgl('s12')"></div><div class="check-text" id="txt-s12">Outbox pattern: what problem does it solve, how does it work?</div></li>
+          </ul>
+        </div>
+        <div class="callout callout-warn" style="margin:16px 18px"><strong>Practice format:</strong> For each design above, time yourself. You should be able to draw the high-level architecture and explain data model + hardest part in under 15 minutes. If it takes 30+ minutes you need more practice, not more reading.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+function scrollTo(id){document.getElementById('sec-'+id).scrollIntoView({behavior:'smooth'})}
+
+const sdDone = loadChecks('sd-done');
+document.getElementById('sd-done').textContent = sdDone.size;
+
+function sdTgl(id){
+  const store = toggleCheck(id,'sd-done');
+  sdDone.clear();store.forEach(x=>sdDone.add(x));
+  document.getElementById('sd-done').textContent = sdDone.size;
+}
+
+sdDone.forEach(id=>{
+  const chk=document.getElementById('chk-'+id);
+  const txt=document.getElementById('txt-'+id);
+  if(chk){chk.classList.add('done');if(txt)txt.classList.add('done');}
+});
+
+buildTopNav('sysdesign');
+</script>
+</body>
+</html>
