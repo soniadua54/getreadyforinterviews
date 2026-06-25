@@ -1,222 +1,971 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>DSA & Coding — Agoda Prep</title>
-<link rel="stylesheet" href="shared.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interview Prep — DSA & Coding</title>
+<style>
+:root {
+  --bg:#0f1117;--bg2:#1a1d27;--bg3:#222536;--bg4:#2a2d3e;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);
+  --text:#e8eaf0;--text2:#9498b0;--text3:#5a5f7a;
+  --accent:#6c63ff;--accent2:#a5a0ff;
+  --tag:#ff6b4a;--tag-bg:rgba(255,107,74,0.12);
+  --must:#ff4d6d;--must-bg:rgba(255,77,109,0.12);
+  --easy:#22c55e;--easy-bg:rgba(34,197,94,0.1);
+  --med:#a78bfa;--med-bg:rgba(167,139,250,0.1);
+  --hard:#f59e0b;--hard-bg:rgba(245,158,11,0.1);
+  --green:#10b981;--green-bg:rgba(16,185,129,0.1);
+  --blue:#38bdf8;--blue-bg:rgba(56,189,248,0.1);
+  --r:8px;--rl:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.6;min-height:100vh}
+a{color:inherit;text-decoration:none}
+
+/* NAV */
+.topnav{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;height:50px;position:sticky;top:0;z-index:100;gap:8px}
+.nav-brand{font-size:14px;font-weight:700;white-space:nowrap;flex-shrink:0}
+.nav-brand span{color:var(--accent2)}
+.nav-links{display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex:1}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-link{padding:6px 10px;border-radius:var(--r);font-size:12px;color:var(--text2);white-space:nowrap;flex-shrink:0}
+.nav-link.active{background:rgba(108,99,255,0.15);color:var(--accent2);font-weight:500}
+.countdown{background:var(--tag-bg);border:1px solid rgba(255,107,74,0.3);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--tag);font-weight:600;white-space:nowrap;flex-shrink:0}
+
+/* LAYOUT */
+.page{padding:16px}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px}
+.stat-n{font-size:20px;font-weight:700;line-height:1}
+.stat-l{font-size:10px;color:var(--text3);margin-top:3px}
+
+/* PROGRESS */
+.prog-wrap{margin-bottom:16px}
+.prog-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:5px}
+.prog-bar{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:2px;transition:width .3s}
+
+/* SEARCH + FILTERS */
+.search-box{position:relative;margin-bottom:10px}
+.search-box input{width:100%;padding:9px 12px 9px 36px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:13px;outline:none}
+.search-box input:focus{border-color:var(--accent)}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);opacity:.4;width:16px;height:16px;pointer-events:none}
+.filters{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px;margin-bottom:16px}
+.filters::-webkit-scrollbar{display:none}
+.fbtn{padding:5px 12px;border:1px solid var(--border);border-radius:20px;font-size:11px;color:var(--text2);white-space:nowrap;flex-shrink:0;cursor:pointer;background:transparent}
+.fbtn.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500}
+
+/* LEGEND */
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.legend-i{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text3)}
+
+/* SECTION */
+.section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);margin-bottom:10px;overflow:hidden}
+.sec-hd{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;user-select:none}
+.sec-hd:active{background:var(--bg3)}
+.sec-icon{width:30px;height:30px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.ph1 .sec-icon{background:rgba(108,99,255,0.15)}
+.ph2 .sec-icon{background:rgba(16,185,129,0.15)}
+.ph3 .sec-icon{background:rgba(245,158,11,0.15)}
+.ph4 .sec-icon{background:rgba(255,77,109,0.15)}
+.sec-title{font-size:13px;font-weight:600;flex:1;line-height:1.3}
+.sec-meta{font-size:10px;color:var(--text3);text-align:right;line-height:1.4}
+.chev{font-size:10px;color:var(--text3);margin-left:4px;transition:transform .2s;flex-shrink:0}
+.chev.open{transform:rotate(180deg)}
+.sec-body{display:none;border-top:1px solid var(--border)}
+.sec-body.open{display:block}
+.phase-pill{display:inline-block;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;padding:10px 14px 4px}
+.sec-sum{font-size:12px;color:var(--text2);padding:0 14px 12px;line-height:1.6}
+
+/* CONCEPT BLOCK */
+.concept{border-top:1px solid var(--border);padding:14px}
+
+/* CONCEPT TABS */
+.con-tabs{display:flex;gap:4px;margin-bottom:12px;border-bottom:1px solid var(--border);padding-bottom:0}
+.con-tab{padding:6px 12px;font-size:12px;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.con-tab.active{color:var(--accent2);border-bottom-color:var(--accent);font-weight:500}
+.con-panel{display:none}
+.con-panel.active{display:block}
+
+.con-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
+.con-why{background:var(--bg3);border-left:3px solid var(--accent);padding:10px 12px;border-radius:0 var(--r) var(--r) 0;font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:10px}
+.con-what{font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:10px}
+.step-list{list-style:none;margin:8px 0}
+.step-item{display:flex;gap:10px;padding:5px 0;font-size:12px;color:var(--text2);line-height:1.5}
+.step-num{width:20px;height:20px;min-width:20px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;margin-top:1px}
+
+/* CODE */
+pre{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:12px;font-family:'Fira Code','Cascadia Code',monospace;font-size:11.5px;line-height:1.7;overflow-x:auto;-webkit-overflow-scrolling:touch;margin:8px 0;white-space:pre}
+.kw{color:#c084fc}.fn{color:#60a5fa}.str{color:#4ade80}.cm{color:var(--text3);font-style:italic}.nu{color:#fb923c}.cl{color:#f472b6}.op{color:#94a3b8}
+
+/* COMPLEXITY TABLE */
+.ctable{width:100%;font-size:11px;border-collapse:collapse;margin:8px 0}
+.ctable th{background:var(--bg3);color:var(--text2);padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)}
+.ctable td{padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)}
+.ctable tr:last-child td{border-bottom:none}
+.ctable .good{color:var(--easy)}
+.ctable .ok{color:var(--med)}
+.ctable .bad{color:var(--hard)}
+
+/* CALLOUT */
+.callout{border-radius:var(--r);padding:10px 12px;margin:8px 0;font-size:12px;line-height:1.6;border-left:3px solid}
+.c-info{background:var(--blue-bg);border-color:var(--blue);color:var(--text2)}
+.c-warn{background:var(--must-bg);border-color:var(--must);color:var(--text2)}
+.c-good{background:var(--green-bg);border-color:var(--green);color:var(--text2)}
+.c-company{background:var(--tag-bg);border-color:var(--tag);color:var(--text2)}
+.callout strong{color:var(--text)}
+
+/* QUESTIONS */
+.q-label{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin:12px 0 6px}
+.q-list{list-style:none}
+.q-row{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)}
+.q-row:last-child{border-bottom:none}
+.chk{width:18px;height:18px;min-width:18px;border:1.5px solid var(--border2);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px;flex-shrink:0;transition:all .12s}
+.chk.done{background:var(--green);border-color:var(--green)}
+.chk.done::after{content:"✓";font-size:11px;color:#fff;font-weight:700}
+.q-content{flex:1;min-width:0}
+.q-text{font-size:13px;color:var(--text);line-height:1.4}
+.q-text.done{color:var(--text3);text-decoration:line-through}
+.q-badges{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;align-items:center}
+.badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600}
+.b-tag{background:var(--tag-bg);color:var(--tag);border:1px solid rgba(255,107,74,0.25)}
+.b-must{background:var(--must-bg);color:var(--must);border:1px solid rgba(255,77,109,0.25)}
+.b-e{background:var(--easy-bg);color:var(--easy)}
+.b-m{background:var(--med-bg);color:var(--med)}
+.b-h{background:var(--hard-bg);color:var(--hard)}
+.lc-link{font-size:11px;color:var(--text3);background:var(--bg4);padding:2px 8px;border-radius:4px;border:1px solid var(--border);white-space:nowrap}
+.no-res{text-align:center;padding:2rem;color:var(--text3);font-size:13px}
+
+/* MOBILE FIXES */
+@media(max-width:480px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .stat-n{font-size:18px}
+  pre{font-size:11px;padding:10px}
+}
+</style>
 </head>
 <body>
-<nav class="topnav" id="topnav"></nav>
-<div class="shell">
-<nav class="sidebar">
-  <div class="sidebar-progress">
-    <div class="sidebar-progress-label"><span>DSA progress</span><span id="sb-pct">0%</span></div>
-    <div class="progress-bar"><div class="progress-fill" id="sb-fill" style="width:0%"></div></div>
-  </div>
-  <div class="sidebar-section">Topics</div>
-  <div id="sidebar-links"></div>
-  <div class="sidebar-section" style="margin-top:auto;padding-top:16px">Resources</div>
-  <a class="sidebar-item" href="https://leetcode.com" target="_blank">↗ LeetCode</a>
-  <a class="sidebar-item" href="https://neetcode.io" target="_blank">↗ NeetCode</a>
-  <a class="sidebar-item" href="platform.html">→ Platform Round</a>
-  <a class="sidebar-item" href="sysdesign.html">→ System Design</a>
-</nav>
-<div class="main">
-  <div class="page-header">
-    <div class="header-row">
-      <h2>DSA & Coding Round</h2>
-    </div>
-    <div class="search-wrap">
-      <svg class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
-      <input type="text" id="srch" placeholder="Search questions or topics..." oninput="render()">
-    </div>
-  </div>
-  <div class="stats-row">
-    <div class="stat-card"><div class="stat-num" id="st-total" style="color:var(--accent2)">—</div><div class="stat-label">Total questions</div></div>
-    <div class="stat-card"><div class="stat-num" id="st-agoda" style="color:var(--agoda)">—</div><div class="stat-label">Agoda-critical</div></div>
-    <div class="stat-card"><div class="stat-num" id="st-done" style="color:var(--success)">0</div><div class="stat-label">Completed</div></div>
-    <div class="stat-card"><div class="stat-num" id="st-rem">—</div><div class="stat-label">Remaining</div></div>
-  </div>
-  <div class="filters" id="filter-row"></div>
-  <div class="legend">
-    <div class="legend-item"><span class="badge b-ag">★ Agoda</span>&nbsp;high probability</div>
-    <div class="legend-item"><span class="badge b-mu">must</span>&nbsp;solve before any interview</div>
-    <div class="legend-item"><span class="badge b-e">easy</span>&nbsp;<span class="badge b-m">med</span>&nbsp;<span class="badge b-h">hard</span></div>
-  </div>
-  <div class="sections" id="sections"></div>
-  <div class="no-res" id="no-res" style="display:none">No questions match.</div>
-</div>
-</div>
-<script src="shared.js"></script>
-<script>
-const SLUGS={1:'two-sum',3:'longest-substring-without-repeating-characters',5:'longest-palindromic-substring',8:'string-to-integer-atoi',11:'container-with-most-water',13:'roman-to-integer',15:'3sum',17:'letter-combinations-of-a-phone-number',18:'4sum',19:'remove-nth-node-from-end-of-list',20:'valid-parentheses',21:'merge-two-sorted-lists',22:'generate-parentheses',23:'merge-k-sorted-lists',28:'find-the-index-of-the-first-occurrence-in-a-string',31:'next-permutation',33:'search-in-rotated-sorted-array',35:'search-insert-position',37:'sudoku-solver',39:'combination-sum',42:'trapping-rain-water',45:'jump-game-ii',46:'permutations',47:'permutations-ii',49:'group-anagrams',51:'n-queens',53:'maximum-subarray',55:'jump-game',56:'merge-intervals',57:'insert-interval',62:'unique-paths',64:'minimum-path-sum',70:'climbing-stairs',72:'edit-distance',74:'search-a-2d-matrix',75:'sort-colors',76:'minimum-window-substring',77:'combinations',78:'subsets',79:'word-search',84:'largest-rectangle-in-histogram',90:'subsets-ii',91:'decode-ways',92:'reverse-linked-list-ii',94:'binary-tree-inorder-traversal',98:'validate-binary-search-tree',100:'same-tree',101:'symmetric-tree',102:'binary-tree-level-order-traversal',103:'binary-tree-zigzag-level-order-traversal',104:'maximum-depth-of-binary-tree',105:'construct-binary-tree-from-preorder-and-inorder-traversal',110:'balanced-binary-tree',112:'path-sum',114:'flatten-binary-tree-to-linked-list',124:'binary-tree-maximum-path-sum',125:'valid-palindrome',128:'longest-consecutive-sequence',133:'clone-graph',138:'copy-list-with-random-pointer',139:'word-break',141:'linked-list-cycle',142:'linked-list-cycle-ii',143:'reorder-list',144:'binary-tree-preorder-traversal',145:'binary-tree-postorder-traversal',146:'lru-cache',150:'evaluate-reverse-polish-notation',151:'reverse-words-in-a-string',153:'find-minimum-in-rotated-sorted-array',155:'min-stack',162:'find-peak-element',169:'majority-element',198:'house-robber',199:'binary-tree-right-side-view',200:'number-of-islands',202:'happy-number',205:'isomorphic-strings',206:'reverse-linked-list',207:'course-schedule',209:'minimum-size-subarray-sum',210:'course-schedule-ii',213:'house-robber-ii',215:'kth-largest-element-in-an-array',217:'contains-duplicate',227:'basic-calculator-ii',230:'kth-smallest-element-in-a-bst',232:'implement-queue-using-stacks',235:'lowest-common-ancestor-of-a-binary-search-tree',238:'product-of-array-except-self',239:'sliding-window-maximum',240:'search-a-2d-matrix-ii',242:'valid-anagram',253:'meeting-rooms-ii',271:'encode-and-decode-strings',278:'first-bad-version',286:'walls-and-gates',290:'word-pattern',295:'find-median-from-data-stream',297:'serialize-and-deserialize-binary-tree',300:'longest-increasing-subsequence',303:'range-sum-query-immutable',322:'coin-change',344:'reverse-string',347:'top-k-frequent-elements',349:'intersection-of-two-arrays',373:'find-k-pairs-with-smallest-sums',378:'kth-smallest-element-in-a-sorted-matrix',387:'first-unique-character-in-a-string',394:'decode-string',410:'split-array-largest-sum',416:'partition-equal-subset-sum',417:'pacific-atlantic-water-flow',435:'non-overlapping-intervals',438:'find-all-anagrams-in-a-string',450:'delete-node-in-a-bst',451:'sort-characters-by-frequency',459:'repeated-substring-pattern',460:'lfu-cache',496:'next-greater-element-i',503:'next-greater-element-ii',509:'fibonacci-number',523:'continuous-subarray-sum',525:'contiguous-array',542:'01-matrix',543:'diameter-of-binary-tree',547:'number-of-provinces',560:'subarray-sum-equals-k',567:'permutation-in-string',621:'task-scheduler',622:'design-circular-queue',637:'average-of-levels-in-binary-tree',643:'maximum-average-subarray-i',647:'palindromic-substrings',662:'maximum-width-of-binary-tree',684:'redundant-connection',692:'top-k-frequent-words',695:'max-area-of-island',700:'search-in-a-binary-search-tree',701:'insert-into-a-binary-search-tree',703:'kth-largest-element-in-a-stream',704:'binary-search',721:'accounts-merge',739:'daily-temperatures',743:'network-delay-time',746:'min-cost-climbing-stairs',767:'reorganize-string',787:'cheapest-flights-within-k-stops',875:'koko-eating-bananas',876:'middle-of-the-linked-list',907:'sum-of-subarray-minimums',973:'k-closest-points-to-origin',974:'subarray-sums-divisible-by-k',981:'time-based-key-value-store',994:'rotting-oranges',1004:'max-consecutive-ones-iii',1011:'capacity-to-ship-packages-within-d-days',1091:'shortest-path-in-binary-matrix',1114:'print-in-order',1115:'print-foobar-alternately',1116:'print-zero-even-odd',1117:'building-h2o',1143:'longest-common-subsequence',1188:'design-bounded-blocking-queue',1242:'web-crawler-multithreaded',1319:'number-of-operations-to-make-network-connected',1631:'path-with-minimum-effort',1971:'find-if-path-exists-in-graph',2461:'maximum-sum-of-distinct-subarrays-with-length-k'};
-function lcUrl(n){return SLUGS[n]?'https://leetcode.com/problems/'+SLUGS[n]:'https://leetcode.com/problemset/';}
 
-const DSA=[
-  {id:'arrays',ph:1,icon:'▦',title:'1. Arrays & Sliding Window',phase:'Phase 1 — Foundation (weeks 1-2)',summary:'Nearly every Agoda coding problem has an array at its core. Sliding window is the most tested pattern.',concepts:[
-    {t:'Two pointer',d:'Two indices moving toward each other or same direction. Reduces O(n²) to O(n) on sorted data.',qs:[{tx:'Two Sum II – sorted array',lc:167,d:'easy',ag:true,mu:true},{tx:'Three Sum',lc:15,d:'med',ag:true,mu:true},{tx:'Container With Most Water',lc:11,d:'med',ag:true,mu:true},{tx:'Trapping Rain Water',lc:42,d:'hard',ag:true},{tx:'Four Sum',lc:18,d:'med'}]},
-    {t:'Sliding window – variable size',d:'Expand right, shrink left when constraint violated.',qs:[{tx:'Longest Substring Without Repeating Characters',lc:3,d:'med',ag:true,mu:true},{tx:'Minimum Window Substring',lc:76,d:'hard',ag:true},{tx:'Longest Repeating Character Replacement',lc:424,d:'med',ag:true},{tx:'Minimum Size Subarray Sum',lc:209,d:'med',mu:true},{tx:'Max Consecutive Ones III',lc:1004,d:'med'}]},
-    {t:'Prefix sums',d:'prefix[r] - prefix[l-1] gives range sum in O(1). Combine with HashMap for target sums.',qs:[{tx:'Subarray Sum Equals K',lc:560,d:'med',ag:true,mu:true},{tx:'Continuous Subarray Sum',lc:523,d:'med',ag:true},{tx:'Product of Array Except Self',lc:238,d:'med',ag:true,mu:true},{tx:'Subarray Sums Divisible by K',lc:974,d:'med'},{tx:'Range Sum Query Immutable',lc:303,d:'easy',mu:true}]},
-    {t:'Sorting-based',d:'Many problems trivial after sorting. Know when O(n log n) is acceptable.',qs:[{tx:'Merge Intervals',lc:56,d:'med',ag:true,mu:true},{tx:'Insert Interval',lc:57,d:'med',ag:true},{tx:'Meeting Rooms II',lc:253,d:'med',ag:true},{tx:'Sort Colors – Dutch flag',lc:75,d:'med',mu:true},{tx:'Non-overlapping Intervals',lc:435,d:'med'}]}
-  ]},
-  {id:'strings',ph:1,icon:'Aa',title:'2. Strings',phase:'Phase 1 — Foundation (weeks 1-2)',summary:'Strings are char arrays. Most problems reduce to sliding window + HashMap.',concepts:[
-    {t:'Anagram & frequency',d:'Use int[26] for lowercase letters — faster than HashMap for char counts.',qs:[{tx:'Valid Anagram',lc:242,d:'easy',mu:true},{tx:'Group Anagrams',lc:49,d:'med',ag:true,mu:true},{tx:'Find All Anagrams in a String',lc:438,d:'med',ag:true},{tx:'Permutation in String',lc:567,d:'med'}]},
-    {t:'Pattern & palindromes',d:'Expand-around-center for palindromes O(n). KMP for O(n+m) substring search.',qs:[{tx:'Longest Palindromic Substring',lc:5,d:'med',ag:true,mu:true},{tx:'Palindromic Substrings count',lc:647,d:'med'},{tx:'Implement strStr',lc:28,d:'easy',mu:true}]},
-    {t:'Encoding & parsing',d:'URL encoding, JSON parsing, tokenization — relevant to Agoda backend.',qs:[{tx:'Encode and Decode Strings',lc:271,d:'med',ag:true},{tx:'Decode Ways',lc:91,d:'med',ag:true},{tx:'Roman to Integer',lc:13,d:'easy',mu:true},{tx:'Basic Calculator II',lc:227,d:'med'}]}
-  ]},
-  {id:'hashmap',ph:1,icon:'#',title:'3. HashMap & HashSet',phase:'Phase 1 — Foundation (weeks 1-2)',summary:'The most useful interview data structure. Trade memory for O(1) lookup.',concepts:[
-    {t:'Frequency & counting',d:'getOrDefault(k,0)+1 is the building block of 30% of interview problems.',qs:[{tx:'Two Sum',lc:1,d:'easy',ag:true,mu:true},{tx:'Top K Frequent Elements',lc:347,d:'med',ag:true,mu:true},{tx:'First Unique Character in String',lc:387,d:'easy',mu:true},{tx:'Majority Element',lc:169,d:'easy',mu:true}]},
-    {t:'Existence & deduplication',d:'HashSet for O(1) contains(). When you only care about existence, not count.',qs:[{tx:'Contains Duplicate',lc:217,d:'easy',mu:true},{tx:'Longest Consecutive Sequence',lc:128,d:'med',ag:true,mu:true},{tx:'Happy Number',lc:202,d:'easy'}]},
-    {t:'Index mapping',d:'Store index as value. map[value]=index lets you find complements in O(1).',qs:[{tx:'Subarray Sum Equals K',lc:560,d:'med',ag:true,mu:true},{tx:'Contiguous Array',lc:525,d:'med',ag:true},{tx:'Word Pattern',lc:290,d:'easy'}]}
-  ]},
-  {id:'stack',ph:1,icon:'≡',title:'4. Stack & Queue',phase:'Phase 1 — Foundation (weeks 1-2)',summary:'Stack for most-recent lookups. Queue for BFS. Monotonic stack — very common at Staff level.',concepts:[
-    {t:'Stack basics',d:'LIFO. Use ArrayDeque in Java — not the legacy Stack class.',qs:[{tx:'Valid Parentheses',lc:20,d:'easy',ag:true,mu:true},{tx:'Min Stack',lc:155,d:'med',mu:true},{tx:'Decode String',lc:394,d:'med',mu:true},{tx:'Generate Parentheses',lc:22,d:'med',ag:true}]},
-    {t:'Monotonic stack',d:'Stack maintaining order. For "next greater/smaller element" problems.',qs:[{tx:'Daily Temperatures',lc:739,d:'med',ag:true,mu:true},{tx:'Next Greater Element I',lc:496,d:'easy',mu:true},{tx:'Largest Rectangle in Histogram',lc:84,d:'hard',ag:true},{tx:'Sum of Subarray Minimums',lc:907,d:'med'}]},
-    {t:'Queue & Deque',d:'FIFO. Sliding window max uses monotonic deque. BFS always uses a queue.',qs:[{tx:'Implement Queue Using Stacks',lc:232,d:'easy',mu:true},{tx:'Sliding Window Maximum',lc:239,d:'hard',ag:true}]}
-  ]},
-  {id:'linked',ph:2,icon:'⬡',title:'5. Linked Lists',phase:'Phase 2 — Core DS (weeks 3-4)',summary:'Fast/slow pointer is the key pattern. LRU Cache is the #1 Staff-level problem.',concepts:[
-    {t:'Pointer manipulation',d:'Always draw it out. Track prev, curr, next.',qs:[{tx:'Reverse Linked List',lc:206,d:'easy',ag:true,mu:true},{tx:'Merge Two Sorted Lists',lc:21,d:'easy',mu:true},{tx:'Remove Nth Node From End',lc:19,d:'med',mu:true},{tx:'Merge K Sorted Lists',lc:23,d:'hard',ag:true}]},
-    {t:'Fast/slow pointers',d:'Fast=2 steps, slow=1. They meeting → cycle. Fast at end → slow at middle.',qs:[{tx:'Linked List Cycle',lc:141,d:'easy',mu:true},{tx:'Linked List Cycle II',lc:142,d:'med',ag:true},{tx:'Middle of the Linked List',lc:876,d:'easy',mu:true},{tx:'Reorder List',lc:143,d:'med',ag:true}]},
-    {t:'Advanced',d:'LRU Cache is the most commonly asked linked list + hashmap combo at Staff level.',qs:[{tx:'LRU Cache',lc:146,d:'med',ag:true,mu:true},{tx:'LFU Cache',lc:460,d:'hard'},{tx:'Copy List with Random Pointer',lc:138,d:'med'}]}
-  ]},
-  {id:'trees',ph:2,icon:'⊕',title:'6. Trees & BST',phase:'Phase 2 — Core DS (weeks 3-4)',summary:'Most common topic at mid-to-senior level. Master the 4 traversals.',concepts:[
-    {t:'DFS traversals',d:'Inorder (L→root→R), Preorder (root→L→R), Postorder (L→R→root).',qs:[{tx:'Binary Tree Inorder Traversal',lc:94,d:'easy',mu:true},{tx:'Binary Tree Preorder Traversal',lc:144,d:'easy',mu:true},{tx:'Binary Tree Postorder Traversal',lc:145,d:'easy',mu:true}]},
-    {t:'BFS / Level order',d:'Queue + capture levelSize before inner loop to separate levels.',qs:[{tx:'Binary Tree Level Order Traversal',lc:102,d:'med',ag:true,mu:true},{tx:'Binary Tree Zigzag Level Order',lc:103,d:'med',ag:true},{tx:'Right Side View of Binary Tree',lc:199,d:'med',ag:true,mu:true},{tx:'Average of Levels in Binary Tree',lc:637,d:'easy',mu:true}]},
-    {t:'Properties & recursion',d:'Left answer + right answer + current node = every tree problem.',qs:[{tx:'Maximum Depth of Binary Tree',lc:104,d:'easy',ag:true,mu:true},{tx:'Diameter of Binary Tree',lc:543,d:'easy',ag:true,mu:true},{tx:'Balanced Binary Tree',lc:110,d:'easy',mu:true},{tx:'Same Tree',lc:100,d:'easy',mu:true},{tx:'Binary Tree Maximum Path Sum',lc:124,d:'hard',ag:true}]},
-    {t:'BST operations',d:'BST: left < node < right at EVERY node. Inorder traversal → sorted output.',qs:[{tx:'Validate Binary Search Tree',lc:98,d:'med',ag:true,mu:true},{tx:'Kth Smallest in BST',lc:230,d:'med',ag:true},{tx:'Lowest Common Ancestor of BST',lc:235,d:'med',mu:true},{tx:'Insert into BST',lc:701,d:'med',mu:true}]},
-    {t:'Construction & serialization',d:'Build from traversal arrays. Serialize/deserialize — hotel category hierarchy.',qs:[{tx:'Construct Tree from Preorder and Inorder',lc:105,d:'med',ag:true,mu:true},{tx:'Serialize and Deserialize Binary Tree',lc:297,d:'hard',ag:true},{tx:'Flatten Binary Tree to Linked List',lc:114,d:'med'}]}
-  ]},
-  {id:'graphs',ph:3,icon:'◎',title:'7. Graphs & BFS/DFS',phase:'Phase 3 — Advanced (weeks 5-7)',summary:"Agoda's highest-priority topic. Hotel hierarchies, routing, connectivity — all graphs.",concepts:[
-    {t:'BFS on grid',d:'Grid = implicit graph. Mark visited WHEN enqueued. BFS gives shortest path.',qs:[{tx:'Number of Islands',lc:200,d:'med',ag:true,mu:true},{tx:'Rotting Oranges',lc:994,d:'med',ag:true,mu:true},{tx:'Shortest Path in Binary Matrix',lc:1091,d:'med',ag:true,mu:true},{tx:'01 Matrix',lc:542,d:'med',mu:true},{tx:'Walls and Gates',lc:286,d:'med',ag:true}]},
-    {t:'DFS & connected components',d:'DFS for connectivity, cycle detection, topological sort.',qs:[{tx:'Clone Graph',lc:133,d:'med',mu:true},{tx:'Max Area of Island',lc:695,d:'med',mu:true},{tx:'Course Schedule',lc:207,d:'med',ag:true,mu:true},{tx:'Course Schedule II',lc:210,d:'med',ag:true},{tx:'Number of Provinces',lc:547,d:'med',mu:true}]},
-    {t:'Dijkstra shortest path',d:'Min-heap PriorityQueue. Weighted graphs only — use BFS for unweighted.',qs:[{tx:'Network Delay Time',lc:743,d:'med',ag:true,mu:true},{tx:'Path With Minimum Effort',lc:1631,d:'med',ag:true},{tx:'Cheapest Flights Within K Stops',lc:787,d:'med',ag:true}]},
-    {t:'Union Find',d:'path compression + union by rank = near O(1). For dynamic connectivity.',qs:[{tx:'Redundant Connection',lc:684,d:'med',mu:true},{tx:'Accounts Merge',lc:721,d:'med',ag:true}]}
-  ]},
-  {id:'binary',ph:3,icon:'⟨⟩',title:'8. Binary Search',phase:'Phase 3 — Advanced (weeks 5-7)',summary:'Beyond sorted arrays: binary search on the ANSWER. Define a monotonic condition, then search.',concepts:[
-    {t:'Classic binary search',d:'lo=0, hi=n-1. mid=lo+(hi-lo)/2 avoids overflow.',qs:[{tx:'Binary Search',lc:704,d:'easy',mu:true},{tx:'Find Minimum in Rotated Sorted Array',lc:153,d:'med',ag:true,mu:true},{tx:'Search in Rotated Sorted Array',lc:33,d:'med',ag:true,mu:true},{tx:'Find Peak Element',lc:162,d:'med',mu:true}]},
-    {t:'Binary search on answer',d:'Search the answer range. Min/max X such that condition holds.',qs:[{tx:'Koko Eating Bananas',lc:875,d:'med',ag:true,mu:true},{tx:'Capacity To Ship Packages Within D Days',lc:1011,d:'med',ag:true},{tx:'Split Array Largest Sum',lc:410,d:'hard',ag:true},{tx:'Time Based Key-Value Store',lc:981,d:'med',ag:true}]},
-    {t:'Binary search on 2D',d:'Treat matrix as 1D sorted array. Or search row-by-row.',qs:[{tx:'Search a 2D Matrix',lc:74,d:'med',mu:true},{tx:'Search a 2D Matrix II',lc:240,d:'med',ag:true},{tx:'First Bad Version',lc:278,d:'easy',mu:true}]}
-  ]},
-  {id:'heap',ph:3,icon:'△',title:'9. Heap / Priority Queue',phase:'Phase 3 — Advanced (weeks 5-7)',summary:'PriorityQueue in Java — min-heap by default. Critical for Top-K and Dijkstra.',concepts:[
-    {t:'Top-K pattern',d:'Keep min-heap of size K. O(n log K) beats O(n log n).',qs:[{tx:'Kth Largest Element in an Array',lc:215,d:'med',ag:true,mu:true},{tx:'Top K Frequent Elements',lc:347,d:'med',ag:true,mu:true},{tx:'K Closest Points to Origin',lc:973,d:'med',ag:true,mu:true},{tx:'Kth Largest in a Stream',lc:703,d:'easy',mu:true}]},
-    {t:'K-way merge',d:'Merge K sorted lists with min-heap. Pop min, add next from same list.',qs:[{tx:'Merge K Sorted Lists',lc:23,d:'hard',ag:true,mu:true},{tx:'Kth Smallest in Sorted Matrix',lc:378,d:'med',ag:true}]},
-    {t:'Median & streams',d:'Two heaps: max-heap for lower half, min-heap for upper. Median in O(1).',qs:[{tx:'Find Median from Data Stream',lc:295,d:'hard',ag:true,mu:true},{tx:'Task Scheduler',lc:621,d:'med',ag:true}]}
-  ]},
-  {id:'recursion',ph:3,icon:'↺',title:'10. Backtracking',phase:'Phase 3 — Advanced (weeks 5-7)',summary:'Pattern: choose → explore → unchoose. For all generate-all problems.',concepts:[
-    {t:'Subsets & combinations',d:'Include or exclude each element. Use start index to avoid duplicates.',qs:[{tx:'Subsets',lc:78,d:'med',mu:true},{tx:'Combination Sum',lc:39,d:'med',ag:true,mu:true},{tx:'Combinations',lc:77,d:'med',mu:true},{tx:'Letter Combinations of Phone Number',lc:17,d:'med',ag:true,mu:true}]},
-    {t:'Permutations',d:'All orderings. Use visited boolean array to track current path.',qs:[{tx:'Permutations',lc:46,d:'med',mu:true},{tx:'Next Permutation',lc:31,d:'med',ag:true}]},
-    {t:'Grid backtracking',d:'Mark cell visited before recursing, unmark after.',qs:[{tx:'Word Search',lc:79,d:'med',ag:true,mu:true},{tx:'N-Queens',lc:51,d:'hard'},{tx:'Sudoku Solver',lc:37,d:'hard'}]}
-  ]},
-  {id:'dp',ph:4,icon:'◈',title:'11. Dynamic Programming',phase:'Phase 4 — DP (weeks 8-12)',summary:'Define dp[i] clearly before writing any code. Everything else follows.',concepts:[
-    {t:'1D DP – linear',d:'dp[i] depends on dp[i-1] or dp[i-2].',qs:[{tx:'Climbing Stairs',lc:70,d:'easy',ag:true,mu:true},{tx:'House Robber',lc:198,d:'med',mu:true},{tx:'Min Cost Climbing Stairs',lc:746,d:'easy',mu:true}]},
-    {t:'1D DP – array decisions',d:'dp[i] = optimal answer ending at i. LIS is canonical.',qs:[{tx:'Longest Increasing Subsequence',lc:300,d:'med',ag:true,mu:true},{tx:'Maximum Subarray – Kadane',lc:53,d:'med',ag:true,mu:true},{tx:'Jump Game',lc:55,d:'med',mu:true},{tx:'Jump Game II',lc:45,d:'med',ag:true}]},
-    {t:'2D DP',d:'dp[i][j] depends on dp[i-1][j] and dp[i][j-1]. Fill row by row.',qs:[{tx:'Unique Paths',lc:62,d:'med',mu:true},{tx:'Edit Distance',lc:72,d:'hard',ag:true,mu:true},{tx:'Longest Common Subsequence',lc:1143,d:'med',ag:true,mu:true},{tx:'Coin Change',lc:322,d:'med',ag:true,mu:true},{tx:'Word Break',lc:139,d:'med',ag:true,mu:true}]}
-  ]},
-  {id:'concurrency',ph:4,icon:'⚙',title:'12. Concurrency & Java Internals',phase:'Phase 4 — Java Depth (weeks 8-12)',summary:'Critical for Staff-level at Agoda. Asked in Platform round. Thread safety and Java memory model.',concepts:[
-    {t:'Thread safety',d:'Race conditions when threads share state without sync. Use synchronized, volatile, AtomicInteger.',qs:[{tx:'Print in Order',lc:1114,d:'easy',ag:true,mu:true},{tx:'Print FooBar Alternately',lc:1115,d:'med',ag:true,mu:true},{tx:'Print Zero Even Odd',lc:1116,d:'med',ag:true},{tx:'Building H2O',lc:1117,d:'med',ag:true}]},
-    {t:'Concurrent data structures',d:'ConcurrentHashMap, AtomicInteger, BlockingQueue. HashMap is NOT thread-safe.',qs:[{tx:'LRU Cache thread-safe',lc:146,d:'med',ag:true,mu:true},{tx:'Design Bounded Blocking Queue',lc:1188,d:'med',ag:true},{tx:'Web Crawler Multithreaded',lc:1242,d:'med',ag:true}]}
-  ]}
+<nav class="topnav">
+  <div class="nav-brand">Prep<span>Kit</span></div>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link active">⌨ DSA</a>
+    <a href="platform.html" class="nav-link">⚙ Platform</a>
+    <a href="sysdesign.html" class="nav-link">🏗 System Design</a>
+  </div>
+  <div class="countdown" id="cd">...</div>
+</nav>
+
+<div class="page">
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="st-total" style="color:var(--accent2)">—</div><div class="stat-l">Questions</div></div>
+    <div class="stat"><div class="stat-n" id="st-tag" style="color:var(--tag)">—</div><div class="stat-l">Company-tagged</div></div>
+    <div class="stat"><div class="stat-n" id="st-done" style="color:var(--green)">0</div><div class="stat-l">Done</div></div>
+    <div class="stat"><div class="stat-n" id="st-rem">—</div><div class="stat-l">Remaining</div></div>
+  </div>
+
+  <div class="prog-wrap">
+    <div class="prog-label"><span>Overall progress</span><span id="prog-pct">0%</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="search-box">
+    <svg class="search-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/></svg>
+    <input type="text" id="srch" placeholder="Search concepts or questions..." oninput="render()">
+  </div>
+
+  <div class="filters" id="filters"></div>
+
+  <div class="legend">
+    <div class="legend-i"><span class="badge b-tag">★ Company</span> high probability</div>
+    <div class="legend-i"><span class="badge b-must">must</span> non-negotiable</div>
+    <div class="legend-i"><span class="badge b-e">easy</span><span class="badge b-m" style="margin-left:3px">med</span><span class="badge b-h" style="margin-left:3px">hard</span></div>
+  </div>
+
+  <div id="sections"></div>
+  <div class="no-res" id="no-res" style="display:none">No results match your search.</div>
+</div>
+
+<script>
+const SLUGS={1:'two-sum',3:'longest-substring-without-repeating-characters',5:'longest-palindromic-substring',8:'string-to-integer-atoi',11:'container-with-most-water',13:'roman-to-integer',15:'3sum',17:'letter-combinations-of-a-phone-number',19:'remove-nth-node-from-end-of-list',20:'valid-parentheses',21:'merge-two-sorted-lists',22:'generate-parentheses',23:'merge-k-sorted-lists',28:'find-the-index-of-the-first-occurrence-in-a-string',31:'next-permutation',33:'search-in-rotated-sorted-array',35:'search-insert-position',39:'combination-sum',42:'trapping-rain-water',45:'jump-game-ii',46:'permutations',49:'group-anagrams',51:'n-queens',53:'maximum-subarray',55:'jump-game',56:'merge-intervals',57:'insert-interval',62:'unique-paths',64:'minimum-path-sum',70:'climbing-stairs',72:'edit-distance',74:'search-a-2d-matrix',75:'sort-colors',76:'minimum-window-substring',77:'combinations',78:'subsets',79:'word-search',84:'largest-rectangle-in-histogram',90:'subsets-ii',91:'decode-ways',92:'reverse-linked-list-ii',94:'binary-tree-inorder-traversal',98:'validate-binary-search-tree',100:'same-tree',101:'symmetric-tree',102:'binary-tree-level-order-traversal',103:'binary-tree-zigzag-level-order-traversal',104:'maximum-depth-of-binary-tree',105:'construct-binary-tree-from-preorder-and-inorder-traversal',110:'balanced-binary-tree',112:'path-sum',114:'flatten-binary-tree-to-linked-list',124:'binary-tree-maximum-path-sum',125:'valid-palindrome',128:'longest-consecutive-sequence',133:'clone-graph',138:'copy-list-with-random-pointer',139:'word-break',141:'linked-list-cycle',142:'linked-list-cycle-ii',143:'reorder-list',144:'binary-tree-preorder-traversal',145:'binary-tree-postorder-traversal',146:'lru-cache',150:'evaluate-reverse-polish-notation',153:'find-minimum-in-rotated-sorted-array',155:'min-stack',162:'find-peak-element',169:'majority-element',198:'house-robber',199:'binary-tree-right-side-view',200:'number-of-islands',202:'happy-number',205:'isomorphic-strings',206:'reverse-linked-list',207:'course-schedule',209:'minimum-size-subarray-sum',210:'course-schedule-ii',213:'house-robber-ii',215:'kth-largest-element-in-an-array',217:'contains-duplicate',227:'basic-calculator-ii',230:'kth-smallest-element-in-a-bst',232:'implement-queue-using-stacks',235:'lowest-common-ancestor-of-a-binary-search-tree',238:'product-of-array-except-self',239:'sliding-window-maximum',240:'search-a-2d-matrix-ii',242:'valid-anagram',253:'meeting-rooms-ii',271:'encode-and-decode-strings',278:'first-bad-version',286:'walls-and-gates',290:'word-pattern',295:'find-median-from-data-stream',297:'serialize-and-deserialize-binary-tree',300:'longest-increasing-subsequence',303:'range-sum-query-immutable',322:'coin-change',344:'reverse-string',347:'top-k-frequent-elements',349:'intersection-of-two-arrays',373:'find-k-pairs-with-smallest-sums',378:'kth-smallest-element-in-a-sorted-matrix',387:'first-unique-character-in-a-string',394:'decode-string',410:'split-array-largest-sum',416:'partition-equal-subset-sum',417:'pacific-atlantic-water-flow',435:'non-overlapping-intervals',438:'find-all-anagrams-in-a-string',450:'delete-node-in-a-bst',451:'sort-characters-by-frequency',459:'repeated-substring-pattern',460:'lfu-cache',496:'next-greater-element-i',503:'next-greater-element-ii',523:'continuous-subarray-sum',525:'contiguous-array',542:'01-matrix',543:'diameter-of-binary-tree',547:'number-of-provinces',560:'subarray-sum-equals-k',567:'permutation-in-string',621:'task-scheduler',622:'design-circular-queue',637:'average-of-levels-in-binary-tree',643:'maximum-average-subarray-i',647:'palindromic-substrings',662:'maximum-width-of-binary-tree',684:'redundant-connection',692:'top-k-frequent-words',695:'max-area-of-island',700:'search-in-a-binary-search-tree',701:'insert-into-a-binary-search-tree',703:'kth-largest-element-in-a-stream',704:'binary-search',721:'accounts-merge',739:'daily-temperatures',743:'network-delay-time',746:'min-cost-climbing-stairs',767:'reorganize-string',787:'cheapest-flights-within-k-stops',875:'koko-eating-bananas',876:'middle-of-the-linked-list',907:'sum-of-subarray-minimums',973:'k-closest-points-to-origin',974:'subarray-sums-divisible-by-k',981:'time-based-key-value-store',994:'rotting-oranges',1004:'max-consecutive-ones-iii',1011:'capacity-to-ship-packages-within-d-days',1091:'shortest-path-in-binary-matrix',1114:'print-in-order',1115:'print-foobar-alternately',1116:'print-zero-even-odd',1117:'building-h2o',1143:'longest-common-subsequence',1188:'design-bounded-blocking-queue',1242:'web-crawler-multithreaded',1319:'number-of-operations-to-make-network-connected',1631:'path-with-minimum-effort',1971:'find-if-path-exists-in-graph',2461:'maximum-sum-of-distinct-subarrays-with-length-k'};
+const lcUrl=n=>SLUGS[n]?`https://leetcode.com/problems/${SLUGS[n]}`:`https://leetcode.com/problemset/`;
+
+const DSA = [
+  {id:'arrays',ph:1,icon:'▦',title:'Arrays & Sliding Window',phase:'Phase 1 — Foundation',
+   summary:'The most tested category. Sliding window converts O(n²) brute force to O(n). Master this pattern before anything else.',
+   concepts:[
+    {t:'Two Pointer',
+     why:'Two pointers let you eliminate half the search space at each step. Instead of checking every pair with nested loops O(n²), you start pointers at both ends and move them inward based on a condition — giving O(n).',
+     what:'Place one pointer at the start, one at the end (or both at start for same-direction). Move them toward each other based on whether the current result is too big, too small, or satisfies the condition.',
+     steps:['Initialize left=0, right=n-1 (or both at 0 for same direction)','Check condition using both pointers','If too small → move left pointer right','If too large → move right pointer left','Repeat until pointers meet'],
+     code:`<span class="cm">// Two Sum II — sorted array</span>
+<span class="kw">public int</span>[] <span class="fn">twoSum</span>(<span class="kw">int</span>[] nums, <span class="kw">int</span> target) {
+    <span class="kw">int</span> left = <span class="nu">0</span>, right = nums.length - <span class="nu">1</span>;
+    <span class="kw">while</span> (left < right) {
+        <span class="kw">int</span> sum = nums[left] + nums[right];
+        <span class="kw">if</span> (sum == target) <span class="kw">return new int</span>[]{left+<span class="nu">1</span>, right+<span class="nu">1</span>};
+        <span class="kw">if</span> (sum < target) left++;  <span class="cm">// need bigger sum</span>
+        <span class="kw">else</span> right--;              <span class="cm">// need smaller sum</span>
+    }
+    <span class="kw">return new int</span>[]{};
+}`,
+     complexity:[['Two Sum II','O(n)','O(1)'],['Three Sum','O(n²)','O(1)'],['Container Water','O(n)','O(1)']],
+     tip:'Two pointer only works on SORTED arrays (or when you sort first). If unsorted → use HashMap instead.',
+     qs:[{tx:'Two Sum II – sorted array',lc:167,d:'easy',tag:true,mu:true},{tx:'Three Sum',lc:15,d:'med',tag:true,mu:true},{tx:'Container With Most Water',lc:11,d:'med',tag:true,mu:true},{tx:'Trapping Rain Water',lc:42,d:'hard',tag:true}]
+    },
+    {t:'Sliding Window — Variable Size',
+     why:'When you need the longest/shortest subarray satisfying a condition, brute force checks all subarrays O(n²). Sliding window maintains a "window" with two pointers — expand right freely, shrink left when constraint breaks. Each element enters and leaves the window at most once → O(n).',
+     what:'Right pointer expands the window. When the constraint is violated, left pointer shrinks from the left until constraint is satisfied again. Track the best window seen.',
+     steps:['right pointer moves forward one step at a time','Add nums[right] to window state','While window violates constraint: remove nums[left], move left++','Update answer with current window size','Repeat'],
+     code:`<span class="cm">// Longest substring without repeating characters</span>
+<span class="kw">public int</span> <span class="fn">lengthOfLongestSubstring</span>(String s) {
+    Map&lt;Character, Integer&gt; lastSeen = <span class="kw">new</span> HashMap&lt;&gt;();
+    <span class="kw">int</span> maxLen = <span class="nu">0</span>, left = <span class="nu">0</span>;
+
+    <span class="kw">for</span> (<span class="kw">int</span> right = <span class="nu">0</span>; right < s.length(); right++) {
+        <span class="kw">char</span> c = s.<span class="fn">charAt</span>(right);
+        <span class="cm">// If seen and inside current window → shrink</span>
+        <span class="kw">if</span> (lastSeen.<span class="fn">containsKey</span>(c) && lastSeen.<span class="fn">get</span>(c) >= left) {
+            left = lastSeen.<span class="fn">get</span>(c) + <span class="nu">1</span>;
+        }
+        lastSeen.<span class="fn">put</span>(c, right);
+        maxLen = Math.<span class="fn">max</span>(maxLen, right - left + <span class="nu">1</span>);
+    }
+    <span class="kw">return</span> maxLen;
+}`,
+     complexity:[['Longest Substring','O(n)','O(k) k=charset'],['Min Window Substr','O(n)','O(k)'],['Max Consecutive 1s','O(n)','O(1)']],
+     tip:'Track what\'s IN the window using a HashMap or array. The window always stays valid — you shrink before you update the answer.',
+     qs:[{tx:'Longest Substring Without Repeating Characters',lc:3,d:'med',tag:true,mu:true},{tx:'Minimum Window Substring',lc:76,d:'hard',tag:true},{tx:'Longest Repeating Character Replacement',lc:424,d:'med',tag:true},{tx:'Minimum Size Subarray Sum',lc:209,d:'med',mu:true},{tx:'Max Consecutive Ones III',lc:1004,d:'med'}]
+    },
+    {t:'Prefix Sums',
+     why:'Finding the sum of any subarray naively is O(n). Prefix sums precompute cumulative totals so any range query is O(1): sum(l,r) = prefix[r] - prefix[l-1]. Combined with a HashMap, this solves "find subarray with target sum" in O(n).',
+     what:'Build prefix array where prefix[i] = sum of first i elements. Any subarray sum from index l to r = prefix[r] - prefix[l-1]. Store prefix sums seen so far in a HashMap to find complement in O(1).',
+     steps:['Build prefix array: prefix[0]=0, prefix[i]=prefix[i-1]+nums[i-1]','For "subarray sum = k": at each position, check if (currentSum - k) exists in map','If yes → found a subarray','Store currentSum in map and continue'],
+     code:`<span class="cm">// Subarray sum equals K</span>
+<span class="kw">public int</span> <span class="fn">subarraySum</span>(<span class="kw">int</span>[] nums, <span class="kw">int</span> k) {
+    Map&lt;Integer,Integer&gt; prefixCount = <span class="kw">new</span> HashMap&lt;&gt;();
+    prefixCount.<span class="fn">put</span>(<span class="nu">0</span>, <span class="nu">1</span>); <span class="cm">// empty prefix</span>
+    <span class="kw">int</span> sum = <span class="nu">0</span>, count = <span class="nu">0</span>;
+
+    <span class="kw">for</span> (<span class="kw">int</span> num : nums) {
+        sum += num;
+        <span class="cm">// if (sum - k) was seen before, those subarrays end here</span>
+        count += prefixCount.<span class="fn">getOrDefault</span>(sum - k, <span class="nu">0</span>);
+        prefixCount.<span class="fn">put</span>(sum, prefixCount.<span class="fn">getOrDefault</span>(sum, <span class="nu">0</span>) + <span class="nu">1</span>);
+    }
+    <span class="kw">return</span> count;
+}`,
+     complexity:[['Range Sum Query','O(n) build, O(1) query','O(n)'],['Subarray Sum=K','O(n)','O(n)'],['Product Except Self','O(n)','O(1)']],
+     tip:'Always initialize map with {0: 1}. This handles subarrays starting from index 0.',
+     qs:[{tx:'Subarray Sum Equals K',lc:560,d:'med',tag:true,mu:true},{tx:'Continuous Subarray Sum',lc:523,d:'med',tag:true},{tx:'Product of Array Except Self',lc:238,d:'med',tag:true,mu:true},{tx:'Subarray Sums Divisible by K',lc:974,d:'med'},{tx:'Range Sum Query Immutable',lc:303,d:'easy',mu:true}]
+    },
+    {t:'Merge Intervals',
+     why:'Overlapping interval problems appear constantly in scheduling, booking, calendar systems. Sorting first turns a chaotic list into a linear scan problem.',
+     what:'Sort by start time. Walk through intervals — if current start ≤ previous end, they overlap, merge by extending end. Otherwise start a new interval.',
+     steps:['Sort intervals by start time','Initialize result with first interval','For each subsequent interval: if start ≤ last end in result → merge (update end to max)','Otherwise → append new interval'],
+     code:`<span class="kw">public int</span>[][] <span class="fn">merge</span>(<span class="kw">int</span>[][] intervals) {
+    Arrays.<span class="fn">sort</span>(intervals, (a,b) -> a[<span class="nu">0</span>] - b[<span class="nu">0</span>]);
+    List&lt;<span class="kw">int</span>[]&gt; res = <span class="kw">new</span> ArrayList&lt;&gt;();
+    res.<span class="fn">add</span>(intervals[<span class="nu">0</span>]);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nu">1</span>; i < intervals.length; i++) {
+        <span class="kw">int</span>[] last = res.<span class="fn">get</span>(res.size() - <span class="nu">1</span>);
+        <span class="kw">if</span> (intervals[i][<span class="nu">0</span>] <= last[<span class="nu">1</span>]) {
+            last[<span class="nu">1</span>] = Math.<span class="fn">max</span>(last[<span class="nu">1</span>], intervals[i][<span class="nu">1</span>]);
+        } <span class="kw">else</span> {
+            res.<span class="fn">add</span>(intervals[i]);
+        }
+    }
+    <span class="kw">return</span> res.<span class="fn">toArray</span>(<span class="kw">new int</span>[<span class="nu">0</span>][]);
+}`,
+     complexity:[['Merge Intervals','O(n log n)','O(n)'],['Insert Interval','O(n)','O(n)'],['Meeting Rooms II','O(n log n)','O(n)']],
+     tip:'For "minimum meeting rooms needed" — use a min-heap of end times. Each time a meeting starts: if heap.peek() ≤ start, reuse that room (poll). Otherwise add new room.',
+     qs:[{tx:'Merge Intervals',lc:56,d:'med',tag:true,mu:true},{tx:'Insert Interval',lc:57,d:'med',tag:true},{tx:'Meeting Rooms II',lc:253,d:'med',tag:true},{tx:'Non-overlapping Intervals',lc:435,d:'med'}]
+    }
+   ]
+  },
+  {id:'hashmap',ph:1,icon:'#',title:'HashMap & HashSet',phase:'Phase 1 — Foundation',
+   summary:'The most useful interview data structure. Trade O(n) memory for O(1) lookup. getOrDefault() is your most-used method — burn it in.',
+   concepts:[
+    {t:'Frequency Counting',
+     why:'Counting how often something appears is O(n) with a HashMap. Without it, checking "does X appear k times" would require sorting O(n log n) or nested loops O(n²).',
+     what:'Walk through the array once, using getOrDefault(key, 0) + 1 to increment counts. Then query the map for any frequency question in O(1).',
+     steps:['Initialize empty HashMap','For each element: map.put(x, map.getOrDefault(x, 0) + 1)','Query the map for frequency answers','Optional: use a heap or bucket sort to find top-K frequencies'],
+     code:`<span class="cm">// Top K frequent elements</span>
+<span class="kw">public int</span>[] <span class="fn">topKFrequent</span>(<span class="kw">int</span>[] nums, <span class="kw">int</span> k) {
+    Map&lt;Integer,Integer&gt; freq = <span class="kw">new</span> HashMap&lt;&gt;();
+    <span class="kw">for</span> (<span class="kw">int</span> n : nums)
+        freq.<span class="fn">put</span>(n, freq.<span class="fn">getOrDefault</span>(n, <span class="nu">0</span>) + <span class="nu">1</span>);
+
+    <span class="cm">// Min-heap of size k — keeps top K</span>
+    PriorityQueue&lt;Integer&gt; heap = <span class="kw">new</span> PriorityQueue&lt;&gt;(
+        (a,b) -> freq.<span class="fn">get</span>(a) - freq.<span class="fn">get</span>(b));
+
+    <span class="kw">for</span> (<span class="kw">int</span> key : freq.<span class="fn">keySet</span>()) {
+        heap.<span class="fn">offer</span>(key);
+        <span class="kw">if</span> (heap.size() > k) heap.<span class="fn">poll</span>(); <span class="cm">// evict least frequent</span>
+    }
+    <span class="kw">return</span> heap.<span class="fn">stream</span>().<span class="fn">mapToInt</span>(Integer::intValue).<span class="fn">toArray</span>();
+}`,
+     complexity:[['Frequency count','O(n)','O(n)'],['Top K frequent','O(n log k)','O(n)'],['Group Anagrams','O(n·k log k)','O(n)']],
+     tip:'getOrDefault(key, 0) is safer than get() which returns null. For char frequency of lowercase letters, use int[26] — faster than HashMap.',
+     qs:[{tx:'Two Sum',lc:1,d:'easy',tag:true,mu:true},{tx:'Top K Frequent Elements',lc:347,d:'med',tag:true,mu:true},{tx:'Group Anagrams',lc:49,d:'med',tag:true,mu:true},{tx:'First Unique Character in String',lc:387,d:'easy',mu:true},{tx:'Sort Characters By Frequency',lc:451,d:'med'}]
+    },
+    {t:'HashSet for Existence',
+     why:'Checking if something EXISTS (not how many times) is O(1) with a HashSet. Finding "longest consecutive sequence" without a set would require sorting O(n log n).',
+     what:'Add all elements to a HashSet upfront. Then query contains() in O(1) instead of searching the array.',
+     steps:['Add all elements to HashSet in one pass O(n)','For each query: use set.contains() in O(1)','For consecutive sequence: only start counting from elements with no left neighbor (x-1 not in set)'],
+     code:`<span class="cm">// Longest consecutive sequence — O(n)</span>
+<span class="kw">public int</span> <span class="fn">longestConsecutive</span>(<span class="kw">int</span>[] nums) {
+    Set&lt;Integer&gt; set = <span class="kw">new</span> HashSet&lt;&gt;();
+    <span class="kw">for</span> (<span class="kw">int</span> n : nums) set.<span class="fn">add</span>(n);
+
+    <span class="kw">int</span> best = <span class="nu">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> n : nums) {
+        <span class="cm">// Only start counting from sequence beginnings</span>
+        <span class="kw">if</span> (!set.<span class="fn">contains</span>(n - <span class="nu">1</span>)) {
+            <span class="kw">int</span> cur = n, len = <span class="nu">1</span>;
+            <span class="kw">while</span> (set.<span class="fn">contains</span>(cur + <span class="nu">1</span>)) { cur++; len++; }
+            best = Math.<span class="fn">max</span>(best, len);
+        }
+    }
+    <span class="kw">return</span> best;
+}`,
+     complexity:[['Contains Duplicate','O(n)','O(n)'],['Longest Consecutive','O(n)','O(n)']],
+     tip:'The trick in Longest Consecutive: only start counting when n-1 is NOT in the set. This ensures each sequence is only counted once → O(n) total.',
+     qs:[{tx:'Contains Duplicate',lc:217,d:'easy',mu:true},{tx:'Longest Consecutive Sequence',lc:128,d:'med',tag:true,mu:true},{tx:'Happy Number',lc:202,d:'easy'},{tx:'Intersection of Two Arrays',lc:349,d:'easy'}]
+    }
+   ]
+  },
+  {id:'stack',ph:1,icon:'≡',title:'Stack & Queue',phase:'Phase 1 — Foundation',
+   summary:'Stack for "most recent" tracking. Monotonic stack is the advanced pattern — very common at senior level for "next greater element" problems.',
+   concepts:[
+    {t:'Stack Basics',
+     why:'A stack lets you track the most recently seen element in O(1). Parenthesis matching, expression evaluation, undo history — all need LIFO access.',
+     what:'Push when you open/start something. Pop and check when you close/end. The element at the top is always the most recently opened unmatched item.',
+     steps:['Use Deque<Character> stack = new ArrayDeque<>() — NOT the legacy Stack class','Push opening elements onto the stack','When closing: check if stack is empty (mismatch) or if top matches','Pop the matched opening element'],
+     code:`<span class="cm">// Valid parentheses</span>
+<span class="kw">public boolean</span> <span class="fn">isValid</span>(String s) {
+    Deque&lt;Character&gt; stack = <span class="kw">new</span> ArrayDeque&lt;&gt;();
+    <span class="kw">for</span> (<span class="kw">char</span> c : s.<span class="fn">toCharArray</span>()) {
+        <span class="kw">if</span> (c==<span class="str">'('</span>||c==<span class="str">'{'</span>||c==<span class="str">'['</span>) { stack.<span class="fn">push</span>(c); <span class="kw">continue</span>; }
+        <span class="kw">if</span> (stack.<span class="fn">isEmpty</span>()) <span class="kw">return false</span>;
+        <span class="kw">char</span> top = stack.<span class="fn">pop</span>();
+        <span class="kw">if</span> (c==<span class="str">')'</span>&&top!=<span class="str">'('</span>) <span class="kw">return false</span>;
+        <span class="kw">if</span> (c==<span class="str">'}'</span>&&top!=<span class="str">'{'</span>) <span class="kw">return false</span>;
+        <span class="kw">if</span> (c==<span class="str">']'</span>&&top!=<span class="str">'['</span>) <span class="kw">return false</span>;
+    }
+    <span class="kw">return</span> stack.<span class="fn">isEmpty</span>(); <span class="cm">// must be empty at end</span>
+}`,
+     complexity:[['Valid Parentheses','O(n)','O(n)'],['Min Stack','O(1) all ops','O(n)'],['Decode String','O(n)','O(n)']],
+     tip:'ArrayDeque is faster than Stack in Java. Use push/pop for stack behavior, offer/poll for queue behavior.',
+     qs:[{tx:'Valid Parentheses',lc:20,d:'easy',tag:true,mu:true},{tx:'Min Stack',lc:155,d:'med',mu:true},{tx:'Decode String',lc:394,d:'med',mu:true},{tx:'Generate Parentheses',lc:22,d:'med',tag:true}]
+    },
+    {t:'Monotonic Stack',
+     why:'For "next greater/smaller element" problems, brute force checks every pair O(n²). Monotonic stack maintains a decreasing or increasing order — when you find the "next greater", you pop and record the answer for all stack elements smaller than current.',
+     what:'Maintain a stack that is always decreasing (for next greater) or always increasing (for next smaller). When you see a new element that breaks the order, pop elements and record their answers.',
+     steps:['Initialize stack (stores indices, not values)','For each element right to left (or left to right):','While stack not empty AND stack.peek() <= current element: this element is the "next greater" for stack.peek() → pop and record','Push current index','Remaining in stack have no next greater → answer is -1'],
+     code:`<span class="cm">// Daily temperatures — next warmer day</span>
+<span class="kw">public int</span>[] <span class="fn">dailyTemperatures</span>(<span class="kw">int</span>[] temps) {
+    <span class="kw">int</span>[] result = <span class="kw">new int</span>[temps.length]; <span class="cm">// default 0</span>
+    Deque&lt;Integer&gt; stack = <span class="kw">new</span> ArrayDeque&lt;&gt;(); <span class="cm">// stores indices</span>
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nu">0</span>; i < temps.length; i++) {
+        <span class="cm">// Pop indices whose "next warmer" is current day</span>
+        <span class="kw">while</span> (!stack.<span class="fn">isEmpty</span>() && temps[i] > temps[stack.<span class="fn">peek</span>()]) {
+            <span class="kw">int</span> idx = stack.<span class="fn">pop</span>();
+            result[idx] = i - idx; <span class="cm">// days until warmer</span>
+        }
+        stack.<span class="fn">push</span>(i);
+    }
+    <span class="kw">return</span> result; <span class="cm">// remaining in stack → result stays 0</span>
+}`,
+     complexity:[['Daily Temperatures','O(n)','O(n)'],['Next Greater Element','O(n)','O(n)'],['Largest Rectangle Histogram','O(n)','O(n)']],
+     tip:'Always push INDICES not values — you need index to compute "how many days away" or to look up the value. The stack stores indices in decreasing order of their temperatures.',
+     qs:[{tx:'Daily Temperatures',lc:739,d:'med',tag:true,mu:true},{tx:'Next Greater Element I',lc:496,d:'easy',mu:true},{tx:'Largest Rectangle in Histogram',lc:84,d:'hard',tag:true},{tx:'Sum of Subarray Minimums',lc:907,d:'med'},{tx:'Next Greater Element II circular',lc:503,d:'med'}]
+    }
+   ]
+  },
+  {id:'linked',ph:2,icon:'⬡',title:'Linked Lists',phase:'Phase 2 — Core DS',
+   summary:'Fast/slow pointer (Floyd\'s algorithm) is the key technique. Know how to reverse a list cold — it\'s the building block for 5+ other problems.',
+   concepts:[
+    {t:'Fast & Slow Pointers',
+     why:'Detecting a cycle requires comparing positions over time. Naive approach: store all visited nodes in a HashSet O(n) space. Fast/slow pointer detects cycle in O(1) space — the fast pointer laps the slow pointer if there is a cycle.',
+     what:'Two pointers at different speeds. Fast moves 2 steps per iteration, slow moves 1. If they ever point to the same node — there is a cycle. If fast reaches null — no cycle.',
+     steps:['Initialize fast=head, slow=head','Loop: fast=fast.next.next, slow=slow.next','If fast==slow → cycle detected','If fast==null or fast.next==null → no cycle','For cycle start: reset one pointer to head, move both 1 step at a time → they meet at cycle start'],
+     code:`<span class="cm">// Linked list cycle II — find cycle start</span>
+<span class="kw">public</span> ListNode <span class="fn">detectCycle</span>(ListNode head) {
+    ListNode fast = head, slow = head;
+
+    <span class="cm">// Phase 1: detect meeting point</span>
+    <span class="kw">while</span> (fast != <span class="kw">null</span> && fast.next != <span class="kw">null</span>) {
+        fast = fast.next.next;
+        slow = slow.next;
+        <span class="kw">if</span> (fast == slow) <span class="kw">break</span>;
+    }
+    <span class="kw">if</span> (fast == <span class="kw">null</span> || fast.next == <span class="kw">null</span>) <span class="kw">return null</span>;
+
+    <span class="cm">// Phase 2: find cycle start — reset slow to head</span>
+    slow = head;
+    <span class="kw">while</span> (slow != fast) {
+        slow = slow.next;
+        fast = fast.next; <span class="cm">// both move 1 step now</span>
+    }
+    <span class="kw">return</span> slow; <span class="cm">// cycle start</span>
+}`,
+     complexity:[['Detect Cycle','O(n)','O(1)'],['Find Cycle Start','O(n)','O(1)'],['Middle of List','O(n)','O(1)']],
+     tip:'For finding the middle: when fast reaches end, slow is at the middle. This is used as a sub-step in Reorder List and Palindrome Linked List.',
+     qs:[{tx:'Linked List Cycle',lc:141,d:'easy',mu:true},{tx:'Linked List Cycle II – find start',lc:142,d:'med',tag:true},{tx:'Middle of the Linked List',lc:876,d:'easy',mu:true},{tx:'Reorder List',lc:143,d:'med',tag:true}]
+    },
+    {t:'Reversal & Pointer Manipulation',
+     why:'Reversing a linked list is the building block for Palindrome List, Reorder List, Reverse Nodes in K-Group. Must do it in place (O(1) space).',
+     what:'Use three pointers: prev, curr, next. At each step: save next, point curr.next to prev, advance prev and curr.',
+     steps:['prev = null, curr = head','Save next = curr.next','Set curr.next = prev (reverse the link)','Move prev = curr, curr = next','Repeat until curr is null → prev is new head'],
+     code:`<span class="cm">// Reverse linked list</span>
+<span class="kw">public</span> ListNode <span class="fn">reverseList</span>(ListNode head) {
+    ListNode prev = <span class="kw">null</span>, curr = head;
+    <span class="kw">while</span> (curr != <span class="kw">null</span>) {
+        ListNode next = curr.next; <span class="cm">// save next FIRST</span>
+        curr.next = prev;          <span class="cm">// reverse link</span>
+        prev = curr;               <span class="cm">// advance prev</span>
+        curr = next;               <span class="cm">// advance curr</span>
+    }
+    <span class="kw">return</span> prev; <span class="cm">// prev is new head</span>
+}
+
+<span class="cm">// LRU Cache — HashMap + Doubly Linked List</span>
+<span class="cm">// LinkedHashMap(capacity, 0.75f, true) handles this automatically</span>
+<span class="cm">// accessOrder=true maintains LRU order</span>`,
+     complexity:[['Reverse List','O(n)','O(1)'],['Merge Two Sorted','O(n+m)','O(1)'],['Remove Nth From End','O(n)','O(1)'],['LRU Cache','O(1) get/put','O(capacity)']],
+     tip:'For Remove Nth from End: use two pointers N apart. When the leading pointer hits null, the trailing pointer is at the node to remove.',
+     qs:[{tx:'Reverse Linked List',lc:206,d:'easy',tag:true,mu:true},{tx:'Merge Two Sorted Lists',lc:21,d:'easy',mu:true},{tx:'Remove Nth Node From End',lc:19,d:'med',mu:true},{tx:'LRU Cache',lc:146,d:'med',tag:true,mu:true},{tx:'Merge K Sorted Lists',lc:23,d:'hard',tag:true}]
+    }
+   ]
+  },
+  {id:'trees',ph:2,icon:'⊕',title:'Trees & BST',phase:'Phase 2 — Core DS',
+   summary:'The most common interview topic at senior level. Every tree problem has a recursive pattern: solve for left subtree, solve for right, combine at current node.',
+   concepts:[
+    {t:'DFS Traversals',
+     why:'The order you visit nodes determines what problems you can solve. Inorder of a BST gives sorted output. Preorder is used to serialize/clone. Postorder processes children before parent (for deletion, size calculation).',
+     what:'All three are the same recursive structure — only the position of the "process current node" step changes.',
+     steps:['Inorder: left → PROCESS → right (BST → sorted output)','Preorder: PROCESS → left → right (useful for copying tree)','Postorder: left → right → PROCESS (useful for deleting or computing size)','Base case: if node is null, return immediately'],
+     code:`<span class="cm">// All three traversals — spot the only difference</span>
+<span class="kw">void</span> <span class="fn">inorder</span>(TreeNode root) {
+    <span class="kw">if</span> (root == <span class="kw">null</span>) <span class="kw">return</span>;
+    <span class="fn">inorder</span>(root.left);
+    process(root.val);      <span class="cm">// ← middle</span>
+    <span class="fn">inorder</span>(root.right);
+}
+<span class="kw">void</span> <span class="fn">preorder</span>(TreeNode root) {
+    <span class="kw">if</span> (root == <span class="kw">null</span>) <span class="kw">return</span>;
+    process(root.val);      <span class="cm">// ← first</span>
+    <span class="fn">preorder</span>(root.left);
+    <span class="fn">preorder</span>(root.right);
+}
+<span class="kw">void</span> <span class="fn">postorder</span>(TreeNode root) {
+    <span class="kw">if</span> (root == <span class="kw">null</span>) <span class="kw">return</span>;
+    <span class="fn">postorder</span>(root.left);
+    <span class="fn">postorder</span>(root.right);
+    process(root.val);      <span class="cm">// ← last</span>
+}`,
+     complexity:[['All traversals','O(n)','O(h) h=height'],['BST inorder','O(n)','O(h)']],
+     tip:'For your tree: 1→2→3→2→4→5→6→3→7. Inorder: 4 2 5 1 6 3 7. Preorder: 1 2 4 5 3 6 7. Postorder: 4 5 2 6 7 3 1.',
+     qs:[{tx:'Binary Tree Inorder Traversal',lc:94,d:'easy',mu:true},{tx:'Binary Tree Preorder Traversal',lc:144,d:'easy',mu:true},{tx:'Binary Tree Postorder Traversal',lc:145,d:'easy',mu:true}]
+    },
+    {t:'BFS / Level Order',
+     why:'Level-order traversal visits nodes floor by floor. Required for: shortest path in a tree, right side view, average per level, connecting nodes at the same depth.',
+     what:'Use a Queue. The key trick: capture the queue size BEFORE the inner loop. This tells you how many nodes are on the current level before you start adding children.',
+     steps:['Add root to queue','While queue not empty: capture levelSize = queue.size()','Inner loop runs exactly levelSize times (processes one full level)','For each node popped: add its children to queue','Store level results, then move to next level'],
+     code:`<span class="cm">// Level order — groups nodes by level</span>
+<span class="kw">public</span> List&lt;List&lt;Integer&gt;&gt; <span class="fn">levelOrder</span>(TreeNode root) {
+    List&lt;List&lt;Integer&gt;&gt; result = <span class="kw">new</span> ArrayList&lt;&gt;();
+    <span class="kw">if</span> (root == <span class="kw">null</span>) <span class="kw">return</span> result;
+    Queue&lt;TreeNode&gt; q = <span class="kw">new</span> LinkedList&lt;&gt;();
+    q.<span class="fn">offer</span>(root);
+
+    <span class="kw">while</span> (!q.<span class="fn">isEmpty</span>()) {
+        <span class="kw">int</span> size = q.size(); <span class="cm">// ← CRITICAL: capture before inner loop</span>
+        List&lt;Integer&gt; level = <span class="kw">new</span> ArrayList&lt;&gt;();
+        <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nu">0</span>; i < size; i++) {
+            TreeNode node = q.<span class="fn">poll</span>();
+            level.<span class="fn">add</span>(node.val);
+            <span class="kw">if</span> (node.left != <span class="kw">null</span>) q.<span class="fn">offer</span>(node.left);
+            <span class="kw">if</span> (node.right != <span class="kw">null</span>) q.<span class="fn">offer</span>(node.right);
+        }
+        result.<span class="fn">add</span>(level);
+    }
+    <span class="kw">return</span> result;
+}`,
+     complexity:[['Level Order','O(n)','O(w) w=max width'],['Right Side View','O(n)','O(w)'],['Zigzag Order','O(n)','O(w)']],
+     tip:'Right Side View: just take the LAST element of each level list. Zigzag: reverse alternate levels.',
+     qs:[{tx:'Binary Tree Level Order Traversal',lc:102,d:'med',tag:true,mu:true},{tx:'Binary Tree Zigzag Level Order',lc:103,d:'med',tag:true},{tx:'Right Side View',lc:199,d:'med',tag:true,mu:true},{tx:'Average of Levels',lc:637,d:'easy',mu:true}]
+    },
+    {t:'Tree Recursion Pattern',
+     why:'Most tree problems reduce to: "what do I need from my left subtree? What from my right? How do I combine them at the current node?" Once you see this, every tree problem has the same skeleton.',
+     what:'Define a recursive function that returns what the parent needs. Base case: null node returns a sensible default. Recursive case: combine left and right answers.',
+     steps:['Define return type: what does parent need from this subtree?','Handle null (base case): return 0, false, null, etc.','Recursively get left answer and right answer','Combine: update global answer if needed, return what parent needs'],
+     code:`<span class="cm">// Diameter of binary tree</span>
+<span class="kw">int</span> maxDiameter = <span class="nu">0</span>;
+
+<span class="kw">public int</span> <span class="fn">diameterOfBinaryTree</span>(TreeNode root) {
+    <span class="fn">depth</span>(root);
+    <span class="kw">return</span> maxDiameter;
+}
+
+<span class="kw">private int</span> <span class="fn">depth</span>(TreeNode node) {
+    <span class="kw">if</span> (node == <span class="kw">null</span>) <span class="kw">return</span> <span class="nu">0</span>;
+    <span class="kw">int</span> left = <span class="fn">depth</span>(node.left);
+    <span class="kw">int</span> right = <span class="fn">depth</span>(node.right);
+    <span class="cm">// Diameter through current node = left + right</span>
+    maxDiameter = Math.<span class="fn">max</span>(maxDiameter, left + right);
+    <span class="cm">// Return height to parent = 1 + max of children</span>
+    <span class="kw">return</span> <span class="nu">1</span> + Math.<span class="fn">max</span>(left, right);
+}`,
+     complexity:[['Max Depth','O(n)','O(h)'],['Diameter','O(n)','O(h)'],['Max Path Sum','O(n)','O(h)'],['Validate BST','O(n)','O(h)']],
+     tip:'The validate BST trap: checking only immediate children is WRONG. You must pass min/max bounds down: validate(node.left, min, node.val) and validate(node.right, node.val, max).',
+     qs:[{tx:'Maximum Depth of Binary Tree',lc:104,d:'easy',tag:true,mu:true},{tx:'Diameter of Binary Tree',lc:543,d:'easy',tag:true,mu:true},{tx:'Balanced Binary Tree',lc:110,d:'easy',mu:true},{tx:'Binary Tree Maximum Path Sum',lc:124,d:'hard',tag:true},{tx:'Validate Binary Search Tree',lc:98,d:'med',tag:true,mu:true},{tx:'Kth Smallest in BST',lc:230,d:'med',tag:true},{tx:'Serialize & Deserialize Binary Tree',lc:297,d:'hard',tag:true}]
+    }
+   ]
+  },
+  {id:'graphs',ph:3,icon:'◎',title:'Graphs & BFS/DFS',phase:'Phase 3 — Advanced',
+   summary:'Highest priority topic at senior level. Grids are implicit graphs. BFS gives shortest path. DFS gives connectivity and cycle detection. Master both.',
+   concepts:[
+    {t:'BFS on Grids',
+     why:'Grid problems (islands, shortest path, spreading) are graph problems in disguise. Each cell is a node, adjacent cells are edges. BFS finds shortest path in unweighted graphs — DFS does not.',
+     what:'Use a Queue. Add starting cell(s). Mark visited WHEN you enqueue (not when you dequeue) — otherwise you\'ll add duplicates and get O(n²) or worse.',
+     steps:['Mark starting cell visited, add to queue','While queue not empty: pop cell','For each of 4 directions: check bounds, check not visited, check not blocked','If valid: mark visited, add to queue, record distance = parent + 1','Continue until target found or queue empty'],
+     code:`<span class="cm">// Shortest path in binary matrix</span>
+<span class="kw">public int</span> <span class="fn">shortestPath</span>(<span class="kw">int</span>[][] grid) {
+    <span class="kw">int</span> n = grid.length;
+    <span class="kw">if</span> (grid[<span class="nu">0</span>][<span class="nu">0</span>]==<span class="nu">1</span> || grid[n-<span class="nu">1</span>][n-<span class="nu">1</span>]==<span class="nu">1</span>) <span class="kw">return</span> -<span class="nu">1</span>;
+    <span class="kw">int</span>[][] dirs = {{<span class="nu">0</span>,<span class="nu">1</span>},{<span class="nu">0</span>,-<span class="nu">1</span>},{<span class="nu">1</span>,<span class="nu">0</span>},{-<span class="nu">1</span>,<span class="nu">0</span>},{<span class="nu">1</span>,<span class="nu">1</span>},{<span class="nu">1</span>,-<span class="nu">1</span>},{-<span class="nu">1</span>,<span class="nu">1</span>},{-<span class="nu">1</span>,-<span class="nu">1</span>}};
+    Queue&lt;<span class="kw">int</span>[]&gt; q = <span class="kw">new</span> LinkedList&lt;&gt;();
+    q.<span class="fn">offer</span>(<span class="kw">new int</span>[]{<span class="nu">0</span>,<span class="nu">0</span>,<span class="nu">1</span>}); <span class="cm">// row, col, distance</span>
+    grid[<span class="nu">0</span>][<span class="nu">0</span>] = <span class="nu">1</span>; <span class="cm">// mark visited by setting to 1</span>
+
+    <span class="kw">while</span> (!q.<span class="fn">isEmpty</span>()) {
+        <span class="kw">int</span>[] cur = q.<span class="fn">poll</span>();
+        <span class="kw">if</span> (cur[<span class="nu">0</span>]==n-<span class="nu">1</span> && cur[<span class="nu">1</span>]==n-<span class="nu">1</span>) <span class="kw">return</span> cur[<span class="nu">2</span>];
+        <span class="kw">for</span> (<span class="kw">int</span>[] d : dirs) {
+            <span class="kw">int</span> r=cur[<span class="nu">0</span>]+d[<span class="nu">0</span>], c=cur[<span class="nu">1</span>]+d[<span class="nu">1</span>];
+            <span class="kw">if</span> (r>=<span class="nu">0</span>&&r<n&&c>=<span class="nu">0</span>&&c<n&&grid[r][c]==<span class="nu">0</span>) {
+                grid[r][c]=<span class="nu">1</span>; <span class="cm">// mark visited WHEN enqueued</span>
+                q.<span class="fn">offer</span>(<span class="kw">new int</span>[]{r,c,cur[<span class="nu">2</span>]+<span class="nu">1</span>});
+            }
+        }
+    }
+    <span class="kw">return</span> -<span class="nu">1</span>;
+}`,
+     complexity:[['Number of Islands','O(m·n)','O(m·n)'],['Rotting Oranges','O(m·n)','O(m·n)'],['Shortest Path','O(m·n)','O(m·n)']],
+     tip:'Mark visited WHEN ENQUEUING, not when dequeuing. This is the #1 BFS mistake — marking on dequeue lets the same cell get added to the queue multiple times.',
+     qs:[{tx:'Number of Islands',lc:200,d:'med',tag:true,mu:true},{tx:'Rotting Oranges',lc:994,d:'med',tag:true,mu:true},{tx:'Shortest Path in Binary Matrix',lc:1091,d:'med',tag:true,mu:true},{tx:'01 Matrix',lc:542,d:'med',mu:true},{tx:'Walls and Gates',lc:286,d:'med',tag:true}]
+    },
+    {t:'DFS & Topological Sort',
+     why:'DFS finds all nodes reachable from a source, detects cycles, and determines ordering. Topological sort determines the order to complete tasks with prerequisites.',
+     what:'For cycle detection: use 3 states (unvisited, in-progress, done). If you reach an in-progress node → cycle. For topological sort: DFS and add to result stack AFTER visiting all neighbors.',
+     steps:['3 colors: WHITE=0 (unvisited), GRAY=1 (in stack), BLACK=2 (done)','Start DFS from each unvisited node','When visiting: mark GRAY','Visit all neighbors: if GRAY neighbor found → cycle!','When done: mark BLACK, add to topological order'],
+     code:`<span class="cm">// Course Schedule — can you finish all courses?</span>
+<span class="kw">public boolean</span> <span class="fn">canFinish</span>(<span class="kw">int</span> n, <span class="kw">int</span>[][] prereqs) {
+    List&lt;List&lt;Integer&gt;&gt; graph = <span class="kw">new</span> ArrayList&lt;&gt;();
+    <span class="kw">for</span> (<span class="kw">int</span> i=<span class="nu">0</span>;i<n;i++) graph.<span class="fn">add</span>(<span class="kw">new</span> ArrayList&lt;&gt;());
+    <span class="kw">for</span> (<span class="kw">int</span>[] p : prereqs) graph.<span class="fn">get</span>(p[<span class="nu">1</span>]).<span class="fn">add</span>(p[<span class="nu">0</span>]);
+
+    <span class="kw">int</span>[] state = <span class="kw">new int</span>[n]; <span class="cm">// 0=unvisited,1=visiting,2=done</span>
+
+    <span class="kw">for</span> (<span class="kw">int</span> i=<span class="nu">0</span>;i<n;i++)
+        <span class="kw">if</span> (!<span class="fn">dfs</span>(i, graph, state)) <span class="kw">return false</span>;
+    <span class="kw">return true</span>;
+}
+
+<span class="kw">boolean</span> <span class="fn">dfs</span>(<span class="kw">int</span> node, List&lt;List&lt;Integer&gt;&gt; g, <span class="kw">int</span>[] state) {
+    <span class="kw">if</span> (state[node]==<span class="nu">1</span>) <span class="kw">return false</span>; <span class="cm">// cycle!</span>
+    <span class="kw">if</span> (state[node]==<span class="nu">2</span>) <span class="kw">return true</span>;  <span class="cm">// already processed</span>
+    state[node] = <span class="nu">1</span>; <span class="cm">// mark as visiting</span>
+    <span class="kw">for</span> (<span class="kw">int</span> next : g.<span class="fn">get</span>(node))
+        <span class="kw">if</span> (!<span class="fn">dfs</span>(next, g, state)) <span class="kw">return false</span>;
+    state[node] = <span class="nu">2</span>; <span class="cm">// mark as done</span>
+    <span class="kw">return true</span>;
+}`,
+     complexity:[['Course Schedule','O(V+E)','O(V+E)'],['Course Schedule II','O(V+E)','O(V+E)'],['Number of Provinces','O(V+E)','O(V)']],
+     tip:'Topological sort alternative: Kahn\'s algorithm (BFS). Track in-degrees. Start with all nodes of in-degree 0. Process and decrement neighbors. If all nodes processed → no cycle.',
+     qs:[{tx:'Course Schedule – cycle detection',lc:207,d:'med',tag:true,mu:true},{tx:'Course Schedule II – topo sort',lc:210,d:'med',tag:true},{tx:'Number of Provinces',lc:547,d:'med',mu:true},{tx:'Clone Graph',lc:133,d:'med',mu:true}]
+    },
+    {t:'Dijkstra — Weighted Shortest Path',
+     why:'BFS finds shortest path by hop count (unweighted). Dijkstra finds shortest path by total weight (weighted). Uses a min-heap to always process the nearest unvisited node.',
+     what:'Greedy algorithm: always expand the cheapest unvisited node. Use a min-heap of (cost, node). Once a node is popped, its shortest distance is finalized.',
+     steps:['Initialize dist[] = infinity for all, dist[start] = 0','Add (0, start) to min-heap','Pop minimum cost node','If already visited with lower cost → skip','For each neighbor: if cur_cost + edge < dist[neighbor] → update and add to heap'],
+     code:`<span class="cm">// Network delay time — shortest path to all nodes</span>
+<span class="kw">public int</span> <span class="fn">networkDelayTime</span>(<span class="kw">int</span>[][] times, <span class="kw">int</span> n, <span class="kw">int</span> k) {
+    Map&lt;Integer,List&lt;<span class="kw">int</span>[]&gt;&gt; graph = <span class="kw">new</span> HashMap&lt;&gt;();
+    <span class="kw">for</span> (<span class="kw">int</span>[] t:times)
+        graph.<span class="fn">computeIfAbsent</span>(t[<span class="nu">0</span>],x->new ArrayList&lt;&gt;()).<span class="fn">add</span>(<span class="kw">new int</span>[]{t[<span class="nu">1</span>],t[<span class="nu">2</span>]});
+
+    <span class="kw">int</span>[] dist = <span class="kw">new int</span>[n+<span class="nu">1</span>];
+    Arrays.<span class="fn">fill</span>(dist, Integer.MAX_VALUE);
+    dist[k] = <span class="nu">0</span>;
+
+    PriorityQueue&lt;<span class="kw">int</span>[]&gt; pq = <span class="kw">new</span> PriorityQueue&lt;&gt;((a,b)->a[<span class="nu">0</span>]-b[<span class="nu">0</span>]);
+    pq.<span class="fn">offer</span>(<span class="kw">new int</span>[]{<span class="nu">0</span>,k}); <span class="cm">// cost, node</span>
+
+    <span class="kw">while</span> (!pq.<span class="fn">isEmpty</span>()) {
+        <span class="kw">int</span>[] cur = pq.<span class="fn">poll</span>();
+        <span class="kw">if</span> (cur[<span class="nu">0</span>] > dist[cur[<span class="nu">1</span>]]) <span class="kw">continue</span>; <span class="cm">// stale entry</span>
+        <span class="kw">for</span> (<span class="kw">int</span>[] nb : graph.<span class="fn">getOrDefault</span>(cur[<span class="nu">1</span>], new ArrayList&lt;&gt;())) {
+            <span class="kw">int</span> newDist = cur[<span class="nu">0</span>] + nb[<span class="nu">1</span>];
+            <span class="kw">if</span> (newDist < dist[nb[<span class="nu">0</span>]]) {
+                dist[nb[<span class="nu">0</span>]] = newDist;
+                pq.<span class="fn">offer</span>(<span class="kw">new int</span>[]{newDist, nb[<span class="nu">0</span>]});
+            }
+        }
+    }
+    <span class="kw">int</span> ans = Arrays.<span class="fn">stream</span>(dist, <span class="nu">1</span>, n+<span class="nu">1</span>).<span class="fn">max</span>().<span class="fn">getAsInt</span>();
+    <span class="kw">return</span> ans == Integer.MAX_VALUE ? -<span class="nu">1</span> : ans;
+}`,
+     complexity:[['Dijkstra','O((V+E) log V)','O(V+E)']],
+     tip:'Key: skip stale heap entries with "if cur_cost > dist[node] → continue". Multiple copies of the same node may be in the heap with different costs — only the first pop (cheapest) is valid.',
+     qs:[{tx:'Network Delay Time',lc:743,d:'med',tag:true,mu:true},{tx:'Path With Minimum Effort',lc:1631,d:'med',tag:true},{tx:'Cheapest Flights Within K Stops',lc:787,d:'med',tag:true}]
+    }
+   ]
+  },
+  {id:'binary',ph:3,icon:'⟨⟩',title:'Binary Search',phase:'Phase 3 — Advanced',
+   summary:'Goes beyond sorted arrays. Binary search on the ANSWER is the advanced pattern: define a monotonic condition, binary search the answer range.',
+   concepts:[
+    {t:'Classic Binary Search',
+     why:'Linear search is O(n). Binary search on sorted data is O(log n). Every time you halve the search space — 1 billion elements needs only 30 iterations.',
+     what:'Maintain lo and hi pointers. Calculate mid. Based on comparison, eliminate half the search space by moving lo or hi.',
+     steps:['lo=0, hi=n-1','mid = lo + (hi-lo)/2  ← avoids integer overflow','If nums[mid] == target → found','If nums[mid] < target → lo = mid+1 (target in right half)','If nums[mid] > target → hi = mid-1 (target in left half)','Loop while lo <= hi'],
+     code:`<span class="cm">// Search in rotated sorted array</span>
+<span class="kw">public int</span> <span class="fn">search</span>(<span class="kw">int</span>[] nums, <span class="kw">int</span> target) {
+    <span class="kw">int</span> lo = <span class="nu">0</span>, hi = nums.length - <span class="nu">1</span>;
+    <span class="kw">while</span> (lo <= hi) {
+        <span class="kw">int</span> mid = lo + (hi - lo) / <span class="nu">2</span>;
+        <span class="kw">if</span> (nums[mid] == target) <span class="kw">return</span> mid;
+
+        <span class="cm">// Left half is sorted</span>
+        <span class="kw">if</span> (nums[lo] <= nums[mid]) {
+            <span class="kw">if</span> (target >= nums[lo] && target < nums[mid])
+                hi = mid - <span class="nu">1</span>; <span class="cm">// target in sorted left</span>
+            <span class="kw">else</span> lo = mid + <span class="nu">1</span>;
+        } <span class="kw">else</span> { <span class="cm">// Right half is sorted</span>
+            <span class="kw">if</span> (target > nums[mid] && target <= nums[hi])
+                lo = mid + <span class="nu">1</span>; <span class="cm">// target in sorted right</span>
+            <span class="kw">else</span> hi = mid - <span class="nu">1</span>;
+        }
+    }
+    <span class="kw">return</span> -<span class="nu">1</span>;
+}`,
+     complexity:[['Binary Search','O(log n)','O(1)'],['Search Rotated Array','O(log n)','O(1)'],['Find Peak Element','O(log n)','O(1)']],
+     tip:'Use mid = lo + (hi - lo) / 2 not (lo + hi) / 2. The second form can overflow when lo and hi are both large integers.',
+     qs:[{tx:'Binary Search',lc:704,d:'easy',mu:true},{tx:'Find Minimum in Rotated Sorted Array',lc:153,d:'med',tag:true,mu:true},{tx:'Search in Rotated Sorted Array',lc:33,d:'med',tag:true,mu:true},{tx:'Find Peak Element',lc:162,d:'med',mu:true}]
+    },
+    {t:'Binary Search on Answer',
+     why:'The most powerful binary search pattern. Instead of searching for a value in an array, you binary search the answer space. Works when: the answer is a number with a range, and you can write a function canAchieve(x) that is monotonic (if x works, x+1 works too, or vice versa).',
+     what:'Define the search space (lo = min possible answer, hi = max possible answer). Write a predicate function. Binary search for the boundary between true and false.',
+     steps:['Define lo = minimum possible answer, hi = maximum possible answer','Write predicate: canAchieve(mid) → true/false','Binary search: if canAchieve(mid) → mid might be answer, try smaller (hi=mid)','If not → need larger (lo=mid+1)','Return lo when lo==hi'],
+     code:`<span class="cm">// Koko eating bananas — minimum speed to finish in h hours</span>
+<span class="kw">public int</span> <span class="fn">minEatingSpeed</span>(<span class="kw">int</span>[] piles, <span class="kw">int</span> h) {
+    <span class="kw">int</span> lo = <span class="nu">1</span>, hi = Arrays.<span class="fn">stream</span>(piles).<span class="fn">max</span>().<span class="fn">getAsInt</span>();
+
+    <span class="kw">while</span> (lo < hi) {
+        <span class="kw">int</span> mid = lo + (hi - lo) / <span class="nu">2</span>;
+        <span class="kw">if</span> (<span class="fn">canFinish</span>(piles, mid, h))
+            hi = mid;       <span class="cm">// mid works, try smaller</span>
+        <span class="kw">else</span>
+            lo = mid + <span class="nu">1</span>;  <span class="cm">// too slow, need faster</span>
+    }
+    <span class="kw">return</span> lo;
+}
+
+<span class="kw">boolean</span> <span class="fn">canFinish</span>(<span class="kw">int</span>[] piles, <span class="kw">int</span> speed, <span class="kw">int</span> h) {
+    <span class="kw">int</span> hours = <span class="nu">0</span>;
+    <span class="kw">for</span> (<span class="kw">int</span> p : piles) hours += (p + speed - <span class="nu">1</span>) / speed;
+    <span class="kw">return</span> hours <= h;
+}`,
+     complexity:[['Binary Search on Answer','O(n log(max))','O(1)']],
+     tip:'The predicate must be monotonic: if speed=5 works, speed=6 also works. This monotonic property is what makes binary search valid on the answer space.',
+     qs:[{tx:'Koko Eating Bananas',lc:875,d:'med',tag:true,mu:true},{tx:'Capacity To Ship Packages',lc:1011,d:'med',tag:true},{tx:'Split Array Largest Sum',lc:410,d:'hard',tag:true},{tx:'Time Based Key-Value Store',lc:981,d:'med',tag:true}]
+    }
+   ]
+  },
+  {id:'heap',ph:3,icon:'△',title:'Heap / Priority Queue',phase:'Phase 3 — Advanced',
+   summary:'PriorityQueue in Java is a min-heap by default. Top-K problems and real-time median are the two core patterns.',
+   concepts:[
+    {t:'Top-K Pattern',
+     why:'Finding K largest/most frequent elements. Sorting the whole array is O(n log n). Using a min-heap of size K is O(n log K) — much better when K is small.',
+     what:'Maintain a min-heap of size exactly K. For each new element: if heap has room, add it. If new element > smallest in heap (heap.peek()), replace it.',
+     steps:['Create PriorityQueue (min-heap)','Add first K elements','For remaining elements: if element > heap.peek() → poll() then offer()','At end: heap contains the K largest elements'],
+     code:`<span class="cm">// Kth largest in array</span>
+<span class="kw">public int</span> <span class="fn">findKthLargest</span>(<span class="kw">int</span>[] nums, <span class="kw">int</span> k) {
+    PriorityQueue&lt;Integer&gt; minHeap = <span class="kw">new</span> PriorityQueue&lt;&gt;();
+    <span class="kw">for</span> (<span class="kw">int</span> n : nums) {
+        minHeap.<span class="fn">offer</span>(n);
+        <span class="kw">if</span> (minHeap.size() > k)
+            minHeap.<span class="fn">poll</span>(); <span class="cm">// evict smallest</span>
+    }
+    <span class="kw">return</span> minHeap.<span class="fn">peek</span>(); <span class="cm">// smallest of the K largest</span>
+}
+
+<span class="cm">// Max-heap: new PriorityQueue&lt;&gt;(Collections.reverseOrder())
+// Custom comparator: new PriorityQueue&lt;&gt;((a,b) -> b-a)</span>`,
+     complexity:[['Kth Largest','O(n log k)','O(k)'],['Top K Frequent','O(n log k)','O(n)'],['K Closest Points','O(n log k)','O(k)'],['Merge K Lists','O(n log k)','O(k)']],
+     tip:'Java PriorityQueue is a MIN-heap. For max-heap: Collections.reverseOrder(). For top-K LARGEST: use min-heap of size K (counterintuitive but correct).',
+     qs:[{tx:'Kth Largest Element in an Array',lc:215,d:'med',tag:true,mu:true},{tx:'Top K Frequent Elements',lc:347,d:'med',tag:true,mu:true},{tx:'K Closest Points to Origin',lc:973,d:'med',tag:true,mu:true},{tx:'Merge K Sorted Lists',lc:23,d:'hard',tag:true,mu:true}]
+    },
+    {t:'Two-Heap Median',
+     why:'Finding median in a static array is O(n log n). For a dynamic stream where numbers keep coming in, two heaps give O(log n) per insertion and O(1) median query.',
+     what:'Two heaps: a max-heap for the lower half, a min-heap for the upper half. Keep them balanced (sizes differ by at most 1). Median is always at the top of one or both heaps.',
+     steps:['Add number to max-heap (lower half)','Balance: if max-heap.peek() > min-heap.peek() → move top of max to min','Re-balance sizes: if sizes differ by more than 1, move top of larger to smaller','Median: if equal sizes → average of both tops. If unequal → top of larger heap'],
+     code:`<span class="kw">class</span> <span class="cl">MedianFinder</span> {
+    PriorityQueue&lt;Integer&gt; lo = <span class="kw">new</span> PriorityQueue&lt;&gt;(Collections.reverseOrder()); <span class="cm">// max</span>
+    PriorityQueue&lt;Integer&gt; hi = <span class="kw">new</span> PriorityQueue&lt;&gt;(); <span class="cm">// min</span>
+
+    <span class="kw">public void</span> <span class="fn">addNum</span>(<span class="kw">int</span> num) {
+        lo.<span class="fn">offer</span>(num);
+        <span class="cm">// Ensure max of lower ≤ min of upper</span>
+        <span class="kw">if</span> (!hi.<span class="fn">isEmpty</span>() && lo.<span class="fn">peek</span>() > hi.<span class="fn">peek</span>())
+            hi.<span class="fn">offer</span>(lo.<span class="fn">poll</span>());
+        <span class="cm">// Balance sizes</span>
+        <span class="kw">if</span> (lo.size() > hi.size() + <span class="nu">1</span>) hi.<span class="fn">offer</span>(lo.<span class="fn">poll</span>());
+        <span class="kw">if</span> (hi.size() > lo.size()) lo.<span class="fn">offer</span>(hi.<span class="fn">poll</span>());
+    }
+
+    <span class="kw">public double</span> <span class="fn">findMedian</span>() {
+        <span class="kw">if</span> (lo.size() == hi.size())
+            <span class="kw">return</span> (lo.<span class="fn">peek</span>() + hi.<span class="fn">peek</span>()) / <span class="nu">2.0</span>;
+        <span class="kw">return</span> lo.<span class="fn">peek</span>();
+    }
+}`,
+     complexity:[['addNum','O(log n)','O(n)'],['findMedian','O(1)','—']],
+     tip:'lo is max-heap (reversed), hi is min-heap. lo always has equal or one more element than hi. Median is always lo.peek() when sizes differ, or average of both tops when equal.',
+     qs:[{tx:'Find Median from Data Stream',lc:295,d:'hard',tag:true,mu:true},{tx:'Task Scheduler',lc:621,d:'med',tag:true}]
+    }
+   ]
+  },
+  {id:'dp',ph:4,icon:'◈',title:'Dynamic Programming',phase:'Phase 4 — Hard Patterns',
+   summary:'Define dp[i] clearly before writing any code. Everything else follows. Start with 1D, then 2D. The pattern: overlapping subproblems + optimal substructure.',
+   concepts:[
+    {t:'1D DP — Linear',
+     why:'When a problem has overlapping subproblems (same sub-calculation needed multiple times), memoization or bottom-up DP eliminates redundant work. Fibonacci without DP is O(2ⁿ), with DP it\'s O(n).',
+     what:'Define dp[i] = answer for subproblem of size i. Write the recurrence: how does dp[i] relate to dp[i-1] and dp[i-2]? Fill left to right.',
+     steps:['Define what dp[i] means precisely (this is the hard part)','Identify base cases: dp[0], dp[1]','Write recurrence: dp[i] = f(dp[i-1], dp[i-2], ...)','Fill array left to right','Return dp[n]'],
+     code:`<span class="cm">// House Robber — dp[i] = max money robbing houses 0..i</span>
+<span class="kw">public int</span> <span class="fn">rob</span>(<span class="kw">int</span>[] nums) {
+    <span class="kw">if</span> (nums.length == <span class="nu">1</span>) <span class="kw">return</span> nums[<span class="nu">0</span>];
+    <span class="kw">int</span>[] dp = <span class="kw">new int</span>[nums.length];
+    dp[<span class="nu">0</span>] = nums[<span class="nu">0</span>];
+    dp[<span class="nu">1</span>] = Math.<span class="fn">max</span>(nums[<span class="nu">0</span>], nums[<span class="nu">1</span>]);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nu">2</span>; i < nums.length; i++) {
+        <span class="cm">// Either rob house i (skip i-1) or skip house i</span>
+        dp[i] = Math.<span class="fn">max</span>(dp[i-<span class="nu">1</span>], dp[i-<span class="nu">2</span>] + nums[i]);
+    }
+    <span class="kw">return</span> dp[nums.length - <span class="nu">1</span>];
+}
+<span class="cm">// Space optimization: only need prev2 and prev1, not full array</span>`,
+     complexity:[['Climbing Stairs','O(n)','O(1) optimized'],['House Robber','O(n)','O(1) optimized'],['LIS','O(n²) basic / O(n log n) optimized','O(n)']],
+     tip:'Most 1D DP can be space-optimized to O(1) by keeping only the last 1-2 values instead of the full array.',
+     qs:[{tx:'Climbing Stairs',lc:70,d:'easy',tag:true,mu:true},{tx:'House Robber',lc:198,d:'med',mu:true},{tx:'Longest Increasing Subsequence',lc:300,d:'med',tag:true,mu:true},{tx:'Maximum Subarray (Kadane)',lc:53,d:'med',tag:true,mu:true},{tx:'Jump Game',lc:55,d:'med',mu:true}]
+    },
+    {t:'2D DP — Grids & Strings',
+     why:'When the answer for (i,j) depends on answers for (i-1,j) and (i,j-1), you need a 2D table. Common for: grid paths, string edit distance, longest common subsequence.',
+     what:'Build a 2D table where dp[i][j] = answer for subproblem involving first i chars/rows and first j chars/cols. Fill row by row, left to right.',
+     steps:['Define dp[i][j]: usually "answer for first i of A and first j of B"','Set base cases: dp[0][j] and dp[i][0] (empty string/row cases)','Fill table row by row','dp[i][j] usually depends on dp[i-1][j], dp[i][j-1], dp[i-1][j-1]','Answer is dp[m][n]'],
+     code:`<span class="cm">// Edit Distance — min operations to convert word1 to word2</span>
+<span class="kw">public int</span> <span class="fn">minDistance</span>(String w1, String w2) {
+    <span class="kw">int</span> m=w1.length(), n=w2.length();
+    <span class="kw">int</span>[][] dp = <span class="kw">new int</span>[m+<span class="nu">1</span>][n+<span class="nu">1</span>];
+
+    <span class="cm">// Base cases: convert to/from empty string</span>
+    <span class="kw">for</span> (<span class="kw">int</span> i=<span class="nu">0</span>;i<=m;i++) dp[i][<span class="nu">0</span>]=i; <span class="cm">// delete i chars</span>
+    <span class="kw">for</span> (<span class="kw">int</span> j=<span class="nu">0</span>;j<=n;j++) dp[<span class="nu">0</span>][j]=j; <span class="cm">// insert j chars</span>
+
+    <span class="kw">for</span> (<span class="kw">int</span> i=<span class="nu">1</span>;i<=m;i++) {
+        <span class="kw">for</span> (<span class="kw">int</span> j=<span class="nu">1</span>;j<=n;j++) {
+            <span class="kw">if</span> (w1.<span class="fn">charAt</span>(i-<span class="nu">1</span>)==w2.<span class="fn">charAt</span>(j-<span class="nu">1</span>))
+                dp[i][j] = dp[i-<span class="nu">1</span>][j-<span class="nu">1</span>]; <span class="cm">// chars match, no op</span>
+            <span class="kw">else</span>
+                dp[i][j] = <span class="nu">1</span> + Math.<span class="fn">min</span>(dp[i-<span class="nu">1</span>][j-<span class="nu">1</span>],  <span class="cm">// replace</span>
+                           Math.<span class="fn">min</span>(dp[i-<span class="nu">1</span>][j],      <span class="cm">// delete</span>
+                                    dp[i][j-<span class="nu">1</span>]));    <span class="cm">// insert</span>
+        }
+    }
+    <span class="kw">return</span> dp[m][n];
+}`,
+     complexity:[['Edit Distance','O(m·n)','O(m·n)'],['LCS','O(m·n)','O(m·n)'],['Coin Change','O(amount·coins)','O(amount)'],['Word Break','O(n²)','O(n)']],
+     tip:'Coin Change: dp[i] = min coins to make amount i. dp[0]=0, dp[i]=min(dp[i-coin]+1) for all coins ≤ i. Initialize dp with amount+1 (acts as infinity).',
+     qs:[{tx:'Unique Paths',lc:62,d:'med',mu:true},{tx:'Edit Distance',lc:72,d:'hard',tag:true,mu:true},{tx:'Longest Common Subsequence',lc:1143,d:'med',tag:true,mu:true},{tx:'Coin Change',lc:322,d:'med',tag:true,mu:true},{tx:'Word Break',lc:139,d:'med',tag:true,mu:true}]
+    }
+   ]
+  },
+  {id:'concurrency',ph:4,icon:'⚙',title:'Concurrency & Java Internals',phase:'Phase 4 — Java Depth',
+   summary:'Critical for staff-level platform rounds. Know thread safety, locks, and Java memory model. These are asked verbally and in code review scenarios.',
+   concepts:[
+    {t:'Thread Safety Fundamentals',
+     why:'Multiple threads accessing shared state without synchronization causes race conditions — unpredictable results that are hard to reproduce. Java provides several tools with different trade-offs.',
+     what:'Three main tools: volatile (visibility), synchronized (mutual exclusion + visibility), AtomicInteger (lock-free atomic operations). Each solves a different level of the problem.',
+     steps:['volatile: guarantees visibility across threads (reads/writes are atomic for primitives, not compound ops)','synchronized: one thread at a time, ensures visibility. Use on methods or code blocks','AtomicInteger: lock-free, uses CPU-level CAS (Compare-And-Swap). Best for counters','ConcurrentHashMap: thread-safe map without locking the whole map (segment-level locking)'],
+     code:`<span class="cm">// volatile — visibility only, NOT atomicity</span>
+<span class="kw">private volatile boolean</span> running = <span class="kw">true</span>;
+<span class="cm">// One thread sets running=false, other thread sees it immediately</span>
+<span class="cm">// But: running++ is NOT atomic with volatile</span>
+
+<span class="cm">// synchronized — mutual exclusion + visibility</span>
+<span class="kw">public synchronized void</span> <span class="fn">increment</span>() { count++; } <span class="cm">// one thread at a time</span>
+
+<span class="cm">// AtomicInteger — lock-free, best for counters</span>
+<span class="kw">private</span> AtomicInteger count = <span class="kw">new</span> AtomicInteger(<span class="nu">0</span>);
+count.<span class="fn">incrementAndGet</span>(); <span class="cm">// atomic read-modify-write</span>
+count.<span class="fn">compareAndSet</span>(expected, update); <span class="cm">// CAS operation</span>
+
+<span class="cm">// HashMap vs ConcurrentHashMap</span>
+Map&lt;K,V&gt; bad = <span class="kw">new</span> HashMap&lt;&gt;();          <span class="cm">// NOT thread-safe</span>
+Map&lt;K,V&gt; good = <span class="kw">new</span> ConcurrentHashMap&lt;&gt;(); <span class="cm">// thread-safe</span>`,
+     complexity:[['synchronized','O(1) per op','Lock overhead'],['AtomicInteger','O(1) per op','CAS, no lock'],['ConcurrentHashMap','O(1) avg','Segment lock']],
+     tip:'volatile does NOT make compound operations atomic. i++ is actually three operations: read, increment, write. Use AtomicInteger for counters, not volatile int.',
+     qs:[{tx:'Print in Order',lc:1114,d:'easy',tag:true,mu:true},{tx:'Print FooBar Alternately',lc:1115,d:'med',tag:true,mu:true},{tx:'Print Zero Even Odd',lc:1116,d:'med',tag:true},{tx:'Building H2O',lc:1117,d:'med',tag:true},{tx:'LRU Cache – thread-safe',lc:146,d:'med',tag:true,mu:true},{tx:'Design Bounded Blocking Queue',lc:1188,d:'med',tag:true}]
+    }
+   ]
+  }
 ];
 
-const FILTERS=[{k:'all',l:'All'},{k:'agoda',l:'★ Agoda only'},{k:'must',l:'Must-solve'},{k:'arrays',l:'Arrays'},{k:'strings',l:'Strings'},{k:'hashmap',l:'HashMap'},{k:'stack',l:'Stack'},{k:'linked',l:'Linked list'},{k:'trees',l:'Trees'},{k:'graphs',l:'Graphs'},{k:'binary',l:'Binary search'},{k:'heap',l:'Heap'},{k:'recursion',l:'Backtracking'},{k:'dp',l:'DP'},{k:'concurrency',l:'Concurrency'}];
+const FILTERS=[{k:'all',l:'All'},{k:'tag',l:'★ Company'},{k:'must',l:'Must-solve'},{k:'arrays',l:'Arrays'},{k:'hashmap',l:'HashMap'},{k:'stack',l:'Stack'},{k:'linked',l:'Linked List'},{k:'trees',l:'Trees'},{k:'graphs',l:'Graphs'},{k:'binary',l:'Binary Search'},{k:'heap',l:'Heap'},{k:'dp',l:'DP'},{k:'concurrency',l:'Concurrency'}];
 
 let activeF='all';
-const done=loadChecks('dsa-done');
+const done=new Set(JSON.parse(localStorage.getItem('dsa-done')||'[]'));
 
+function save(){localStorage.setItem('dsa-done',JSON.stringify([...done]))}
 function totalQ(){return DSA.reduce((a,s)=>a+s.concepts.reduce((b,c)=>b+c.qs.length,0),0)}
-function agodaQ(){return DSA.reduce((a,s)=>a+s.concepts.reduce((b,c)=>b+c.qs.filter(q=>q.ag).length,0),0)}
-function qId(sid,ci,qi){return sid+'-'+ci+'-'+qi}
+function tagQ(){return DSA.reduce((a,s)=>a+s.concepts.reduce((b,c)=>b+c.qs.filter(q=>q.tag).length,0),0)}
 
 function updateStats(){
   const total=totalQ(),d=done.size;
   document.getElementById('st-total').textContent=total;
-  document.getElementById('st-agoda').textContent=agodaQ();
+  document.getElementById('st-tag').textContent=tagQ();
   document.getElementById('st-done').textContent=d;
   document.getElementById('st-rem').textContent=total-d;
   const pct=total?Math.round(d/total*100):0;
-  document.getElementById('sb-fill').style.width=pct+'%';
-  document.getElementById('sb-pct').textContent=pct+'%';
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-pct').textContent=pct+'%';
 }
 
-function tgl(id){
-  const store=toggleCheck(id,'dsa-done');
-  done.clear();store.forEach(x=>done.add(x));
+function toggleDone(id){
+  if(done.has(id))done.delete(id);else done.add(id);
+  save();
+  const chk=document.getElementById('chk-'+id);
+  const txt=document.getElementById('txt-'+id);
+  if(chk)chk.classList.toggle('done',done.has(id));
+  if(txt)txt.classList.toggle('done',done.has(id));
   updateStats();
 }
 
-function buildSidebar(){
-  document.getElementById('sidebar-links').innerHTML=DSA.map(s=>
-    `<div class="sidebar-item" onclick="document.getElementById('sec-${s.id}').scrollIntoView({behavior:'smooth'})">${s.icon} ${s.title.replace(/^\d+\.\s*/,'')}</div>`
-  ).join('');
-}
-
 function buildFilters(){
-  document.getElementById('filter-row').innerHTML=FILTERS.map(f=>
-    `<button class="filter-btn${f.k===activeF?' on':''}" onclick="setF('${f.k}',this)">${f.l}</button>`
+  document.getElementById('filters').innerHTML=FILTERS.map(f=>
+    `<span class="fbtn${f.k===activeF?' on':''}" onclick="setF('${f.k}',this)">${f.l}</span>`
   ).join('');
 }
 
-function setF(k,btn){
-  activeF=k;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');render();
+function setF(k,el){
+  activeF=k;
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  render();
 }
 
-function phClass(ph){return['','ph1','ph2','ph3','ph4'][ph]||'ph1'}
+function switchTab(secId,ci,tab){
+  const base=`tab-${secId}-${ci}`;
+  document.querySelectorAll(`.con-tab[data-base="${base}"]`).forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll(`.con-panel[data-base="${base}"]`).forEach(p=>p.classList.remove('active'));
+  document.getElementById(`tab-${secId}-${ci}-${tab}`).classList.add('active');
+  document.getElementById(`panel-${secId}-${ci}-${tab}`).classList.add('active');
+}
+
+function toggleSec(hd){
+  const body=hd.nextElementSibling;
+  const chev=hd.querySelector('.chev');
+  body.classList.toggle('open');
+  chev.classList.toggle('open');
+}
 
 function render(){
   const srch=document.getElementById('srch').value.toLowerCase();
   const container=document.getElementById('sections');
-  container.innerHTML='';let any=false;
+  container.innerHTML='';
+  let any=false;
 
   DSA.forEach(sec=>{
-    if(activeF!=='all'&&activeF!=='agoda'&&activeF!=='must'&&sec.id!==activeF)return;
+    if(activeF!=='all'&&activeF!=='tag'&&activeF!=='must'&&sec.id!==activeF)return;
     const filtC=sec.concepts.map((c,ci)=>{
       const fqs=c.qs.filter(q=>{
-        const fm=activeF==='all'?true:activeF==='agoda'?q.ag:activeF==='must'?q.mu:true;
+        const fm=activeF==='all'?true:activeF==='tag'?q.tag:activeF==='must'?q.mu:true;
         const sm=srch===''?true:(q.tx.toLowerCase().includes(srch)||c.t.toLowerCase().includes(srch)||sec.title.toLowerCase().includes(srch));
         return fm&&sm;
       });
       return{...c,qs:fqs,ci};
-    }).filter(c=>c.qs.length>0);
-    if(!filtC.length)return;any=true;
+    }).filter(c=>c.qs.length>0||(srch===''&&activeF==='all'));
+
+    const hasConcepts = filtC.length > 0;
+    if(!hasConcepts && srch!=='')return;
+    any=true;
 
     const totalS=filtC.reduce((a,c)=>a+c.qs.length,0);
-    const agS=filtC.reduce((a,c)=>a+c.qs.filter(q=>q.ag).length,0);
+    const tagS=filtC.reduce((a,c)=>a+c.qs.filter(q=>q.tag).length,0);
     const el=document.createElement('div');
-    el.className='section '+phClass(sec.ph);el.id='sec-'+sec.id;
+    el.className=`section ph${sec.ph}`;
+    el.id='sec-'+sec.id;
+
+    const conceptsHTML=filtC.map((c,ci)=>{
+      const base=`tab-${sec.id}-${ci}`;
+      const stepsHTML=c.steps?`<ol class="step-list">${c.steps.map((s,i)=>`<li class="step-item"><div class="step-num">${i+1}</div><div>${s}</div></li>`).join('')}</ol>`:'';
+      const complexityHTML=c.complexity?`<table class="ctable"><tr><th>Problem</th><th>Time</th><th>Space</th></tr>${c.complexity.map(r=>`<tr><td>${r[0]}</td><td class="ok">${r[1]}</td><td class="good">${r[2]}</td></tr>`).join('')}</table>`:'';
+      const qsHTML=c.qs.length?`<div class="q-label">Practice questions</div><ul class="q-list">${c.qs.map((q,qi)=>{
+        const id=`${sec.id}-${ci}-${qi}`;
+        const isDone=done.has(id);
+        return`<li class="q-row"><div class="chk${isDone?' done':''}" id="chk-${id}" onclick="toggleDone('${id}')"></div><div class="q-content"><div class="q-text${isDone?' done':''}" id="txt-${id}">LC ${q.lc} — ${q.tx}</div><div class="q-badges">${q.tag?'<span class="badge b-tag">★ Company</span>':''}${q.mu?'<span class="badge b-must">must</span>':''}<span class="badge ${q.d==='easy'?'b-e':q.d==='hard'?'b-h':'b-m'}">${q.d}</span><a href="${lcUrl(q.lc)}" target="_blank" class="lc-link">↗ LeetCode</a></div></div></li>`;
+      }).join('')}</ul>`:'';
+
+      return`<div class="concept">
+        <div class="con-title">${c.t}</div>
+        <div class="con-tabs">
+          <div class="con-tab active" id="tab-${base}-why" data-base="${base}" onclick="switchTab('${sec.id}',${ci},'why')">Why it works</div>
+          <div class="con-tab" id="tab-${base}-how" data-base="${base}" onclick="switchTab('${sec.id}',${ci},'how')">How to solve</div>
+          <div class="con-tab" id="tab-${base}-code" data-base="${base}" onclick="switchTab('${sec.id}',${ci},'code')">Code</div>
+          <div class="con-tab" id="tab-${base}-qs" data-base="${base}" onclick="switchTab('${sec.id}',${ci},'qs')">Questions (${c.qs.length})</div>
+        </div>
+        <div class="con-panel active" id="panel-${base}-why" data-base="${base}">
+          <div class="con-why">${c.why}</div>
+          ${c.tip?`<div class="callout c-info"><strong>Key insight:</strong> ${c.tip}</div>`:''}
+        </div>
+        <div class="con-panel" id="panel-${base}-how" data-base="${base}">
+          <div class="con-what">${c.what}</div>
+          ${stepsHTML}
+          ${complexityHTML}
+        </div>
+        <div class="con-panel" id="panel-${base}-code" data-base="${base}">
+          <pre>${c.code}</pre>
+        </div>
+        <div class="con-panel" id="panel-${base}-qs" data-base="${base}">
+          ${qsHTML}
+        </div>
+      </div>`;
+    }).join('');
 
     el.innerHTML=`
-      <div class="sec-header" onclick="toggleSec(this)">
+      <div class="sec-hd" onclick="toggleSec(this)">
         <div class="sec-icon">${sec.icon}</div>
-        <div class="sec-title">${sec.title}</div>
-        <span class="sec-meta">${totalS} questions · ${agS} Agoda</span>
-        <span class="sec-chevron open">▼</span>
+        <div>
+          <div class="sec-title">${sec.title}</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">${sec.phase}</div>
+        </div>
+        <div class="sec-meta">${totalS} q · ${tagS} ★<br>${sec.concepts.length} concepts</div>
+        <span class="chev open">▼</span>
       </div>
       <div class="sec-body open">
-        <div class="phase-tag">${sec.phase}</div>
-        <div class="sec-summary">${sec.summary}</div>
-        ${filtC.map(c=>`
-          <div class="content-block">
-            <div class="block-title">${c.t} <span style="font-size:10px;color:var(--text3);background:var(--bg4);padding:1px 7px;border-radius:10px;font-weight:500">${c.qs.length}</span></div>
-            <div class="block-desc">${c.d}</div>
-            <ul class="checklist">
-              ${c.qs.map((q,qi)=>{
-                const id=qId(sec.id,c.ci,qi);
-                const isDone=done.has(id);
-                return`<li class="check-item">
-                  <div class="chk${isDone?' done':''}" id="chk-${id}" onclick="tgl('${id}')"></div>
-                  <div style="flex:1">
-                    <div class="check-text${isDone?' done':''}" id="txt-${id}">LC ${q.lc} — ${q.tx}</div>
-                    <div class="check-sub">
-                      ${q.ag?'<span class="badge b-ag">★ Agoda</span>':''}
-                      ${q.mu?'<span class="badge b-mu">must</span>':''}
-                      <span class="badge ${q.d==='easy'?'b-e':q.d==='hard'?'b-h':'b-m'}">${q.d}</span>
-                      <a href="${lcUrl(q.lc)}" target="_blank" style="font-size:11px;color:var(--text3);background:var(--bg4);padding:1px 8px;border-radius:4px;border:1px solid var(--border);text-decoration:none" onmouseover="this.style.color='var(--accent2)'" onmouseout="this.style.color='var(--text3)'">↗ LeetCode</a>
-                    </div>
-                  </div>
-                </li>`;
-              }).join('')}
-            </ul>
-          </div>`).join('')}
+        <div class="sec-sum">${sec.summary}</div>
+        ${conceptsHTML}
       </div>`;
     container.appendChild(el);
   });
@@ -225,8 +974,18 @@ function render(){
   updateStats();
 }
 
-buildTopNav('dsa');
-buildSidebar();
+// Countdown
+function updateCd(){
+  const target=new Date('2026-07-09T09:00:00');
+  const diff=target-new Date();
+  const el=document.getElementById('cd');
+  if(!el)return;
+  if(diff<=0){el.textContent='Interview day!';return;}
+  const d=Math.floor(diff/864e5),h=Math.floor((diff%864e5)/36e5);
+  el.textContent=`${d}d ${h}h left`;
+}
+updateCd();setInterval(updateCd,60000);
+
 buildFilters();
 render();
 </script>
