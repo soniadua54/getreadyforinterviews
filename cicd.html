@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PrepKit — CI/CD Pipelines</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<nav class="topnav" id="topnav"></nav>
+<div class="page">
+
+<div class="hero">
+  <div class="hero-row">
+    <div class="hero-icon" style="background:var(--red-bg)">🔄</div>
+    <div>
+      <div class="hero-title">CI/CD Pipelines</div>
+      <div class="hero-sub">GitHub Actions · Jenkins · ArgoCD · GitOps · Docker + K8s deploy</div>
+    </div>
+  </div>
+  <div class="hero-desc">CI/CD is not on your resume — this is the #1 Staff-level gap to close. Every senior/staff role expects you to own the build and deploy pipeline, not just consume it. This page covers everything from first principles through production GitOps patterns with real examples matching your stack.</div>
+  <div class="callout c-gap" style="margin-top:10px"><strong>Why this matters for your interviews:</strong> At Agoda (and any Staff SWE role), platform round interviewers ask "how do you ship code to production?" and "how do you roll back a bad deploy?" If you can't answer these with specifics, it signals you've been a code consumer, not an owner. You need to speak to this from your UKG/Walmart experience even if you didn't own the pipeline — know what it looked like.</div>
+  <div class="level-pills" style="margin-top:10px">
+    <span class="level-pill lp-all selected" onclick="setLevel('all',this)">All Levels</span>
+    <span class="level-pill lp-beg" onclick="setLevel('beginner',this)">🟢 Beginner</span>
+    <span class="level-pill lp-int" onclick="setLevel('intermediate',this)">🟣 Intermediate</span>
+    <span class="level-pill lp-adv" onclick="setLevel('advanced',this)">🟠 Advanced</span>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-n" style="color:var(--beg)">4</div><div class="stat-l">Beginner topics</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--int)">5</div><div class="stat-l">Intermediate</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--adv)">4</div><div class="stat-l">Advanced</div></div>
+  <div class="stat"><div class="stat-n" id="cicd-done" style="color:var(--green)">0</div><div class="stat-l">Checked off</div></div>
+</div>
+<div class="prog-wrap">
+  <div class="prog-label"><span>Progress</span><span id="cicd-pct">0 / 18</span></div>
+  <div class="prog-bar"><div class="prog-fill" id="cicd-fill" style="width:0%"></div></div>
+</div>
+
+<!-- ════ BEGINNER ════ -->
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--beg-bg)">📖</div>
+    <div style="flex:1"><div class="sec-title">What is CI/CD and why it exists</div><div class="sec-sub">The problem it solves and the full pipeline model</div></div>
+    <span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="cc-what" id="tab-cc-what-why" onclick="switchTab('cc-what','why')">Why CI/CD</div>
+      <div class="tab" data-group="cc-what" id="tab-cc-what-arch" onclick="switchTab('cc-what','arch')">Pipeline anatomy</div>
+      <div class="tab" data-group="cc-what" id="tab-cc-what-terms" onclick="switchTab('cc-what','terms')">Key terms</div>
+    </div>
+    <div class="tab-panel active" data-group="cc-what" id="panel-cc-what-why">
+      <div class="block">
+        <div class="block-title">The problem before CI/CD</div>
+        <div class="prose">Before automated pipelines, teams would manually build, test, and deploy. A release might take days: developer finishes code → manually runs tests → creates a ZIP → emails it to ops → ops manually copies to server → cross fingers. This led to "integration hell" — multiple developers merging weeks of work simultaneously, each breaking each other's code.</div>
+        <div class="two-col">
+          <div class="col-card"><h4>Continuous Integration (CI)</h4><p>Automatically build and test every code commit. Detects broken code within minutes, not days. Goal: merge small changes often, never let main branch break.</p></div>
+          <div class="col-card"><h4>Continuous Delivery (CD)</h4><p>Automatically deploy every successful build to staging. Production deploy is still a manual button push. Goal: always have a deployable artifact ready.</p></div>
+        </div>
+        <div class="two-col">
+          <div class="col-card"><h4>Continuous Deployment</h4><p>Like CD but production deploy is also automatic — no manual gate. Used by Netflix, Amazon (thousands of deploys per day). Requires extremely mature testing and monitoring.</p></div>
+          <div class="col-card"><h4>GitOps</h4><p>Git repo is the single source of truth for infrastructure AND app state. What's in Git = what's in production. ArgoCD watches Git, auto-syncs to K8s. You never run kubectl manually in production.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="cc-what" id="panel-cc-what-arch">
+      <div class="arch-title">Full CI/CD pipeline — from git push to production</div>
+      <div class="arch">Developer pushes code to feature branch
+          ↓
+[GitHub / GitLab / Bitbucket]
+          ↓ pull request opened
+[CI Pipeline triggered]
+  Stage 1: Build
+    ├── Compile (mvn package / npm ci)
+    ├── Static analysis (SonarQube, Checkstyle)
+    └── SAST security scan (Snyk, OWASP)
+  Stage 2: Test
+    ├── Unit tests (JUnit, Jest)
+    ├── Integration tests (TestContainers)
+    └── Code coverage gate (must be > 80%)
+  Stage 3: Package
+    ├── Docker image build
+    ├── Image vulnerability scan (Trivy)
+    └── Push to registry (ECR / GCR / Docker Hub)
+          ↓ merge to main
+[CD Pipeline triggered]
+  Stage 4: Deploy to Staging
+    ├── Helm upgrade / kubectl apply
+    ├── Smoke tests
+    └── Automated E2E tests (Cypress / Playwright)
+          ↓ manual approval gate
+  Stage 5: Deploy to Production
+    ├── Blue/green or canary deploy
+    ├── Health check verification
+    ├── Rollback on failure (automatic)
+    └── Notify team (Slack, PagerDuty)</div>
+    </div>
+    <div class="tab-panel" data-group="cc-what" id="panel-cc-what-terms">
+      <table class="ctable">
+        <tr><th>Term</th><th>What it means</th></tr>
+        <tr><td><strong>Pipeline</strong></td><td>Sequence of automated stages: build → test → deploy</td></tr>
+        <tr><td><strong>Artifact</strong></td><td>Output of a build: JAR file, Docker image, npm package</td></tr>
+        <tr><td><strong>Stage / Job</strong></td><td>One step in the pipeline: a script that runs and succeeds or fails</td></tr>
+        <tr><td><strong>Runner / Agent</strong></td><td>Machine that executes pipeline jobs (GitHub-hosted or self-hosted)</td></tr>
+        <tr><td><strong>Trigger</strong></td><td>Event that starts the pipeline: push, PR, cron, manual</td></tr>
+        <tr><td><strong>Environment</strong></td><td>Dev → Staging → Production — each with own config and deploy</td></tr>
+        <tr><td><strong>Blue/Green deploy</strong></td><td>Two identical environments. Switch traffic from blue to green. Instant rollback = switch back.</td></tr>
+        <tr><td><strong>Canary deploy</strong></td><td>Send 5% of traffic to new version. If metrics OK, gradually increase to 100%.</td></tr>
+        <tr><td><strong>Feature flags</strong></td><td>Deploy code to production but hide behind a flag. Enable for 1% of users first.</td></tr>
+        <tr><td><strong>Rollback</strong></td><td>Redeploy previous version automatically when health checks fail.</td></tr>
+        <tr><td><strong>GitOps</strong></td><td>Infrastructure state is stored in Git. Tools like ArgoCD sync K8s to match Git state.</td></tr>
+        <tr><td><strong>Helm chart</strong></td><td>Package manager for Kubernetes. Template-based K8s manifests with values override per environment.</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--beg-bg)">⚡</div>
+    <div style="flex:1"><div class="sec-title">GitHub Actions — Complete Guide</div><div class="sec-sub">The most common CI/CD tool — learn this first</div></div>
+    <span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="cc-gha" id="tab-cc-gha-concept" onclick="switchTab('cc-gha','concept')">Core concepts</div>
+      <div class="tab" data-group="cc-gha" id="tab-cc-gha-java" onclick="switchTab('cc-gha','java')">Java/Spring pipeline</div>
+      <div class="tab" data-group="cc-gha" id="tab-cc-gha-node" onclick="switchTab('cc-gha','node')">Node.js pipeline</div>
+      <div class="tab" data-group="cc-gha" id="tab-cc-gha-docker" onclick="switchTab('cc-gha','docker')">Docker build + push</div>
+    </div>
+    <div class="tab-panel active" data-group="cc-gha" id="panel-cc-gha-concept">
+      <div class="block">
+        <div class="block-title">GitHub Actions structure</div>
+        <div class="prose">Workflows live in <code>.github/workflows/*.yml</code>. Each workflow has triggers, jobs, and steps. Jobs run in parallel by default; use <code>needs</code> to sequence them.</div>
+<pre><span class="cm"># .github/workflows/ci.yml</span>
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]      <span class="cm"># trigger on push to these branches</span>
+  pull_request:
+    branches: [ main ]               <span class="cm"># trigger on PR targeting main</span>
+  workflow_dispatch:                 <span class="cm"># allow manual trigger</span>
+
+jobs:
+  build:
+    runs-on: ubuntu-latest           <span class="cm"># GitHub-hosted runner</span>
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4    <span class="cm"># clone the repo</span>
+      
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      
+      - name: Run tests
+        run: ./mvnw test
+      
+      - name: Build JAR
+        run: ./mvnw package -DskipTests
+
+  deploy-staging:
+    needs: build                     <span class="cm"># only runs if build succeeds</span>
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'  <span class="cm"># only on main branch</span>
+    
+    steps:
+      - name: Deploy to staging
+        run: echo "deploy step here"</pre>
+        <div class="callout c-info"><strong>Key concepts:</strong> <code>uses:</code> runs a pre-built Action from Marketplace. <code>run:</code> runs a shell command directly. <code>needs:</code> creates dependency between jobs. <code>if:</code> conditionally runs a job.</div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="cc-gha" id="panel-cc-gha-java">
+<pre><span class="cm"># Complete Java/Spring Boot CI/CD pipeline</span>
+name: Java CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  JAVA_VERSION: '17'
+  IMAGE_NAME: hotel-service
+  ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:                        <span class="cm"># spin up DB for integration tests</span>
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: testdb
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-retries 5
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: temurin
+          cache: maven                 <span class="cm"># cache ~/.m2 between runs</span>
+      
+      - name: Run tests
+        run: ./mvnw verify            <span class="cm"># compile + test + integration tests</span>
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/testdb
+          SPRING_DATASOURCE_USERNAME: test
+          SPRING_DATASOURCE_PASSWORD: test
+      
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        if: always()                  <span class="cm"># upload even on failure</span>
+        with:
+          name: test-results
+          path: target/surefire-reports/
+
+  build-and-push:
+    name: Build Docker Image
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    outputs:
+      image-tag: ${{ steps.meta.outputs.version }}  <span class="cm"># pass tag to next job</span>
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+      
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.ECR_REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=,format=short     <span class="cm"># git short SHA as tag</span>
+            type=raw,value=latest,enable=true
+      
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy-staging:
+    name: Deploy to Staging
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    environment: staging             <span class="cm"># requires environment approval if configured</span>
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Deploy via Helm
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name staging-cluster
+          helm upgrade --install hotel-service ./helm/hotel-service \
+            --namespace hotel \
+            --set image.tag=${{ needs.build-and-push.outputs.image-tag }} \
+            --set environment=staging \
+            --wait --timeout 5m
+      
+      - name: Smoke test
+        run: |
+          sleep 10
+          curl -f https://staging.hotel-service.com/actuator/health || exit 1
+
+  deploy-production:
+    name: Deploy to Production
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    environment: production           <span class="cm"># REQUIRES manual approval in GitHub UI</span>
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Deploy to production
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name prod-cluster
+          helm upgrade hotel-service ./helm/hotel-service \
+            --namespace hotel \
+            --set image.tag=${{ needs.build-and-push.outputs.image-tag }} \
+            --set environment=production \
+            --wait --timeout 10m
+      
+      - name: Notify Slack on success
+        if: success()
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: '{"text":"✅ hotel-service deployed to production"}'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      
+      - name: Rollback on failure
+        if: failure()
+        run: helm rollback hotel-service --namespace hotel</pre>
+    </div>
+    <div class="tab-panel" data-group="cc-gha" id="panel-cc-gha-node">
+<pre><span class="cm"># Node.js pipeline (from your Walmart Secure Media Service work)</span>
+name: Node.js CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]    <span class="cm"># test on multiple Node versions</span>
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'                 <span class="cm"># cache node_modules</span>
+      
+      - name: Install dependencies
+        run: npm ci                    <span class="cm"># ci = clean install, respects lockfile</span>
+      
+      - name: Lint
+        run: npm run lint
+      
+      - name: Test with coverage
+        run: npm run test:coverage
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+      
+      - name: Build
+        run: npm run build
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+      - name: Snyk security scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}</pre>
+    </div>
+    <div class="tab-panel" data-group="cc-gha" id="panel-cc-gha-docker">
+<pre><span class="cm"># Reusable Docker build workflow</span>
+name: Docker Build
+
+on:
+  workflow_call:                       <span class="cm"># reusable workflow — called from other workflows</span>
+    inputs:
+      image-name:
+        required: true
+        type: string
+    outputs:
+      image-tag:
+        value: ${{ jobs.build.outputs.tag }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.meta.outputs.version }}
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up QEMU             <span class="cm"># for multi-platform builds (arm64 + amd64)</span>
+        uses: docker/setup-qemu-action@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ inputs.image-name }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
+      
+      - name: Build and push multi-platform
+        uses: docker/build-push-action@v5
+        with:
+          platforms: linux/amd64,linux/arm64    <span class="cm"># Apple Silicon + x86</span>
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Scan image for vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ inputs.image-name }}:${{ steps.meta.outputs.version }}
+          severity: CRITICAL,HIGH
+          exit-code: 1                 <span class="cm"># fail if critical vulns found</span></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ════ INTERMEDIATE ════ -->
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--int-bg)">🎯</div>
+    <div style="flex:1"><div class="sec-title">GitOps with ArgoCD</div><div class="sec-sub">Git as the source of truth for Kubernetes state</div></div>
+    <span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="cc-argo" id="tab-cc-argo-concept" onclick="switchTab('cc-argo','concept')">How ArgoCD works</div>
+      <div class="tab" data-group="cc-argo" id="tab-cc-argo-setup" onclick="switchTab('cc-argo','setup')">Setup & config</div>
+      <div class="tab" data-group="cc-argo" id="tab-cc-argo-gitops" onclick="switchTab('cc-argo','gitops')">GitOps repo structure</div>
+    </div>
+    <div class="tab-panel active" data-group="cc-argo" id="panel-cc-argo-concept">
+      <div class="block">
+        <div class="block-title">ArgoCD architecture</div>
+        <div class="arch-title">GitOps flow with ArgoCD</div>
+        <div class="arch">Developer pushes code → GitHub Actions builds image → pushes to ECR
+                                                    ↓
+                              GitHub Actions updates image tag in git repo
+                              (gitops-repo/apps/hotel-service/values.yaml)
+                                                    ↓
+                              ArgoCD continuously watches gitops-repo
+                                                    ↓
+                              ArgoCD detects drift (current K8s ≠ Git state)
+                                                    ↓
+                              ArgoCD syncs: applies new deployment to K8s
+                                                    ↓
+                              K8s rolls out new pods with new image tag
+                              
+Key principle: You NEVER run kubectl apply manually in production.
+Git is the only way to change what's in production.
+Rollback = revert the git commit, ArgoCD auto-syncs.</div>
+        <div class="callout c-good"><strong>Why GitOps beats imperative deploy:</strong> Every change is a git commit — full audit trail, easy rollback, peer-reviewed changes, no snowflake servers. At UKG, TRex manages tenant config in Git for the same reason — the config file IS the state.</div>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="cc-argo" id="panel-cc-argo-setup">
+<pre><span class="cm"># Install ArgoCD in K8s cluster</span>
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+<span class="cm"># Get initial admin password</span>
+kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath="{.data.password}" | base64 -d
+
+<span class="cm"># Port forward to access UI</span>
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+<span class="cm"># Create an Application — tells ArgoCD what to watch</span>
+<span class="cm"># argocd-app-hotel-service.yaml</span>
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hotel-service
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/yourorg/gitops-repo
+    targetRevision: main
+    path: apps/hotel-service             <span class="cm"># where Helm chart is in gitops repo</span>
+    helm:
+      valueFiles:
+        - values-production.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: hotel
+  syncPolicy:
+    automated:
+      prune: true                        <span class="cm"># delete K8s resources removed from Git</span>
+      selfHeal: true                     <span class="cm"># re-sync if someone manually changes K8s</span>
+    syncOptions:
+      - CreateNamespace=true
+
+<span class="cm"># Update image tag in GitOps repo from CI pipeline</span>
+<span class="cm"># In GitHub Actions after Docker build:</span>
+- name: Update image tag in GitOps repo
+  run: |
+    git clone https://github.com/yourorg/gitops-repo
+    cd gitops-repo
+    yq -i '.image.tag = "${{ steps.meta.outputs.version }}"' \
+      apps/hotel-service/values-production.yaml
+    git config user.email "ci@yourorg.com"
+    git config user.name "CI Bot"
+    git add .
+    git commit -m "chore: update hotel-service to ${{ steps.meta.outputs.version }}"
+    git push</pre>
+    </div>
+    <div class="tab-panel" data-group="cc-argo" id="panel-cc-argo-gitops">
+<pre><span class="cm"># GitOps repository structure</span>
+gitops-repo/
+├── apps/
+│   ├── hotel-service/
+│   │   ├── Chart.yaml
+│   │   ├── templates/
+│   │   │   ├── deployment.yaml
+│   │   │   ├── service.yaml
+│   │   │   ├── ingress.yaml
+│   │   │   ├── hpa.yaml
+│   │   │   └── configmap.yaml
+│   │   ├── values.yaml              <span class="cm"># defaults</span>
+│   │   ├── values-staging.yaml      <span class="cm"># staging overrides</span>
+│   │   └── values-production.yaml   <span class="cm"># prod overrides (image tag updated by CI)</span>
+│   ├── notification-service/
+│   └── payment-service/
+├── infrastructure/
+│   ├── namespaces.yaml
+│   ├── network-policies.yaml
+│   └── rbac.yaml
+└── argocd/
+    ├── hotel-service-app.yaml       <span class="cm"># ArgoCD Application definition</span>
+    └── notification-service-app.yaml
+
+<span class="cm"># values-production.yaml (CI updates image.tag)</span>
+image:
+  repository: 123456789.dkr.ecr.us-east-1.amazonaws.com/hotel-service
+  tag: a1b2c3d                       <span class="cm"># updated by CI pipeline on every deploy</span>
+  pullPolicy: IfNotPresent
+
+replicaCount: 3
+resources:
+  requests:
+    cpu: 500m
+    memory: 512Mi
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70</pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--int-bg)">🚀</div>
+    <div style="flex:1"><div class="sec-title">Deployment Strategies</div><div class="sec-sub">Rolling, Blue/Green, Canary — when to use each</div></div>
+    <span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="cc-dep" id="tab-cc-dep-rolling" onclick="switchTab('cc-dep','rolling')">Rolling update</div>
+      <div class="tab" data-group="cc-dep" id="tab-cc-dep-bg" onclick="switchTab('cc-dep','bg')">Blue/Green</div>
+      <div class="tab" data-group="cc-dep" id="tab-cc-dep-canary" onclick="switchTab('cc-dep','canary')">Canary</div>
+    </div>
+    <div class="tab-panel active" data-group="cc-dep" id="panel-cc-dep-rolling">
+      <div class="block">
+        <div class="block-title">Rolling update — K8s default</div>
+        <div class="prose">Replace pods gradually. New pods are created before old ones are terminated. Zero downtime. If new pods fail health checks, K8s pauses the rollout and leaves old pods running.</div>
+<pre><span class="cm"># Deployment with rolling update strategy</span>
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hotel-service
+spec:
+  replicas: 6
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2          <span class="cm"># max extra pods during update (6 + 2 = 8 max)</span>
+      maxUnavailable: 0    <span class="cm"># never remove old pod before new one is ready</span>
+  template:
+    spec:
+      containers:
+      - name: hotel-service
+        image: hotel-service:v2
+        readinessProbe:    <span class="cm"># K8s waits for this before routing traffic</span>
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 3
+
+<span class="cm"># Monitor rollout</span>
+kubectl rollout status deployment/hotel-service -n hotel
+kubectl rollout history deployment/hotel-service -n hotel
+
+<span class="cm"># Rollback instantly</span>
+kubectl rollout undo deployment/hotel-service -n hotel
+kubectl rollout undo deployment/hotel-service -n hotel --to-revision=3</pre>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="cc-dep" id="panel-cc-dep-bg">
+      <div class="block">
+        <div class="arch-title">Blue/Green deployment</div>
+        <div class="arch">State:      [Blue: v1 - LIVE]       [Green: v2 - STAGED]
+                     ↑ receives traffic        ↑ running but no traffic
+
+Deploy:     Deploy v2 to Green environment
+            Run smoke tests against Green
+            
+Switch:     Update Service selector:
+            selector: version: green    ← instant traffic switch
+            
+Result:     [Blue: v1 - STANDBY]       [Green: v2 - LIVE]
+                                              ↑ receives all traffic
+
+Rollback:   selector: version: blue    ← instant (Blue still running)</div>
+<pre><span class="cm"># Blue deployment (currently live)</span>
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hotel-service-blue
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hotel-service
+      version: blue
+  template:
+    metadata:
+      labels:
+        app: hotel-service
+        version: blue     <span class="cm"># ← differentiator</span>
+    spec:
+      containers:
+      - name: hotel-service
+        image: hotel-service:v1
+
+<span class="cm"># Service points to blue (current live)</span>
+apiVersion: v1
+kind: Service
+metadata:
+  name: hotel-service
+spec:
+  selector:
+    app: hotel-service
+    version: blue         <span class="cm"># ← switch this to 'green' to flip traffic</span>
+
+<span class="cm"># After deploying green and testing, switch traffic:</span>
+kubectl patch service hotel-service -n hotel \
+  -p '{"spec":{"selector":{"version":"green"}}}'
+
+<span class="cm"># Rollback is instant — just switch back:</span>
+kubectl patch service hotel-service -n hotel \
+  -p '{"spec":{"selector":{"version":"blue"}}}'</pre>
+      </div>
+    </div>
+    <div class="tab-panel" data-group="cc-dep" id="panel-cc-dep-canary">
+<pre><span class="cm"># Canary: send 10% of traffic to new version</span>
+<span class="cm"># Technique: run more stable replicas than canary replicas</span>
+<span class="cm"># 9 stable + 1 canary = 10% of traffic to canary</span>
+
+<span class="cm"># Stable deployment (9 replicas = 90% traffic)</span>
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hotel-service-stable
+spec:
+  replicas: 9
+  selector:
+    matchLabels:
+      app: hotel-service
+      track: stable
+  template:
+    metadata:
+      labels:
+        app: hotel-service
+        track: stable
+    spec:
+      containers:
+      - image: hotel-service:v1
+
+<span class="cm"># Canary deployment (1 replica = ~10% traffic)</span>
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hotel-service-canary
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hotel-service
+      track: canary
+  template:
+    metadata:
+      labels:
+        app: hotel-service
+        track: canary
+    spec:
+      containers:
+      - image: hotel-service:v2       <span class="cm"># new version</span>
+
+<span class="cm"># Service selects BOTH (by shared label)</span>
+apiVersion: v1
+kind: Service
+spec:
+  selector:
+    app: hotel-service                <span class="cm"># matches BOTH stable and canary</span>
+                                      <span class="cm"># K8s load balances 9:1 ratio</span>
+
+<span class="cm"># If canary metrics look good: scale up canary, scale down stable</span>
+kubectl scale deployment hotel-service-canary --replicas=9 -n hotel
+kubectl scale deployment hotel-service-stable --replicas=1 -n hotel
+<span class="cm"># Eventually remove stable:</span>
+kubectl delete deployment hotel-service-stable -n hotel</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="intermediate">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--int-bg)">🔒</div>
+    <div style="flex:1"><div class="sec-title">Secrets & Environment Management</div><div class="sec-sub">Never commit secrets. Use vaults, sealed secrets, parameter stores.</div></div>
+    <span class="sec-lv lv-int">Intermediate</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="cc-sec" id="tab-cc-sec-github" onclick="switchTab('cc-sec','github')">GitHub Secrets</div>
+      <div class="tab" data-group="cc-sec" id="tab-cc-sec-vault" onclick="switchTab('cc-sec','vault')">HashiCorp Vault</div>
+      <div class="tab" data-group="cc-sec" id="tab-cc-sec-sealed" onclick="switchTab('cc-sec','sealed')">Sealed Secrets (K8s)</div>
+    </div>
+    <div class="tab-panel active" data-group="cc-sec" id="panel-cc-sec-github">
+<pre><span class="cm"># GitHub Secrets — stored encrypted in GitHub, injected as env vars in Actions</span>
+<span class="cm"># Set via: Repository Settings → Secrets and variables → Actions → New secret</span>
+
+<span class="cm"># Access in workflow</span>
+jobs:
+  deploy:
+    steps:
+      - name: Deploy
+        env:
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: ./deploy.sh
+
+<span class="cm"># Environment-specific secrets</span>
+<span class="cm"># Create environments in GitHub: Settings → Environments → staging/production</span>
+<span class="cm"># Add secrets per environment</span>
+jobs:
+  deploy-prod:
+    environment: production          <span class="cm"># uses production-specific secrets</span>
+    steps:
+      - run: echo ${{ secrets.DB_PASSWORD }}  <span class="cm"># production DB password</span>
+
+<span class="cm"># NEVER do this:</span>
+<span class="cm"># DB_PASSWORD: mysecret  ← hardcoded in YAML — visible in git history!</span>
+<span class="cm"># echo $DB_PASSWORD      ← leaks to logs — always mask with ::add-mask::</span>
+
+<span class="cm"># Mask secret in logs if you must print it:</span>
+- name: Mask secret
+  run: echo "::add-mask::${{ secrets.DB_PASSWORD }}"</pre>
+    </div>
+    <div class="tab-panel" data-group="cc-sec" id="panel-cc-sec-vault">
+<pre><span class="cm"># HashiCorp Vault — enterprise secrets management</span>
+<span class="cm"># Used at large companies to manage secrets centrally</span>
+
+<span class="cm"># Store a secret</span>
+vault kv put secret/hotel-service/prod \
+  db_password="supersecret" \
+  jwt_secret="mykey"
+
+<span class="cm"># Read a secret</span>
+vault kv get -field=db_password secret/hotel-service/prod
+
+<span class="cm"># In GitHub Actions — pull secrets from Vault dynamically</span>
+- name: Import secrets from Vault
+  uses: hashicorp/vault-action@v3
+  with:
+    url: https://vault.yourcompany.com
+    token: ${{ secrets.VAULT_TOKEN }}
+    secrets: |
+      secret/data/hotel-service/prod db_password | DB_PASSWORD ;
+      secret/data/hotel-service/prod jwt_secret | JWT_SECRET
+
+<span class="cm"># In Spring Boot — pull secrets at startup via Spring Cloud Vault</span>
+<span class="cm"># application.yml:</span>
+spring:
+  cloud:
+    vault:
+      uri: https://vault.yourcompany.com
+      authentication: TOKEN
+      token: ${VAULT_TOKEN}
+      kv:
+        enabled: true
+        default-context: hotel-service/prod
+
+<span class="cm"># Then your application.yml can reference vault secrets:</span>
+spring:
+  datasource:
+    password: ${db_password}         <span class="cm"># Spring Cloud Vault resolves this</span></pre>
+    </div>
+    <div class="tab-panel" data-group="cc-sec" id="panel-cc-sec-sealed">
+<pre><span class="cm"># Sealed Secrets — encrypt K8s secrets so they're safe to commit to git</span>
+<span class="cm"># Problem: K8s Secret is just base64, NOT encrypted. Don't commit to git.</span>
+<span class="cm"># Solution: SealedSecret is encrypted with cluster key — safe to commit.</span>
+
+<span class="cm"># Install Sealed Secrets controller</span>
+helm install sealed-secrets \
+  sealed-secrets/sealed-secrets \
+  --namespace kube-system
+
+<span class="cm"># Create a sealed secret from a plain secret</span>
+kubectl create secret generic hotel-db-secret \
+  --from-literal=password=mysecret \
+  --dry-run=client -o yaml | \
+  kubeseal --format yaml > hotel-db-sealed.yaml
+
+<span class="cm"># hotel-db-sealed.yaml — safe to commit to git!</span>
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: hotel-db-secret
+spec:
+  encryptedData:
+    password: AgA9Xk2...long_encrypted_string...==
+
+<span class="cm"># Apply to cluster (controller decrypts automatically)</span>
+kubectl apply -f hotel-db-sealed.yaml
+
+<span class="cm"># Controller creates a regular K8s Secret from the SealedSecret</span>
+kubectl get secret hotel-db-secret -o jsonpath='{.data.password}' | base64 -d</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ════ ADVANCED ════ -->
+<div class="section" data-level="advanced">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--adv-bg)">🧪</div>
+    <div style="flex:1"><div class="sec-title">Testing in CI/CD — Full Strategy</div><div class="sec-sub">Unit · Integration · Contract · Load · E2E — what runs when</div></div>
+    <span class="sec-lv lv-adv">Advanced</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="cc-test" id="tab-cc-test-pyramid" onclick="switchTab('cc-test','pyramid')">Test pyramid</div>
+      <div class="tab" data-group="cc-test" id="tab-cc-test-integration" onclick="switchTab('cc-test','integration')">Integration tests</div>
+      <div class="tab" data-group="cc-test" id="tab-cc-test-contract" onclick="switchTab('cc-test','contract')">Contract testing</div>
+    </div>
+    <div class="tab-panel active" data-group="cc-test" id="panel-cc-test-pyramid">
+      <div class="arch-title">Test pyramid — what runs where in pipeline</div>
+      <div class="arch">          [E2E Tests]          ← runs post-deploy on staging
+         /     few       \          Playwright/Cypress
+        / Slow, fragile   \         Tests full user journey
+       ────────────────────
+      [Integration Tests]          ← runs in CI (TestContainers)
+     /   Database, API calls  \     Tests your code + real DB
+    /   Medium speed           \
+   ──────────────────────────────
+  [Unit Tests]                       ← runs in CI, fast
+ /  Mock everything external   \      JUnit + Mockito
+/  Fast, isolated, many         \     Tests one class/method
+──────────────────────────────────────
+
+[Contract Tests]                      ← consumer-driven
+Consumer defines expected API shape   Pact framework
+Provider verifies it satisfies contract
+
+[Load Tests]                          ← runs in staging
+k6 / Gatling / JMeter                 Before production deploy</div>
+    </div>
+    <div class="tab-panel" data-group="cc-test" id="panel-cc-test-integration">
+<pre><span class="cm">// Integration tests with TestContainers — real DB in CI</span>
+<span class="an">@SpringBootTest</span>
+<span class="an">@Testcontainers</span>
+<span class="kw">class</span> <span class="cl">BookingServiceIntegrationTest</span> {
+
+    <span class="an">@Container</span>
+    <span class="kw">static</span> PostgreSQLContainer&lt;?&gt; postgres =
+        <span class="kw">new</span> PostgreSQLContainer&lt;&gt;(<span class="str">"postgres:15-alpine"</span>)
+            .withDatabaseName(<span class="str">"testdb"</span>)
+            .withUsername(<span class="str">"test"</span>)
+            .withPassword(<span class="str">"test"</span>);
+
+    <span class="an">@Container</span>
+    <span class="kw">static</span> GenericContainer&lt;?&gt; redis =
+        <span class="kw">new</span> GenericContainer&lt;&gt;(<span class="str">"redis:7-alpine"</span>).withExposedPorts(<span class="nu">6379</span>);
+
+    <span class="an">@DynamicPropertySource</span>
+    <span class="kw">static void</span> <span class="fn">configure</span>(DynamicPropertyRegistry registry) {
+        registry.<span class="fn">add</span>(<span class="str">"spring.datasource.url"</span>, postgres::getJdbcUrl);
+        registry.<span class="fn">add</span>(<span class="str">"spring.datasource.username"</span>, postgres::getUsername);
+        registry.<span class="fn">add</span>(<span class="str">"spring.redis.host"</span>, redis::getHost);
+        registry.<span class="fn">add</span>(<span class="str">"spring.redis.port"</span>, () -> redis.getMappedPort(<span class="nu">6379</span>).toString());
+    }
+
+    <span class="an">@Autowired</span> BookingService bookingService;
+
+    <span class="an">@Test</span>
+    <span class="kw">void</span> <span class="fn">createBooking_persistsToDatabase</span>() {
+        CreateBookingRequest req = CreateBookingRequest.<span class="fn">builder</span>()
+            .<span class="fn">userId</span>(<span class="str">"user-1"</span>).<span class="fn">roomId</span>(<span class="str">"room-101"</span>).<span class="fn">checkIn</span>(LocalDate.now())
+            .<span class="fn">checkOut</span>(LocalDate.now().<span class="fn">plusDays</span>(<span class="nu">3</span>)).<span class="fn">build</span>();
+
+        Booking created = bookingService.<span class="fn">create</span>(req);
+
+        assertThat(created.getId()).<span class="fn">isNotNull</span>();
+        assertThat(created.getStatus()).<span class="fn">isEqualTo</span>(BookingStatus.CONFIRMED);
+    }
+}</pre>
+    </div>
+    <div class="tab-panel" data-group="cc-test" id="panel-cc-test-contract">
+<pre><span class="cm">// Consumer-driven contract testing with Pact</span>
+<span class="cm">// Consumer: notification-service defines what it expects from booking-service API</span>
+<span class="cm">// Provider: booking-service verifies it actually delivers that contract</span>
+
+<span class="cm">// 1. Consumer side — defines the contract</span>
+<span class="an">@ExtendWith</span>(PactConsumerTestExt.<span class="kw">class</span>)
+<span class="an">@PactTestFor</span>(providerName = <span class="str">"booking-service"</span>)
+<span class="kw">class</span> <span class="cl">NotificationServiceConsumerTest</span> {
+
+    <span class="an">@Pact</span>(consumer = <span class="str">"notification-service"</span>)
+    <span class="kw">public</span> RequestResponsePact <span class="fn">getBookingPact</span>(PactDslWithProvider builder) {
+        <span class="kw">return</span> builder
+            .given(<span class="str">"booking with id 123 exists"</span>)
+            .uponReceiving(<span class="str">"a request for booking 123"</span>)
+            .path(<span class="str">"/api/v1/bookings/123"</span>)
+            .method(<span class="str">"GET"</span>)
+            .willRespondWith()
+            .status(<span class="nu">200</span>)
+            .body(<span class="kw">new</span> PactDslJsonBody()
+                .stringType(<span class="str">"id"</span>, <span class="str">"123"</span>)
+                .stringType(<span class="str">"userId"</span>, <span class="str">"user-1"</span>)
+                .stringType(<span class="str">"status"</span>, <span class="str">"CONFIRMED"</span>))
+            .toPact();
+    }
+}
+
+<span class="cm">// 2. Provider side — verifies the contract</span>
+<span class="an">@SpringBootTest</span>
+<span class="an">@Provider</span>(<span class="str">"booking-service"</span>)
+<span class="an">@PactBroker</span>(url = <span class="str">"https://your-pact-broker.com"</span>)
+<span class="kw">class</span> <span class="cl">BookingServiceProviderTest</span> {
+    <span class="an">@TestTemplate</span>
+    <span class="an">@ExtendWith</span>(PactVerificationInvocationContextProvider.<span class="kw">class</span>)
+    <span class="kw">void</span> <span class="fn">pactVerificationTestTemplate</span>(PactVerificationContext context) {
+        context.<span class="fn">verifyInteraction</span>();
+    }
+}</pre>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-level="advanced">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--adv-bg)">📊</div>
+    <div style="flex:1"><div class="sec-title">Pipeline Observability & Quality Gates</div><div class="sec-sub">SonarQube · Code coverage gates · Deploy metrics</div></div>
+    <span class="sec-lv lv-adv">Advanced</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+<pre><span class="cm"># SonarQube quality gate in GitHub Actions</span>
+- name: SonarQube scan
+  uses: SonarSource/sonarqube-scan-action@master
+  env:
+    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    SONAR_HOST_URL: https://sonar.yourcompany.com
+
+<span class="cm"># sonar-project.properties</span>
+sonar.projectKey=hotel-service
+sonar.projectName=Hotel Service
+sonar.sources=src/main
+sonar.tests=src/test
+sonar.java.binaries=target/classes
+sonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+sonar.qualitygate.wait=true         <span class="cm"># fail build if quality gate not passed</span>
+
+<span class="cm"># Quality gate rules (typical setup):</span>
+<span class="cm"># Coverage on new code > 80%</span>
+<span class="cm"># No new blocker or critical issues</span>
+<span class="cm"># Duplication < 3%</span>
+<span class="cm"># Security hotspots reviewed</span>
+
+<span class="cm">────────────────────────────────────────</span>
+
+<span class="cm"># DORA metrics — how to measure pipeline health</span>
+<span class="cm"># (The 4 key DevOps metrics every staff engineer should know)</span>
+
+<span class="cm"># 1. Deployment Frequency — how often you deploy to production</span>
+<span class="cm">#    Elite: multiple times per day | Good: weekly | Poor: monthly</span>
+
+<span class="cm"># 2. Lead Time for Changes — commit to production</span>
+<span class="cm">#    Elite: < 1 hour | Good: < 1 day | Poor: months</span>
+
+<span class="cm"># 3. Change Failure Rate — % of deploys causing incidents</span>
+<span class="cm">#    Elite: 0-15% | Poor: > 45%</span>
+
+<span class="cm"># 4. Mean Time to Restore (MTTR) — incident to resolution</span>
+<span class="cm">#    Elite: < 1 hour | Poor: > 1 week</span>
+
+<span class="cm"># Track in pipeline:</span>
+- name: Record deploy time
+  run: |
+    COMMIT_TIME=$(git log -1 --format=%ct HEAD)
+    DEPLOY_TIME=$(date +%s)
+    LEAD_TIME=$((DEPLOY_TIME - COMMIT_TIME))
+    echo "Lead time: ${LEAD_TIME}s" >> metrics.log
+    <span class="cm"># push to Datadog/Prometheus</span></pre>
+  </div>
+</div>
+
+<!-- Checklist -->
+<div class="section" data-level="beginner">
+  <div class="sec-hd" onclick="toggleSec(this)">
+    <div class="sec-icon" style="background:var(--green-bg)">✅</div>
+    <div style="flex:1"><div class="sec-title">CI/CD readiness checklist</div><div class="sec-sub">Can you answer these in an interview?</div></div>
+    <span class="sec-lv lv-beg">All levels</span><span class="chev open">▼</span>
+  </div>
+  <div class="sec-body open">
+    <div class="tabs">
+      <div class="tab active" data-group="cc-chk" id="tab-cc-chk-beg" onclick="switchTab('cc-chk','beg')">🟢 Beginner</div>
+      <div class="tab" data-group="cc-chk" id="tab-cc-chk-int" onclick="switchTab('cc-chk','int')">🟣 Intermediate</div>
+      <div class="tab" data-group="cc-chk" id="tab-cc-chk-adv" onclick="switchTab('cc-chk','adv')">🟠 Advanced</div>
+    </div>
+    <div class="tab-panel active" data-group="cc-chk" id="panel-cc-chk-beg">
+      <ul class="chk-list" style="padding:14px">
+        <li class="chk-item"><div class="chkbox" id="chk-c1" onclick="cToggle('c1')"></div><div class="chk-text" id="txt-c1">Explain CI vs CD vs Continuous Deployment — precise difference</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-c2" onclick="cToggle('c2')"></div><div class="chk-text" id="txt-c2">Draw the full pipeline: code push → production deploy, all stages</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-c3" onclick="cToggle('c3')"></div><div class="chk-text" id="txt-c3">Write a basic GitHub Actions workflow: test on PR, deploy on merge to main</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-c4" onclick="cToggle('c4')"></div><div class="chk-text" id="txt-c4">What is a runner? What's the difference between GitHub-hosted and self-hosted?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-c5" onclick="cToggle('c5')"></div><div class="chk-text" id="txt-c5">How do you handle secrets in GitHub Actions — what NEVER goes in YAML?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-c6" onclick="cToggle('c6')"></div><div class="chk-text" id="txt-c6">What is Docker layer caching in CI and how does it speed up builds?</div></li>
+      </ul>
+    </div>
+    <div class="tab-panel" data-group="cc-chk" id="panel-cc-chk-int">
+      <ul class="chk-list" style="padding:14px">
+        <li class="chk-item"><div class="chkbox" id="chk-c7" onclick="cToggle('c7')"></div><div class="chk-text" id="txt-c7">Explain GitOps — how ArgoCD knows what to deploy and when</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-c8" onclick="cToggle('c8')"></div><div class="chk-text" id="txt-c8">Rolling update vs Blue/Green vs Canary — trade-offs of each</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-c9" onclick="cToggle('c9')"></div><div class="chk-text" id="txt-c9">How do you roll back a bad deploy in under 2 minutes?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-c10" onclick="cToggle('c10')"></div><div class="chk-text" id="txt-c10">How do you use TestContainers in CI — why better than mocks for integration tests?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-c11" onclick="cToggle('c11')"></div><div class="chk-text" id="txt-c11">Describe the GitOps repo structure — what goes where, who updates what</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-c12" onclick="cToggle('c12')"></div><div class="chk-text" id="txt-c12">How do you manage per-environment config (dev/staging/prod) in Helm?</div></li>
+      </ul>
+    </div>
+    <div class="tab-panel" data-group="cc-chk" id="panel-cc-chk-adv">
+      <ul class="chk-list" style="padding:14px">
+        <li class="chk-item"><div class="chkbox" id="chk-c13" onclick="cToggle('c13')"></div><div class="chk-text" id="txt-c13">The 4 DORA metrics — what they measure and what elite looks like</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-c14" onclick="cToggle('c14')"></div><div class="chk-text" id="txt-c14">Consumer-driven contract testing — what problem does Pact solve?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-c15" onclick="cToggle('c15')"></div><div class="chk-text" id="txt-c15">SonarQube quality gate — what metrics matter, when to fail the pipeline</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-c16" onclick="cToggle('c16')"></div><div class="chk-text" id="txt-c16">Sealed Secrets vs Vault vs GitHub Secrets — when to use each</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-c17" onclick="cToggle('c17')"></div><div class="chk-text" id="txt-c17">How would you design a pipeline for the TRex multi-tenant onboarding at UKG?</div></li>
+        <li class="chk-item"><div class="chkbox" id="chk-c18" onclick="cToggle('c18')"></div><div class="chk-text" id="txt-c18">Multi-platform Docker builds — why needed and how (QEMU + Buildx)</div></li>
+      </ul>
+    </div>
+
+    <div style="padding:14px 14px 10px">
+      <div class="block-title">Further reading</div>
+      <a class="ref-link" href="https://docs.github.com/en/actions" target="_blank">↗ GitHub Actions Docs</a>
+      <a class="ref-link" href="https://argo-cd.readthedocs.io" target="_blank">↗ ArgoCD Docs</a>
+      <a class="ref-link" href="https://helm.sh/docs" target="_blank">↗ Helm Docs</a>
+      <a class="ref-link" href="https://testcontainers.com/guides/getting-started-with-testcontainers-for-java" target="_blank">↗ TestContainers Guide</a>
+      <a class="ref-link" href="https://docs.pact.io" target="_blank">↗ Pact Contract Testing</a>
+      <a class="ref-link" href="https://dora.dev/research" target="_blank">↗ DORA Research</a>
+    </div>
+  </div>
+</div>
+
+</div>
+<script src="shared.js"></script>
+<script>
+buildNav('cicd');
+const cDone = initChecks('cicd-done', 18, 'cicd-done', 'cicd-pct', 'cicd-fill');
+function cToggle(id){ toggleCheck(id, cDone, 'cicd-done', 18, 'cicd-done', 'cicd-pct', 'cicd-fill'); }
+</script>
+</body>
+</html>
