@@ -24,11 +24,7 @@
   </div>
 </div>
 
-  <div class="stat"><div class="stat-n" style="color:var(--int)">4</div><div class="stat-l">Intermediate</div></div>
-  <div class="stat"><div class="stat-n" style="color:var(--adv)">3</div><div class="stat-l">Advanced</div></div>
-  <div class="stat"><div class="stat-n" id="kafka-done" style="color:var(--green)">0</div><div class="stat-l">Done</div></div>
-</div>
-</div>
+
 
 <!-- BEGINNER -->
 <div class="section" data-level="beginner">
@@ -95,10 +91,7 @@ Key terms:
         <tr><td>Use when</td><td>Event streaming, audit logs, high volume</td><td>Task queues, routing</td><td>Simple async jobs</td><td>Real-time pub/sub, ephemeral</td></tr>
       </table>
       <div class="callout c-good"><strong>In your system design answers:</strong> "I'd use Kafka because we need replay capability for the audit log, ordered delivery per user, and the ability to add new consumers without changing the producer. SQS would work for simpler async jobs but we lose message replay."</div>
-    </div>
-  </div>
 </div>
-
 <div class="section" data-level="beginner">
   <div class="sec-hd" onclick="toggleSec(this)">
     <div class="sec-icon" style="background:var(--beg-bg)">⚡</div>

@@ -26,13 +26,6 @@
     <span class="level-pill lp-adv" onclick="setLevel('advanced',this)">🟠 Advanced</span>
   </div>
 </div>
-
-  <div class="stat"><div class="stat-n" style="color:var(--int)">5</div><div class="stat-l">Intermediate</div></div>
-  <div class="stat"><div class="stat-n" style="color:var(--adv)">4</div><div class="stat-l">Advanced</div></div>
-  <div class="stat"><div class="stat-n" id="cicd-done" style="color:var(--green)">0</div><div class="stat-l">Checked off</div></div>
-</div>
-</div>
-
 <!-- ════ BEGINNER ════ -->
 <div class="section" data-level="beginner">
   <div class="sec-hd" onclick="toggleSec(this)">
@@ -732,10 +725,7 @@ kubectl scale deployment hotel-service-stable --replicas=1 -n hotel
 <span class="cm"># Eventually remove stable:</span>
 kubectl delete deployment hotel-service-stable -n hotel</pre>
       </div>
-    </div>
-  </div>
 </div>
-
 <div class="section" data-level="intermediate">
   <div class="sec-hd" onclick="toggleSec(this)">
     <div class="sec-icon" style="background:var(--int-bg)">🔒</div>

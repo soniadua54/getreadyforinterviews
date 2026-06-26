@@ -22,13 +22,6 @@
     <span class="level-pill lp-adv" onclick="setLevel('advanced',this)">🟠 Advanced</span>
   </div>
 </div>
-
-  <div class="stat"><div class="stat-n" style="color:var(--int)">9</div><div class="stat-l">Intermediate</div></div>
-  <div class="stat"><div class="stat-n" style="color:var(--adv)">7</div><div class="stat-l">Advanced</div></div>
-  <div class="stat"><div class="stat-n" id="java-done" style="color:var(--green)">0</div><div class="stat-l">Checked off</div></div>
-</div>
-</div>
-
 <!-- ═══════════════════════════════════════ BEGINNER ═══════════════════════════════════════ -->
 
 <div class="section" data-level="beginner">
@@ -109,10 +102,7 @@
         <div class="prose">In the WFM Forecasting Platform:</div>
         <div class="callout c-tag"><strong>Encapsulation:</strong> The forecasting engine's internal algorithm (number of historical weeks, smoothing factor, seasonal adjustments) is private. The public API is simply <code>forecast(tenantId, periodRange)</code>. If the algorithm changes, callers are unaffected.<br><br><strong>Polymorphism:</strong> TRex onboarding handles Staging, Prod-US, and Prod-EU environments. Each has its own <code>EnvironmentConfig implements TenantConfig</code>. The onboarding pipeline doesn't care which environment — it calls <code>config.getConnectionString()</code> and gets the right one.<br><br><strong>Abstraction:</strong> The MongoDB Cosmos DB layer is behind a <code>ForecastRepository</code> interface. Business logic never has database code in it. If Walmart IDC switches from Cosmos DB to Cassandra, only the repository implementation changes.</div>
       </div>
-    </div>
-  </div>
 </div>
-
 <div class="section" data-level="beginner">
   <div class="sec-hd" onclick="toggleSec(this)">
     <div class="sec-icon">🗂</div>
@@ -414,10 +404,7 @@ hotels.<span class="fn">stream</span>().<span class="fn">map</span>(Hotel::new) 
         <div class="block-title">Your UKG forecasting platform</div>
         <div class="callout c-tag"><strong>WFM Forecasting:</strong> When computing forecast aggregates across tenants, streams let you write: <code>tenants.stream().filter(t -> t.isActive()).map(this::computeForecast).collect(groupingBy(Forecast::getRegion))</code> — readable, parallel-capable, and no mutable intermediate variables.<br><br><strong>People Fabric CDC pipeline:</strong> The PostgreSQL to AlloyDB migration pipeline uses streams to transform entity records: filter changed records, map to new schema format, batch collect for bulk insert.<br><br><strong>TRex onboarding:</strong> Environment validation uses <code>environments.stream().allMatch(env -> env.isHealthy())</code> before proceeding with onboarding.</div>
       </div>
-    </div>
-  </div>
 </div>
-
 <div class="section" data-level="intermediate">
   <div class="sec-hd" onclick="toggleSec(this)">
     <div class="sec-icon">🧵</div>
@@ -542,10 +529,7 @@ cache.<span class="fn">merge</span>(<span class="str">"key"</span>, <span class=
       <div class="block">
         <div class="callout c-tag"><strong>TRex multi-tenant onboarding:</strong> When onboarding multiple tenants concurrently to Staging/Prod-US/Prod-EU, a ConcurrentHashMap tracks onboarding state per tenant. AtomicInteger counts successfully onboarded tenants. If one tenant fails, others continue — no shared mutable state between tenant onboarding tasks.<br><br><strong>WFM Forecasting:</strong> The forecasting service processes multiple tenants in parallel using a thread pool (ExecutorService). Each tenant's forecast is independent (no shared state), so no synchronization needed. Results are collected using CompletableFuture.allOf().<br><br><strong>People Fabric CDC:</strong> The pipeline processes CDC events from PostgreSQL in order per entity but can process different entities in parallel. BlockingQueue separates the reader thread (reads CDC events) from writer threads (insert to AlloyDB).</div>
       </div>
-    </div>
-  </div>
 </div>
-
 <div class="section" data-level="intermediate">
   <div class="sec-hd" onclick="toggleSec(this)">
     <div class="sec-icon">⚡</div>

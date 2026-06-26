@@ -35,7 +35,7 @@ const NAV_GROUPS = [
   {
     label: 'Interview',
     pages: [
-      {id:'dsa',      emoji:'⌨️', label:'DSA',           href:'dsa.html',        desc:'10 patterns · 28 problems'},
+      {id:'dsa',      emoji:'⌨️', label:'DSA',           href:'dsa.html',        desc:'18 patterns · 170 problems'},
       {id:'sys',      emoji:'🏗️', label:'System Design',  href:'sysdesign.html',  desc:'Booking · Payments · Kafka'},
       {id:'plat',     emoji:'⚙️', label:'Platform Round', href:'platform.html',   desc:'LLD · Code review · Scenarios'},
       {id:'behavioral',emoji:'🎙️',label:'Behavioral',     href:'behavioral.html', desc:'STAR · Influence · Incidents'},

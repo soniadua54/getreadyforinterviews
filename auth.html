@@ -5,8 +5,7 @@
 <div class="hero-desc">Auth0 is on your resume from UKG (TRex onboarding — you configured Auth0 credentials for tenants). At Staff level this means knowing the OAuth2/OIDC flow internals, not just "I configured Auth0." This page covers the full authentication/authorization stack — from JWT structure through RBAC, API security, and secrets management.</div>
 <div class="callout c-gap" style="margin-top:10px"><strong>Gap to close:</strong> Security depth. Interviewers at Adyen, Klarna, and Agoda (fintech/payments) will ask about OAuth2 flows, JWT vulnerabilities, and how you secure APIs. Know the Authorization Code Flow with PKCE cold.</div>
 <div class="level-pills" style="margin-top:10px"><span class="level-pill lp-all selected" onclick="setLevel('all',this)">All</span><span class="level-pill lp-beg" onclick="setLevel('beginner',this)">🟢 Beginner</span><span class="level-pill lp-int" onclick="setLevel('intermediate',this)">🟣 Intermediate</span><span class="level-pill lp-adv" onclick="setLevel('advanced',this)">🟠 Advanced</span></div></div>
-<div class="stat"><div class="stat-n" style="color:var(--beg)">14</div><div class="stat-l">Checklist items</div></div></div>
-</div>
+
 
 <div class="section" data-level="beginner">
   <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--beg-bg)">🔑</div><div style="flex:1"><div class="sec-title">OAuth2 & OIDC — The Complete Flow</div><div class="sec-sub">Authorization Code Flow with PKCE — the one you need to know cold</div></div><span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span></div>
@@ -73,10 +72,7 @@
         <div class="col-card"><h4>OpenID Connect (OIDC)</h4><p>Authentication layer on top of OAuth2. Answers: "Who is this user?" Adds ID token (JWT with user claims). Auth0, Google, Azure AD all implement OIDC. This is what you actually use for login.</p></div>
       </div>
       <div class="callout c-info"><strong>Remember:</strong> OAuth2 = authorization ("can this app read your files?"). OIDC = authentication ("who are you?"). OIDC is OAuth2 + identity. Your Auth0 work at UKG implements OIDC for tenant authentication.</div>
-    </div>
-  </div>
 </div>
-
 <div class="section" data-level="beginner">
   <div class="sec-hd" onclick="toggleSec(this)"><div class="sec-icon" style="background:var(--beg-bg)">🎫</div><div style="flex:1"><div class="sec-title">JWT — Structure, Validation, Vulnerabilities</div><div class="sec-sub">Header.Payload.Signature — what each part is and how to validate safely</div></div><span class="sec-lv lv-beg">Beginner</span><span class="chev open">▼</span></div>
   <div class="sec-body open">
