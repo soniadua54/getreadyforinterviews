@@ -121,7 +121,7 @@
       <div class="op-stat-l">Items checked off</div>
     </div>
     <div class="op-stat">
-      <div class="op-stat-n" style="color:var(--text2)">183</div>
+      <div class="op-stat-n" style="color:var(--text2)">263</div>
       <div class="op-stat-l">Total items</div>
     </div>
     <div class="op-stat">
@@ -154,7 +154,7 @@
   <a class="tech-card round-card" href="dsa.html">
     <div class="tc-icon">⌨️</div>
     <div class="tc-name">DSA & Coding</div>
-    <div class="tc-desc">10 patterns · 28 problems · Concept questions · LeetCode links · Key insight per problem</div>
+    <div class="tc-desc">18 patterns · 170 practice problems · 88 Agoda-tagged · Concept questions · LeetCode links</div>
     <div class="tc-footer"><span class="tc-badge b-int">Coding round</span></div>
   </a>
   <a class="tech-card round-card" href="sysdesign.html">
@@ -276,6 +276,18 @@
   </a>
 </div>
 
+<!-- ── STUDY PLAN CALLOUT ── -->
+<div class="callout c-info" style="margin-top:24px;font-size:12.5px">
+  <strong>14 days to July 9 — suggested priority order</strong><br>
+  <span style="color:var(--text2);line-height:2">
+  <strong>Day 1–3:</strong> SQL (biggest gap — SELECT FOR UPDATE and N+1 cold) + Behavioral (3 stories out loud)<br>
+  <strong>Day 4–6:</strong> System Design (hotel booking end-to-end, payment flow, Outbox) + DSA (patterns 1–5)<br>
+  <strong>Day 7–9:</strong> Java/Spring deep review + Kafka/Redis gaps + CI/CD basics<br>
+  <strong>Day 10–12:</strong> DSA patterns 6–10 + Platform round LLD scenarios<br>
+  <strong>Day 13:</strong> Full mock — one of each round type, timed. Find weak spots.<br>
+  <strong>Day 14:</strong> Light review only. Sleep. Don't cram.
+  </span>
+</div>
 
 </div>
 <script src="shared.js"></script>
@@ -297,15 +309,24 @@ setInterval(updateCountdown, 60000);
 // Aggregate progress
 function calcTotal() {
   const keys = [
-    {key:'java-done',total:20},{key:'spring-done',total:18},
-    {key:'node-done',total:16},{key:'go-done',total:12},
-    {key:'python-done',total:11},{key:'angular-done',total:14},
-    {key:'mongo-done',total:12},{key:'docker-done',total:14},
-    {key:'k8s-done',total:14},{key:'auth-done',total:14},
-    {key:'kafka-done',total:14},{key:'redis-done',total:12},
-    {key:'cicd-done',total:14},{key:'sql-done',total:16},
-    {key:'behavioral-done',total:12},{key:'dsa-done',total:18},
-    {key:'platform-done',total:10},
+    {key:'java-done',   total:24}, // 24 actual chkboxes
+    {key:'spring-done', total:20}, // 20 actual chkboxes
+    {key:'node-done',   total:10}, // 10 actual chkboxes
+    {key:'go-done',     total:10}, // 10 actual chkboxes
+    {key:'python-done', total:11},
+    {key:'angular-done',total:14},
+    {key:'mongo-done',  total:12},
+    {key:'docker-done', total:14},
+    {key:'k8s-done',    total:20}, // 20 actual chkboxes
+    {key:'auth-done',   total:14},
+    {key:'kafka-done',  total:18}, // 18 actual chkboxes
+    {key:'redis-done',  total:8},  // 8 actual chkboxes
+    {key:'cicd-done',   total:18}, // 18 actual chkboxes
+    {key:'sql-done',    total:16},
+    {key:'behavioral-done',total:12},
+    {key:'dsa-done',    total:18},
+    {key:'sd-done',     total:12}, // platform (uses sd-done key)
+    {key:'sysdesign-done',total:12}, // sysdesign
   ];
   let done=0, total=0;
   keys.forEach(({key,total:t})=>{

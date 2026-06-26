@@ -11,7 +11,37 @@
 .pattern-body{display:none;border-top:1px solid var(--border)}
 .pattern-body.open{display:block}
 
-/* Question table */
+/* ── PRACTICE QUESTION ROWS ─── */
+.pq-filters{display:flex;gap:6px;flex-wrap:wrap;padding:12px 14px 8px;border-bottom:1px solid var(--border);background:var(--bg3)}
+.pq-filter{padding:3px 11px;border:1px solid var(--border2);border-radius:20px;font-size:11px;cursor:pointer;background:transparent;color:var(--text2);transition:all .14s;white-space:nowrap}
+.pq-filter:hover{border-color:var(--accent);color:var(--text)}
+.pq-filter.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.pq-search{flex:1;min-width:120px;padding:3px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:12px;outline:none;font-family:inherit}
+.pq-search:focus{border-color:var(--accent)}
+.pq-search::placeholder{color:var(--text3)}
+.pq-group{padding:0 14px 4px}
+.pq-group-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:10px 0 5px}
+.pq-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.pq-row:last-child{border-bottom:none}
+.pq-check{width:17px;height:17px;min-width:17px;border:1.5px solid var(--border2);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:2px;flex-shrink:0;transition:all .14s}
+.pq-check:hover{border-color:var(--green)}
+.pq-check.done{background:var(--green);border-color:var(--green)}
+.pq-check.done::after{content:"✓";font-size:10px;color:#fff;font-weight:700}
+.pq-text{font-size:12.5px;color:var(--text);line-height:1.4}
+.pq-text.done{color:var(--text3);text-decoration:line-through}
+.pq-badges{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:5px}
+.b-ag{background:rgba(255,107,74,0.12);color:#ff6b4a;border:1px solid rgba(255,107,74,0.2);padding:1px 7px;border-radius:10px;font-size:10px;font-weight:600}
+.b-mu{background:rgba(255,77,109,0.12);color:#ff4d6d;border:1px solid rgba(255,77,109,0.2);padding:1px 7px;border-radius:10px;font-size:10px;font-weight:600}
+.b-easy{background:var(--beg-bg);color:var(--beg);padding:1px 7px;border-radius:10px;font-size:10px;font-weight:600}
+.b-med{background:var(--int-bg);color:var(--int);padding:1px 7px;border-radius:10px;font-size:10px;font-weight:600}
+.b-hard{background:var(--adv-bg);color:var(--adv);padding:1px 7px;border-radius:10px;font-size:10px;font-weight:600}
+.pq-lc{font-size:11px;color:var(--text3);background:var(--bg4);padding:1px 8px;border-radius:4px;text-decoration:none;border:1px solid var(--border);transition:all .14s}
+.pq-lc:hover{color:var(--accent2);border-color:var(--accent);background:var(--accent3)}
+.pq-empty{padding:16px 14px;font-size:12px;color:var(--text3);text-align:center}
+.pq-stats{display:flex;gap:10px;padding:8px 14px;font-size:11px;color:var(--text3);border-bottom:1px solid var(--border);background:var(--bg3)}
+.pq-stat-n{color:var(--text);font-weight:600}
+
+/* Existing styles kept */
 .q-table{width:100%;border-collapse:collapse}
 .q-table th{background:var(--bg3);color:var(--text3);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
 .q-row{border-bottom:1px solid var(--border)}
@@ -30,22 +60,17 @@
 .q-link:hover{background:rgba(56,189,248,0.2)}
 .q-link.neet{color:var(--orange);border-color:rgba(245,158,11,0.2);background:var(--orange-bg)}
 .q-link.neet:hover{background:rgba(245,158,11,0.2)}
-
-/* Concept Q block */
 .concept-block{padding:14px;border-bottom:1px solid var(--border)}
 .concept-block:last-child{border-bottom:none}
 .cq-title{font-size:11px;font-weight:700;color:var(--accent2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
 .cq-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-size:12px;color:var(--text2);line-height:1.55}
 .cq-dot{width:6px;height:6px;min-width:6px;border-radius:50%;background:var(--accent);margin-top:5px;flex-shrink:0}
 .cq-item strong{color:var(--text)}
-
-/* Quick ref table */
 .ref-table{width:100%;font-size:11.5px;border-collapse:collapse}
 .ref-table th{background:var(--bg3);color:var(--text3);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:7px 10px;text-align:left;border-bottom:1px solid var(--border)}
 .ref-table td{padding:7px 10px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
 .ref-table tr:last-child td{border-bottom:none}
 .ref-table tr:hover td{background:var(--bg3)}
-
 .tab-inner{display:flex;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border);background:var(--bg3)}
 .tab-inner::-webkit-scrollbar{display:none}
 </style>
@@ -73,9 +98,9 @@
 
 <div class="stats">
   <div class="stat"><div class="stat-n" style="color:var(--beg)">18</div><div class="stat-l">Patterns</div></div>
-  <div class="stat"><div class="stat-n" id="dsa-done" style="color:var(--green)">0</div><div class="stat-l">Patterns done</div></div>
-  <div class="stat"><div class="stat-n" style="color:var(--int)">42</div><div class="stat-l">Must-solve problems</div></div>
-  <div class="stat"><div class="stat-n" style="color:var(--orange)">45m</div><div class="stat-l">Round length</div></div>
+  <div class="stat"><div class="stat-n" id="dsa-done" style="color:var(--green)">0</div><div class="stat-l">Patterns mastered</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--int)">170</div><div class="stat-l">Practice problems</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--orange)">88</div><div class="stat-l">★ Agoda-tagged</div></div>
 </div>
 <div class="prog-wrap">
   <div class="prog-label"><span>Patterns mastered</span><span id="dsa-pct">0 / 18</span></div>
@@ -101,6 +126,7 @@
       <div class="tab active" data-group="p1" id="tab-p1-cq" onclick="switchTab('p1','cq')">Concept Questions</div>
       <div class="tab" data-group="p1" id="tab-p1-prob" onclick="switchTab('p1','prob')">Problems & Links</div>
       <div class="tab" data-group="p1" id="tab-p1-code" onclick="switchTab('p1','code')">Key Code</div>
+      <div class="tab" data-group="p1" id="tab-p1-pq" onclick="switchTab('p1','pq')">📋 Practice Questions</div>
     </div>
     <div class="tab-panel active" data-group="p1" id="panel-p1-cq">
       <div class="concept-block">
@@ -148,6 +174,7 @@
     <span class="kw">return new int</span>[]{};
 }</pre>
     </div>
+    <div class="tab-panel" data-group="p1" id="panel-p1-pq"></div>
   </div>
 </div>
 
@@ -170,6 +197,7 @@
       <div class="tab active" data-group="p2" id="tab-p2-cq" onclick="switchTab('p2','cq')">Concept Questions</div>
       <div class="tab" data-group="p2" id="tab-p2-prob" onclick="switchTab('p2','prob')">Problems & Links</div>
       <div class="tab" data-group="p2" id="tab-p2-code" onclick="switchTab('p2','code')">Key Code</div>
+      <div class="tab" data-group="p2" id="tab-p2-pq" onclick="switchTab('p2','pq')">📋 Practice Questions</div>
     </div>
     <div class="tab-panel active" data-group="p2" id="panel-p2-cq">
       <div class="concept-block">
@@ -214,6 +242,7 @@
     <span class="kw">return</span> max;
 }</pre>
     </div>
+    <div class="tab-panel" data-group="p2" id="panel-p2-pq"></div>
   </div>
 </div>
 
@@ -236,6 +265,7 @@
       <div class="tab active" data-group="p3" id="tab-p3-cq" onclick="switchTab('p3','cq')">Concept Questions</div>
       <div class="tab" data-group="p3" id="tab-p3-prob" onclick="switchTab('p3','prob')">Problems & Links</div>
       <div class="tab" data-group="p3" id="tab-p3-code" onclick="switchTab('p3','code')">Key Code</div>
+      <div class="tab" data-group="p3" id="tab-p3-pq" onclick="switchTab('p3','pq')">📋 Practice Questions</div>
     </div>
     <div class="tab-panel active" data-group="p3" id="panel-p3-cq">
       <div class="concept-block">
@@ -292,6 +322,7 @@
     <span class="kw">return</span> res;
 }</pre>
     </div>
+    <div class="tab-panel" data-group="p3" id="panel-p3-pq"></div>
   </div>
 </div>
 
@@ -314,6 +345,7 @@
       <div class="tab active" data-group="p4" id="tab-p4-cq" onclick="switchTab('p4','cq')">Concept Questions</div>
       <div class="tab" data-group="p4" id="tab-p4-prob" onclick="switchTab('p4','prob')">Problems & Links</div>
       <div class="tab" data-group="p4" id="tab-p4-code" onclick="switchTab('p4','code')">Key Code</div>
+      <div class="tab" data-group="p4" id="tab-p4-pq" onclick="switchTab('p4','pq')">📋 Practice Questions</div>
     </div>
     <div class="tab-panel active" data-group="p4" id="panel-p4-cq">
       <div class="concept-block">
@@ -356,6 +388,7 @@
     <span class="kw">return</span> prev;                   <span class="cm">// new head</span>
 }</pre>
     </div>
+    <div class="tab-panel" data-group="p4" id="panel-p4-pq"></div>
   </div>
 </div>
 
@@ -378,6 +411,7 @@
       <div class="tab active" data-group="p5" id="tab-p5-cq" onclick="switchTab('p5','cq')">Concept Questions</div>
       <div class="tab" data-group="p5" id="tab-p5-prob" onclick="switchTab('p5','prob')">Problems & Links</div>
       <div class="tab" data-group="p5" id="tab-p5-code" onclick="switchTab('p5','code')">Key Code</div>
+      <div class="tab" data-group="p5" id="tab-p5-pq" onclick="switchTab('p5','pq')">📋 Practice Questions</div>
     </div>
     <div class="tab-panel active" data-group="p5" id="panel-p5-cq">
       <div class="concept-block">
@@ -423,6 +457,7 @@
     <span class="kw">return</span> left;
 }</pre>
     </div>
+    <div class="tab-panel" data-group="p5" id="panel-p5-pq"></div>
   </div>
 </div>
 
@@ -445,6 +480,7 @@
       <div class="tab active" data-group="p6" id="tab-p6-cq" onclick="switchTab('p6','cq')">Concept Questions</div>
       <div class="tab" data-group="p6" id="tab-p6-prob" onclick="switchTab('p6','prob')">Problems & Links</div>
       <div class="tab" data-group="p6" id="tab-p6-code" onclick="switchTab('p6','code')">Key Code</div>
+      <div class="tab" data-group="p6" id="tab-p6-pq" onclick="switchTab('p6','pq')">📋 Practice Questions</div>
     </div>
     <div class="tab-panel active" data-group="p6" id="panel-p6-cq">
       <div class="concept-block">
@@ -498,6 +534,7 @@
     <span class="kw">return</span> dp[amount] > amount ? -1 : dp[amount];
 }</pre>
     </div>
+    <div class="tab-panel" data-group="p6" id="panel-p6-pq"></div>
   </div>
 </div>
 
@@ -520,6 +557,7 @@
       <div class="tab active" data-group="p7" id="tab-p7-cq" onclick="switchTab('p7','cq')">Concept Questions</div>
       <div class="tab" data-group="p7" id="tab-p7-prob" onclick="switchTab('p7','prob')">Problems & Links</div>
       <div class="tab" data-group="p7" id="tab-p7-code" onclick="switchTab('p7','code')">Key Code</div>
+      <div class="tab" data-group="p7" id="tab-p7-pq" onclick="switchTab('p7','pq')">📋 Practice Questions</div>
     </div>
     <div class="tab-panel active" data-group="p7" id="panel-p7-cq">
       <div class="concept-block">
@@ -565,6 +603,7 @@
     <span class="fn">dfs</span>(g,r+1,c); <span class="fn">dfs</span>(g,r-1,c); <span class="fn">dfs</span>(g,r,c+1); <span class="fn">dfs</span>(g,r,c-1);
 }</pre>
     </div>
+    <div class="tab-panel" data-group="p7" id="panel-p7-pq"></div>
   </div>
 </div>
 
@@ -587,6 +626,7 @@
       <div class="tab active" data-group="p8" id="tab-p8-cq" onclick="switchTab('p8','cq')">Concept Questions</div>
       <div class="tab" data-group="p8" id="tab-p8-prob" onclick="switchTab('p8','prob')">Problems & Links</div>
       <div class="tab" data-group="p8" id="tab-p8-code" onclick="switchTab('p8','code')">Key Code</div>
+      <div class="tab" data-group="p8" id="tab-p8-pq" onclick="switchTab('p8','pq')">📋 Practice Questions</div>
     </div>
     <div class="tab-panel active" data-group="p8" id="panel-p8-cq">
       <div class="concept-block">
@@ -629,6 +669,7 @@
 }
 <span class="cm">// Max-heap: new PriorityQueue<>((a,b) -> b-a)</span></pre>
     </div>
+    <div class="tab-panel" data-group="p8" id="panel-p8-pq"></div>
   </div>
 </div>
 
@@ -651,6 +692,7 @@
       <div class="tab active" data-group="p9" id="tab-p9-cq" onclick="switchTab('p9','cq')">Concept Questions</div>
       <div class="tab" data-group="p9" id="tab-p9-prob" onclick="switchTab('p9','prob')">Problems & Links</div>
       <div class="tab" data-group="p9" id="tab-p9-code" onclick="switchTab('p9','code')">Key Code</div>
+      <div class="tab" data-group="p9" id="tab-p9-pq" onclick="switchTab('p9','pq')">📋 Practice Questions</div>
     </div>
     <div class="tab-panel active" data-group="p9" id="panel-p9-cq">
       <div class="concept-block">
@@ -695,6 +737,7 @@
 <span class="cm">// Correct version: save idx before pop
 // int idx = stack.pop(); res[idx] = i - idx;</span></pre>
     </div>
+    <div class="tab-panel" data-group="p9" id="panel-p9-pq"></div>
   </div>
 </div>
 
@@ -717,6 +760,7 @@
       <div class="tab active" data-group="p10" id="tab-p10-cq" onclick="switchTab('p10','cq')">Concept Questions</div>
       <div class="tab" data-group="p10" id="tab-p10-prob" onclick="switchTab('p10','prob')">Problems & Links</div>
       <div class="tab" data-group="p10" id="tab-p10-code" onclick="switchTab('p10','code')">Key Code</div>
+      <div class="tab" data-group="p10" id="tab-p10-pq" onclick="switchTab('p10','pq')">📋 Practice Questions</div>
     </div>
     <div class="tab-panel active" data-group="p10" id="panel-p10-cq">
       <div class="concept-block">
@@ -768,6 +812,7 @@
     }
 }</pre>
     </div>
+    <div class="tab-panel" data-group="p10" id="panel-p10-pq"></div>
   </div>
 </div>
 
@@ -784,6 +829,7 @@
       <div class="tab active" data-group="p11" id="tab-p11-cq" onclick="switchTab('p11','cq')">Concept Questions</div>
       <div class="tab" data-group="p11" id="tab-p11-prob" onclick="switchTab('p11','prob')">Problems & Links</div>
       <div class="tab" data-group="p11" id="tab-p11-code" onclick="switchTab('p11','code')">Key Code</div>
+      <div class="tab" data-group="p11" id="tab-p11-pq" onclick="switchTab('p11','pq')">📋 Practice Questions</div>
     </div>
     <div class="tab-panel active" data-group="p11" id="panel-p11-cq">
       <div class="concept-block">
@@ -823,6 +869,7 @@
     <span class="kw">return</span> res;
 }</pre>
     </div>
+    <div class="tab-panel" data-group="p11" id="panel-p11-pq"></div>
   </div>
 </div>
 
@@ -956,6 +1003,7 @@
       <div class="tab active" data-group="p14" id="tab-p14-cq" onclick="switchTab('p14','cq')">Concept Questions</div>
       <div class="tab" data-group="p14" id="tab-p14-prob" onclick="switchTab('p14','prob')">Problems & Links</div>
       <div class="tab" data-group="p14" id="tab-p14-code" onclick="switchTab('p14','code')">Key Code</div>
+      <div class="tab" data-group="p14" id="tab-p14-pq" onclick="switchTab('p14','pq')">📋 Practice Questions</div>
     </div>
     <div class="tab-panel active" data-group="p14" id="panel-p14-cq">
       <div class="concept-block">
@@ -998,6 +1046,7 @@
     <span class="kw">return</span> res.toArray(<span class="kw">new int</span>[0][]);
 }</pre>
     </div>
+    <div class="tab-panel" data-group="p14" id="panel-p14-pq"></div>
   </div>
 </div>
 
@@ -1069,6 +1118,7 @@
       <div class="tab active" data-group="p16" id="tab-p16-cq" onclick="switchTab('p16','cq')">Concept Questions</div>
       <div class="tab" data-group="p16" id="tab-p16-prob" onclick="switchTab('p16','prob')">Problems & Links</div>
       <div class="tab" data-group="p16" id="tab-p16-code" onclick="switchTab('p16','code')">Key Code</div>
+      <div class="tab" data-group="p16" id="tab-p16-pq" onclick="switchTab('p16','pq')">📋 Practice Questions</div>
     </div>
     <div class="tab-panel active" data-group="p16" id="panel-p16-cq">
       <div class="concept-block">
@@ -1098,6 +1148,7 @@
     <span class="kw">return</span> heap.size(); <span class="cm">// rooms in use = rooms needed</span>
 }</pre>
     </div>
+    <div class="tab-panel" data-group="p16" id="panel-p16-pq"></div>
   </div>
 </div>
 
@@ -1114,6 +1165,7 @@
       <div class="tab active" data-group="p17" id="tab-p17-cq" onclick="switchTab('p17','cq')">Concept Questions</div>
       <div class="tab" data-group="p17" id="tab-p17-prob" onclick="switchTab('p17','prob')">Problems & Links</div>
       <div class="tab" data-group="p17" id="tab-p17-code" onclick="switchTab('p17','code')">Key Code</div>
+      <div class="tab" data-group="p17" id="tab-p17-pq" onclick="switchTab('p17','pq')">📋 Practice Questions</div>
     </div>
     <div class="tab-panel active" data-group="p17" id="panel-p17-cq">
       <div class="concept-block">
@@ -1149,6 +1201,7 @@
     <span class="kw">return</span> s.substring(start,start+maxLen);
 }</pre>
     </div>
+    <div class="tab-panel" data-group="p17" id="panel-p17-pq"></div>
   </div>
 </div>
 
@@ -1244,6 +1297,526 @@
 buildNav('dsa');
 const dsaDone = initChecks('dsa-done', 18, 'dsa-done', 'dsa-pct', 'dsa-fill');
 function dsaToggle(id){ toggleCheck(id, dsaDone, 'dsa-done', 18, 'dsa-done', 'dsa-pct', 'dsa-fill'); }
+
+// ── PRACTICE QUESTION DATA (from dsa_prep.html) ─────────────────
+const SLUGS = {
+  1:'two-sum',2:'add-two-numbers',3:'longest-substring-without-repeating-characters',
+  5:'longest-palindromic-substring',8:'string-to-integer-atoi',11:'container-with-most-water',
+  13:'roman-to-integer',14:'longest-common-prefix',15:'3sum',17:'letter-combinations-of-a-phone-number',
+  18:'4sum',19:'remove-nth-node-from-end-of-list',20:'valid-parentheses',21:'merge-two-sorted-lists',
+  22:'generate-parentheses',23:'merge-k-sorted-lists',28:'find-the-index-of-the-first-occurrence-in-a-string',
+  31:'next-permutation',33:'search-in-rotated-sorted-array',35:'search-insert-position',
+  37:'sudoku-solver',39:'combination-sum',40:'combination-sum-ii',42:'trapping-rain-water',
+  45:'jump-game-ii',46:'permutations',47:'permutations-ii',49:'group-anagrams',
+  51:'n-queens',53:'maximum-subarray',55:'jump-game',56:'merge-intervals',
+  57:'insert-interval',62:'unique-paths',64:'minimum-path-sum',70:'climbing-stairs',
+  72:'edit-distance',74:'search-a-2d-matrix',75:'sort-colors',76:'minimum-window-substring',
+  77:'combinations',78:'subsets',79:'word-search',84:'largest-rectangle-in-histogram',
+  85:'maximal-rectangle',90:'subsets-ii',91:'decode-ways',92:'reverse-linked-list-ii',
+  94:'binary-tree-inorder-traversal',98:'validate-binary-search-tree',
+  100:'same-tree',101:'symmetric-tree',102:'binary-tree-level-order-traversal',
+  103:'binary-tree-zigzag-level-order-traversal',104:'maximum-depth-of-binary-tree',
+  105:'construct-binary-tree-from-preorder-and-inorder-traversal',
+  110:'balanced-binary-tree',112:'path-sum',114:'flatten-binary-tree-to-linked-list',
+  116:'populating-next-right-pointers-in-each-node',124:'binary-tree-maximum-path-sum',
+  125:'valid-palindrome',128:'longest-consecutive-sequence',130:'surrounded-regions',
+  131:'palindrome-partitioning',133:'clone-graph',138:'copy-list-with-random-pointer',
+  139:'word-break',140:'word-break-ii',141:'linked-list-cycle',
+  142:'linked-list-cycle-ii',143:'reorder-list',144:'binary-tree-preorder-traversal',
+  145:'binary-tree-postorder-traversal',146:'lru-cache',150:'evaluate-reverse-polish-notation',
+  151:'reverse-words-in-a-string',153:'find-minimum-in-rotated-sorted-array',
+  155:'min-stack',162:'find-peak-element',169:'majority-element',
+  198:'house-robber',199:'binary-tree-right-side-view',200:'number-of-islands',
+  202:'happy-number',205:'isomorphic-strings',206:'reverse-linked-list',
+  207:'course-schedule',209:'minimum-size-subarray-sum',210:'course-schedule-ii',
+  212:'word-search-ii',213:'house-robber-ii',215:'kth-largest-element-in-an-array',
+  217:'contains-duplicate',227:'basic-calculator-ii',230:'kth-smallest-element-in-a-bst',
+  232:'implement-queue-using-stacks',234:'palindrome-linked-list',235:'lowest-common-ancestor-of-a-binary-search-tree',
+  238:'product-of-array-except-self',239:'sliding-window-maximum',240:'search-a-2d-matrix-ii',
+  242:'valid-anagram',253:'meeting-rooms-ii',271:'encode-and-decode-strings',
+  278:'first-bad-version',286:'walls-and-gates',290:'word-pattern',
+  295:'find-median-from-data-stream',297:'serialize-and-deserialize-binary-tree',
+  300:'longest-increasing-subsequence',303:'range-sum-query-immutable',
+  305:'number-of-islands-ii',312:'burst-balloons',322:'coin-change',
+  323:'number-of-connected-components-in-an-undirected-graph',
+  344:'reverse-string',347:'top-k-frequent-elements',349:'intersection-of-two-arrays',
+  373:'find-k-pairs-with-smallest-sums',378:'kth-smallest-element-in-a-sorted-matrix',
+  387:'first-unique-character-in-a-string',394:'decode-string',
+  409:'longest-palindrome',410:'split-array-largest-sum',416:'partition-equal-subset-sum',
+  417:'pacific-atlantic-water-flow',429:'n-ary-tree-level-order-traversal',
+  430:'flatten-a-multilevel-doubly-linked-list',435:'non-overlapping-intervals',
+  438:'find-all-anagrams-in-a-string',450:'delete-node-in-a-bst',
+  451:'sort-characters-by-frequency',454:'4sum-ii',459:'repeated-substring-pattern',
+  460:'lfu-cache',496:'next-greater-element-i',503:'next-greater-element-ii',
+  509:'fibonacci-number',516:'longest-palindromic-subsequence',
+  518:'coin-change-ii',523:'continuous-subarray-sum',
+  525:'contiguous-array',542:'01-matrix',543:'diameter-of-binary-tree',
+  547:'number-of-provinces',560:'subarray-sum-equals-k',567:'permutation-in-string',
+  621:'task-scheduler',622:'design-circular-queue',
+  632:'smallest-range-covering-elements-from-k-lists',
+  637:'average-of-levels-in-binary-tree',643:'maximum-average-subarray-i',
+  647:'palindromic-substrings',662:'maximum-width-of-binary-tree',
+  684:'redundant-connection',692:'top-k-frequent-words',695:'max-area-of-island',
+  700:'search-in-a-binary-search-tree',701:'insert-into-a-binary-search-tree',
+  703:'kth-largest-element-in-a-stream',704:'binary-search',
+  719:'find-k-th-smallest-pair-distance',721:'accounts-merge',
+  739:'daily-temperatures',743:'network-delay-time',
+  746:'min-cost-climbing-stairs',767:'reorganize-string',
+  774:'minimize-max-distance-to-gas-station',
+  787:'cheapest-flights-within-k-stops',
+  875:'koko-eating-bananas',876:'middle-of-the-linked-list',
+  904:'fruit-into-baskets',907:'sum-of-subarray-minimums',
+  973:'k-closest-points-to-origin',974:'subarray-sums-divisible-by-k',
+  981:'time-based-key-value-store',994:'rotting-oranges',
+  1004:'max-consecutive-ones-iii',1011:'capacity-to-ship-packages-within-d-days',
+  1091:'shortest-path-in-binary-matrix',1114:'print-in-order',
+  1115:'print-foobar-alternately',1116:'print-zero-even-odd',
+  1117:'building-h2o',1143:'longest-common-subsequence',
+  1188:'design-bounded-blocking-queue',1242:'web-crawler-multithreaded',
+  1319:'number-of-operations-to-make-network-connected',
+  1334:'find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance',
+  1343:'number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold',
+  1631:'path-with-minimum-effort',1971:'find-if-path-exists-in-graph',
+  2461:'maximum-sum-of-distinct-subarrays-with-length-k',
+  424:'longest-repeating-character-replacement'
+};
+function lcUrl(n){ return SLUGS[n]?'https://leetcode.com/problems/'+SLUGS[n]:'https://leetcode.com/problemset/'; }
+
+const PQ_DATA = {
+  hashmap: {summary:'The most useful interview data structure. Trade memory for O(1) lookup. getOrDefault(k,0)+1 is the building block of 30% of interview problems.',concepts:[
+    {t:'Frequency & counting',qs:[
+      {tx:'Two Sum',lc:1,d:'easy',ag:true,mu:true},
+      {tx:'Top K Frequent Elements',lc:347,d:'med',ag:true,mu:true},
+      {tx:'First Unique Character in String',lc:387,d:'easy',mu:true},
+      {tx:'Majority Element',lc:169,d:'easy',mu:true},
+      {tx:'Sort Characters By Frequency',lc:451,d:'med'}]},
+    {t:'Existence & deduplication',qs:[
+      {tx:'Contains Duplicate',lc:217,d:'easy',mu:true},
+      {tx:'Longest Consecutive Sequence',lc:128,d:'med',ag:true,mu:true},
+      {tx:'Happy Number',lc:202,d:'easy'},
+      {tx:'Intersection of Two Arrays',lc:349,d:'easy'}]},
+    {t:'Index mapping',qs:[
+      {tx:'Subarray Sum Equals K',lc:560,d:'med',ag:true,mu:true},
+      {tx:'Contiguous Array',lc:525,d:'med',ag:true},
+      {tx:'Isomorphic Strings',lc:205,d:'easy'},
+      {tx:'Word Pattern',lc:290,d:'easy'}]}
+  ]},
+  arrays: {summary:'Nearly every coding problem has an array at its core. Sliding window is the most tested pattern. Two pointers reduce O(n²) brute force to O(n) on sorted data.',concepts:[
+    {t:'Two pointer',qs:[
+      {tx:'Two Sum II – sorted array',lc:167,d:'easy',ag:true,mu:true},
+      {tx:'Three Sum',lc:15,d:'med',ag:true,mu:true},
+      {tx:'Container With Most Water',lc:11,d:'med',ag:true,mu:true},
+      {tx:'Trapping Rain Water',lc:42,d:'hard',ag:true},
+      {tx:'Four Sum',lc:18,d:'med'}]},
+    {t:'Sliding window – fixed size',qs:[
+      {tx:'Maximum Average Subarray I',lc:643,d:'easy',mu:true},
+      {tx:'Max Sum of Distinct Subarrays Length K',lc:2461,d:'med'}]},
+    {t:'Sliding window – variable size',qs:[
+      {tx:'Longest Substring Without Repeating Characters',lc:3,d:'med',ag:true,mu:true},
+      {tx:'Minimum Window Substring',lc:76,d:'hard',ag:true},
+      {tx:'Longest Repeating Character Replacement',lc:424,d:'med',ag:true},
+      {tx:'Minimum Size Subarray Sum',lc:209,d:'med',mu:true},
+      {tx:'Max Consecutive Ones III',lc:1004,d:'med'}]},
+    {t:'Prefix sums',qs:[
+      {tx:'Subarray Sum Equals K',lc:560,d:'med',ag:true,mu:true},
+      {tx:'Continuous Subarray Sum',lc:523,d:'med',ag:true},
+      {tx:'Product of Array Except Self',lc:238,d:'med',ag:true,mu:true},
+      {tx:'Subarray Sums Divisible by K',lc:974,d:'med'},
+      {tx:'Range Sum Query – Immutable',lc:303,d:'easy',mu:true}]},
+    {t:'Sorting-based & intervals',qs:[
+      {tx:'Merge Intervals',lc:56,d:'med',ag:true,mu:true},
+      {tx:'Insert Interval',lc:57,d:'med',ag:true},
+      {tx:'Meeting Rooms II',lc:253,d:'med',ag:true},
+      {tx:'Sort Colors – Dutch flag',lc:75,d:'med',mu:true},
+      {tx:'Non-overlapping Intervals',lc:435,d:'med'}]}
+  ]},
+  strings: {summary:'Strings are char arrays. Most string problems reduce to sliding window + HashMap combinations. Know charAt, StringBuilder — Strings are immutable in Java.',concepts:[
+    {t:'Manipulation basics',qs:[
+      {tx:'Reverse String',lc:344,d:'easy',mu:true},
+      {tx:'Valid Palindrome',lc:125,d:'easy',mu:true},
+      {tx:'Reverse Words in a String',lc:151,d:'med'},
+      {tx:'String to Integer atoi',lc:8,d:'med'}]},
+    {t:'Anagram & character frequency',qs:[
+      {tx:'Valid Anagram',lc:242,d:'easy',mu:true},
+      {tx:'Group Anagrams',lc:49,d:'med',ag:true,mu:true},
+      {tx:'Find All Anagrams in a String',lc:438,d:'med',ag:true},
+      {tx:'Permutation in String',lc:567,d:'med'}]},
+    {t:'Pattern matching & palindromes',qs:[
+      {tx:'Longest Palindromic Substring',lc:5,d:'med',ag:true,mu:true},
+      {tx:'Palindromic Substrings count',lc:647,d:'med'},
+      {tx:'Implement strStr',lc:28,d:'easy',mu:true},
+      {tx:'Repeated Substring Pattern',lc:459,d:'easy'}]},
+    {t:'Encoding & parsing',qs:[
+      {tx:'Encode and Decode Strings',lc:271,d:'med',ag:true},
+      {tx:'Decode Ways',lc:91,d:'med',ag:true},
+      {tx:'Roman to Integer',lc:13,d:'easy',mu:true},
+      {tx:'Basic Calculator II',lc:227,d:'med'}]}
+  ]},
+  stack: {summary:'Stack for most-recent lookups. Queue for BFS. Monotonic stack is the advanced pattern — use ArrayDeque in Java, not the legacy Stack class.',concepts:[
+    {t:'Stack basics',qs:[
+      {tx:'Valid Parentheses',lc:20,d:'easy',ag:true,mu:true},
+      {tx:'Min Stack',lc:155,d:'med',mu:true},
+      {tx:'Decode String',lc:394,d:'med',mu:true},
+      {tx:'Generate Parentheses',lc:22,d:'med',ag:true},
+      {tx:'Evaluate Reverse Polish Notation',lc:150,d:'med'}]},
+    {t:'Monotonic stack',qs:[
+      {tx:'Daily Temperatures',lc:739,d:'med',ag:true,mu:true},
+      {tx:'Next Greater Element I',lc:496,d:'easy',mu:true},
+      {tx:'Largest Rectangle in Histogram',lc:84,d:'hard',ag:true},
+      {tx:'Sum of Subarray Minimums',lc:907,d:'med'},
+      {tx:'Next Greater Element II circular',lc:503,d:'med'}]},
+    {t:'Queue & Deque',qs:[
+      {tx:'Implement Queue Using Stacks',lc:232,d:'easy',mu:true},
+      {tx:'Sliding Window Maximum',lc:239,d:'hard',ag:true},
+      {tx:'Design Circular Queue',lc:622,d:'med'}]}
+  ]},
+  linked: {summary:'Fast/slow pointer is the key pattern. LRU Cache is the #1 Staff-level linked list problem. Always draw it out first. Track prev, curr, next.',concepts:[
+    {t:'Pointer manipulation',qs:[
+      {tx:'Reverse Linked List',lc:206,d:'easy',ag:true,mu:true},
+      {tx:'Merge Two Sorted Lists',lc:21,d:'easy',mu:true},
+      {tx:'Remove Nth Node From End',lc:19,d:'med',mu:true},
+      {tx:'Merge K Sorted Lists',lc:23,d:'hard',ag:true},
+      {tx:'Reverse Linked List II',lc:92,d:'med'}]},
+    {t:'Fast/slow pointers',qs:[
+      {tx:'Linked List Cycle',lc:141,d:'easy',mu:true},
+      {tx:'Linked List Cycle II find start',lc:142,d:'med',ag:true},
+      {tx:'Middle of the Linked List',lc:876,d:'easy',mu:true},
+      {tx:'Reorder List',lc:143,d:'med',ag:true}]},
+    {t:'Advanced',qs:[
+      {tx:'LRU Cache',lc:146,d:'med',ag:true,mu:true},
+      {tx:'LFU Cache',lc:460,d:'hard'},
+      {tx:'Copy List with Random Pointer',lc:138,d:'med'}]}
+  ]},
+  trees: {summary:'Most common topic at mid-to-senior level. Master the 4 traversals and the recursive mental model. Solve for left, solve for right, combine at current node.',concepts:[
+    {t:'DFS traversals',qs:[
+      {tx:'Binary Tree Inorder Traversal',lc:94,d:'easy',mu:true},
+      {tx:'Binary Tree Preorder Traversal',lc:144,d:'easy',mu:true},
+      {tx:'Binary Tree Postorder Traversal',lc:145,d:'easy',mu:true}]},
+    {t:'BFS / Level order',qs:[
+      {tx:'Binary Tree Level Order Traversal',lc:102,d:'med',ag:true,mu:true},
+      {tx:'Binary Tree Zigzag Level Order',lc:103,d:'med',ag:true},
+      {tx:'Right Side View of Binary Tree',lc:199,d:'med',ag:true,mu:true},
+      {tx:'Average of Levels in Binary Tree',lc:637,d:'easy',mu:true},
+      {tx:'Maximum Width of Binary Tree',lc:662,d:'med'}]},
+    {t:'Properties & recursion',qs:[
+      {tx:'Maximum Depth of Binary Tree',lc:104,d:'easy',ag:true,mu:true},
+      {tx:'Diameter of Binary Tree',lc:543,d:'easy',ag:true,mu:true},
+      {tx:'Balanced Binary Tree',lc:110,d:'easy',mu:true},
+      {tx:'Same Tree',lc:100,d:'easy',mu:true},
+      {tx:'Path Sum',lc:112,d:'easy',mu:true},
+      {tx:'Binary Tree Maximum Path Sum',lc:124,d:'hard',ag:true}]},
+    {t:'BST operations',qs:[
+      {tx:'Validate Binary Search Tree',lc:98,d:'med',ag:true,mu:true},
+      {tx:'Kth Smallest in BST',lc:230,d:'med',ag:true},
+      {tx:'Lowest Common Ancestor of BST',lc:235,d:'med',mu:true},
+      {tx:'Insert into BST',lc:701,d:'med',mu:true},
+      {tx:'Delete Node in BST',lc:450,d:'med'}]},
+    {t:'Construction & serialization',qs:[
+      {tx:'Construct Tree from Preorder and Inorder',lc:105,d:'med',ag:true,mu:true},
+      {tx:'Serialize and Deserialize Binary Tree',lc:297,d:'hard',ag:true}]}
+  ]},
+  graphs: {summary:'Highest-priority topic at top companies. Hotel hierarchies, routing, connectivity — all graphs. Mark visited WHEN enqueued in BFS, not when dequeued.',concepts:[
+    {t:'BFS on grid',qs:[
+      {tx:'Number of Islands',lc:200,d:'med',ag:true,mu:true},
+      {tx:'Rotting Oranges',lc:994,d:'med',ag:true,mu:true},
+      {tx:'Shortest Path in Binary Matrix',lc:1091,d:'med',ag:true,mu:true},
+      {tx:'01 Matrix',lc:542,d:'med',mu:true},
+      {tx:'Walls and Gates',lc:286,d:'med',ag:true},
+      {tx:'Pacific Atlantic Water Flow',lc:417,d:'med'}]},
+    {t:'DFS & connected components',qs:[
+      {tx:'Clone Graph',lc:133,d:'med',mu:true},
+      {tx:'Max Area of Island',lc:695,d:'med',mu:true},
+      {tx:'Course Schedule – cycle detection',lc:207,d:'med',ag:true,mu:true},
+      {tx:'Course Schedule II – topological sort',lc:210,d:'med',ag:true},
+      {tx:'Number of Provinces',lc:547,d:'med',mu:true}]},
+    {t:'Shortest path – Dijkstra',qs:[
+      {tx:'Network Delay Time',lc:743,d:'med',ag:true,mu:true},
+      {tx:'Path With Minimum Effort',lc:1631,d:'med',ag:true},
+      {tx:'Cheapest Flights Within K Stops',lc:787,d:'med',ag:true}]},
+    {t:'Union Find',qs:[
+      {tx:'Redundant Connection',lc:684,d:'med',mu:true},
+      {tx:'Accounts Merge',lc:721,d:'med',ag:true},
+      {tx:'Number of Operations to Connect Network',lc:1319,d:'med'}]}
+  ]},
+  binary: {summary:'Beyond sorted arrays: binary search on the ANSWER. Define a monotonic condition, then search. lo=0, hi=n-1, mid=lo+(hi-lo)/2 avoids overflow.',concepts:[
+    {t:'Classic binary search',qs:[
+      {tx:'Binary Search',lc:704,d:'easy',mu:true},
+      {tx:'Find Minimum in Rotated Sorted Array',lc:153,d:'med',ag:true,mu:true},
+      {tx:'Search in Rotated Sorted Array',lc:33,d:'med',ag:true,mu:true},
+      {tx:'Find Peak Element',lc:162,d:'med',mu:true},
+      {tx:'Search Insert Position',lc:35,d:'easy',mu:true}]},
+    {t:'Binary search on answer',qs:[
+      {tx:'Koko Eating Bananas',lc:875,d:'med',ag:true,mu:true},
+      {tx:'Capacity To Ship Packages Within D Days',lc:1011,d:'med',ag:true},
+      {tx:'Split Array Largest Sum',lc:410,d:'hard',ag:true},
+      {tx:'Time Based Key-Value Store',lc:981,d:'med',ag:true}]},
+    {t:'Binary search on 2D',qs:[
+      {tx:'Search a 2D Matrix',lc:74,d:'med',mu:true},
+      {tx:'Search a 2D Matrix II',lc:240,d:'med',ag:true},
+      {tx:'First Bad Version',lc:278,d:'easy',mu:true}]}
+  ]},
+  heap: {summary:'PriorityQueue in Java — min-heap by default. Critical for Top-K problems and Dijkstra. Keep min-heap of size K: if new element > peek(), poll and add. O(n log K).',concepts:[
+    {t:'Top-K pattern',qs:[
+      {tx:'Kth Largest Element in an Array',lc:215,d:'med',ag:true,mu:true},
+      {tx:'Top K Frequent Elements',lc:347,d:'med',ag:true,mu:true},
+      {tx:'K Closest Points to Origin',lc:973,d:'med',ag:true,mu:true},
+      {tx:'Top K Frequent Words',lc:692,d:'med',ag:true},
+      {tx:'Kth Largest in a Stream',lc:703,d:'easy',mu:true}]},
+    {t:'K-way merge',qs:[
+      {tx:'Merge K Sorted Lists',lc:23,d:'hard',ag:true,mu:true},
+      {tx:'Kth Smallest in Sorted Matrix',lc:378,d:'med',ag:true},
+      {tx:'Find K Pairs with Smallest Sums',lc:373,d:'med'}]},
+    {t:'Median & streams',qs:[
+      {tx:'Find Median from Data Stream',lc:295,d:'hard',ag:true,mu:true},
+      {tx:'Task Scheduler',lc:621,d:'med',ag:true},
+      {tx:'Reorganize String',lc:767,d:'med'}]}
+  ]},
+  recursion: {summary:'Pattern: choose → explore → unchoose. Used for all generate-all problems. Use start index to avoid duplicates. Use visited[] boolean array for permutations.',concepts:[
+    {t:'Subsets & combinations',qs:[
+      {tx:'Subsets',lc:78,d:'med',mu:true},
+      {tx:'Combination Sum',lc:39,d:'med',ag:true,mu:true},
+      {tx:'Combinations',lc:77,d:'med',mu:true},
+      {tx:'Letter Combinations of Phone Number',lc:17,d:'med',ag:true,mu:true},
+      {tx:'Subsets II with duplicates',lc:90,d:'med'}]},
+    {t:'Permutations',qs:[
+      {tx:'Permutations',lc:46,d:'med',mu:true},
+      {tx:'Next Permutation',lc:31,d:'med',ag:true},
+      {tx:'Permutations II with duplicates',lc:47,d:'med'}]},
+    {t:'Grid backtracking',qs:[
+      {tx:'Word Search',lc:79,d:'med',ag:true,mu:true},
+      {tx:'N-Queens',lc:51,d:'hard'},
+      {tx:'Sudoku Solver',lc:37,d:'hard'}]}
+  ]},
+  dp: {summary:'Define what dp[i] means clearly before writing any code. Everything else follows. Both 1D and 2D DP covered.',concepts:[
+    {t:'1D DP – linear',qs:[
+      {tx:'Climbing Stairs',lc:70,d:'easy',ag:true,mu:true},
+      {tx:'House Robber',lc:198,d:'med',mu:true},
+      {tx:'Min Cost Climbing Stairs',lc:746,d:'easy',mu:true},
+      {tx:'House Robber II circular',lc:213,d:'med'}]},
+    {t:'1D DP – array decisions',qs:[
+      {tx:'Longest Increasing Subsequence',lc:300,d:'med',ag:true,mu:true},
+      {tx:'Maximum Subarray – Kadane',lc:53,d:'med',ag:true,mu:true},
+      {tx:'Jump Game',lc:55,d:'med',mu:true},
+      {tx:'Jump Game II',lc:45,d:'med',ag:true},
+      {tx:'Partition Equal Subset Sum',lc:416,d:'med',ag:true}]},
+    {t:'2D DP – grids & strings',qs:[
+      {tx:'Unique Paths',lc:62,d:'med',mu:true},
+      {tx:'Minimum Path Sum',lc:64,d:'med',mu:true},
+      {tx:'Edit Distance',lc:72,d:'hard',ag:true,mu:true},
+      {tx:'Longest Common Subsequence',lc:1143,d:'med',ag:true,mu:true},
+      {tx:'Coin Change',lc:322,d:'med',ag:true,mu:true},
+      {tx:'Word Break',lc:139,d:'med',ag:true,mu:true}]}
+  ]},
+  concurrency: {summary:'Critical for Staff-level platform rounds. Thread safety, locks, Java memory model. Use synchronized, volatile, AtomicInteger for shared state.',concepts:[
+    {t:'Thread safety fundamentals',qs:[
+      {tx:'Print in Order',lc:1114,d:'easy',ag:true,mu:true},
+      {tx:'Print FooBar Alternately',lc:1115,d:'med',ag:true,mu:true},
+      {tx:'Print Zero Even Odd',lc:1116,d:'med',ag:true},
+      {tx:'Building H2O',lc:1117,d:'med',ag:true}]},
+    {t:'Concurrent data structures',qs:[
+      {tx:'LRU Cache – thread-safe design',lc:146,d:'med',ag:true,mu:true},
+      {tx:'Design Bounded Blocking Queue',lc:1188,d:'med',ag:true},
+      {tx:'Web Crawler Multithreaded',lc:1242,d:'med',ag:true}]}
+  ]}
+};
+
+// Map pattern IDs to PQ_DATA keys
+const PQ_MAP = {
+  p1:'hashmap', p2:'arrays', p3:'trees', p4:'linked', p5:'binary',
+  p6:'dp', p7:'graphs', p8:'heap', p9:'stack', p10:'recursion',
+  p11:'arrays', p12:null, p13:null, p14:'arrays', p15:'graphs',
+  p16:'arrays', p17:'strings', p18:'dp'
+};
+
+// ── PQ DONE tracking (separate from pattern mastery) ────────────
+const PQ_DONE = new Set(JSON.parse(localStorage.getItem('pq-done') || '[]'));
+
+function pqId(dsaKey, ci, qi) { return `pq-${dsaKey}-${ci}-${qi}`; }
+
+function togglePqDone(id) {
+  PQ_DONE.has(id) ? PQ_DONE.delete(id) : PQ_DONE.add(id);
+  localStorage.setItem('pq-done', JSON.stringify([...PQ_DONE]));
+  const chk = document.getElementById('pqc-' + id);
+  const txt = document.getElementById('pqt-' + id);
+  if (chk) chk.classList.toggle('done', PQ_DONE.has(id));
+  if (txt) txt.classList.toggle('done', PQ_DONE.has(id));
+  updatePqStats();
+}
+
+function updatePqStats() {
+  // Update global stat displays if they exist
+  const totalEl = document.getElementById('pq-total');
+  const doneEl  = document.getElementById('pq-done-count');
+  if (!totalEl) return;
+  let total = 0;
+  Object.values(PQ_DATA).forEach(sec => sec.concepts.forEach(c => total += c.qs.length));
+  totalEl.textContent = total;
+  doneEl.textContent  = PQ_DONE.size;
+}
+
+// ── Render a PQ panel ────────────────────────────────────────────
+function renderPqPanel(panelEl, dsaKey) {
+  const data = PQ_DATA[dsaKey];
+  if (!data) { panelEl.innerHTML = '<div class="pq-empty">No practice questions mapped for this pattern yet.</div>'; return; }
+
+  let activeFilter = 'all';
+
+  function render(searchVal) {
+    const q = (searchVal || '').toLowerCase();
+    const total = data.concepts.reduce((a,c) => a + c.qs.length, 0);
+    const agoda = data.concepts.reduce((a,c) => a + c.qs.filter(x => x.ag).length, 0);
+    const done  = data.concepts.reduce((a,c) => a + c.qs.filter((_,ci2) =>
+      c.qs.map((_,qi) => pqId(dsaKey, data.concepts.indexOf(c), qi)).some(id => PQ_DONE.has(id))
+    ).length, 0);
+
+    let html = `
+      <div class="pq-filters">
+        <input class="pq-search" id="pqs-${dsaKey}" placeholder="Search questions…" oninput="renderPqPanel(document.getElementById('panel-${Object.entries(PQ_MAP).find(([k,v])=>v===dsaKey)?.[0]||''}-pq'), '${dsaKey}')" value="${searchVal||''}">
+        <button class="pq-filter${activeFilter==='all'?' on':''}" onclick="setPqFilter('${dsaKey}','all',this)">All</button>
+        <button class="pq-filter${activeFilter==='ag'?' on':''}" onclick="setPqFilter('${dsaKey}','ag',this)">★ Agoda (${agoda})</button>
+        <button class="pq-filter${activeFilter==='mu'?' on':''}" onclick="setPqFilter('${dsaKey}','mu',this)">Must-solve</button>
+        <button class="pq-filter${activeFilter==='todo'?' on':''}" onclick="setPqFilter('${dsaKey}','todo',this)">To do</button>
+      </div>
+      <div class="pq-stats">Total: <span class="pq-stat-n">${total}</span>&nbsp;&nbsp;Agoda: <span class="pq-stat-n" style="color:#ff6b4a">${agoda}</span>&nbsp;&nbsp;Done: <span class="pq-stat-n" style="color:var(--green)">${PQ_DONE.size}</span>
+      </div>`;
+
+    let anyVisible = false;
+    data.concepts.forEach((concept, ci) => {
+      const filtered = concept.qs.filter((qq, qi) => {
+        const id = pqId(dsaKey, ci, qi);
+        const fMatch = activeFilter === 'all' ? true
+          : activeFilter === 'ag'   ? qq.ag
+          : activeFilter === 'mu'   ? qq.mu
+          : activeFilter === 'todo' ? !PQ_DONE.has(id)
+          : true;
+        const sMatch = !q || qq.tx.toLowerCase().includes(q) || concept.t.toLowerCase().includes(q);
+        return fMatch && sMatch;
+      });
+      if (!filtered.length) return;
+      anyVisible = true;
+
+      html += `<div class="pq-group">
+        <div class="pq-group-label">${concept.t} <span style="font-size:9px;opacity:.6">${filtered.length} question${filtered.length!==1?'s':''}</span></div>`;
+      filtered.forEach((qq, fqi) => {
+        const origQi = concept.qs.indexOf(qq);
+        const id = pqId(dsaKey, ci, origQi);
+        const isDone = PQ_DONE.has(id);
+        html += `<div class="pq-row">
+          <div class="pq-check${isDone?' done':''}" id="pqc-${id}" onclick="togglePqDone('${id}')" title="Mark complete"></div>
+          <div style="flex:1;min-width:0">
+            <div class="pq-text${isDone?' done':''}" id="pqt-${id}">LC ${qq.lc} — ${qq.tx}</div>
+            <div class="pq-badges">
+              ${qq.ag ? '<span class="b-ag">★ Agoda</span>' : ''}
+              ${qq.mu ? '<span class="b-mu">must</span>' : ''}
+              <span class="b-${qq.d}">${qq.d}</span>
+              <a class="pq-lc" href="${lcUrl(qq.lc)}" target="_blank">↗ LeetCode</a>
+            </div>
+          </div>
+        </div>`;
+      });
+      html += `</div>`;
+    });
+
+    if (!anyVisible) html += `<div class="pq-empty">No questions match this filter.</div>`;
+    panelEl.innerHTML = html;
+  }
+
+  // Store active filter per panel so filter buttons can update it
+  panelEl._activeFilter = 'all';
+  panelEl._render = render;
+  render('');
+}
+
+// Filter setter called by buttons
+function setPqFilter(dsaKey, filter, btn) {
+  // Find the panel
+  const pid = Object.entries(PQ_MAP).find(([k,v]) => v === dsaKey)?.[0];
+  if (!pid) return;
+  const panel = document.getElementById(`panel-${pid}-pq`);
+  if (!panel) return;
+  panel._activeFilter = filter;
+  // Re-render — we re-call renderPqPanel with the closure updating activeFilter
+  // Simple approach: set data attr and re-render
+  panel.setAttribute('data-filter', filter);
+  renderPqPanelWithFilter(panel, dsaKey, filter, document.getElementById(`pqs-${dsaKey}`)?.value || '');
+}
+
+function renderPqPanelWithFilter(panelEl, dsaKey, activeFilter, searchVal) {
+  const data = PQ_DATA[dsaKey];
+  if (!data) return;
+  const q = (searchVal || '').toLowerCase();
+  const total = data.concepts.reduce((a,c) => a + c.qs.length, 0);
+  const agoda = data.concepts.reduce((a,c) => a + c.qs.filter(x => x.ag).length, 0);
+
+  // Find the pattern ID for search input id
+  const pid = Object.entries(PQ_MAP).find(([k,v]) => v === dsaKey)?.[0] || '';
+
+  let html = `
+    <div class="pq-filters">
+      <input class="pq-search" id="pqs-${dsaKey}" placeholder="Search questions…" oninput="renderPqPanelWithFilter(document.getElementById('panel-${pid}-pq'),'${dsaKey}',document.querySelector('[data-filter]')?.getAttribute('data-filter')||'all',this.value)" value="${searchVal||''}">
+      <button class="pq-filter${activeFilter==='all'?' on':''}" onclick="setPqFilter('${dsaKey}','all',this)">All</button>
+      <button class="pq-filter${activeFilter==='ag'?' on':''}" onclick="setPqFilter('${dsaKey}','ag',this)">★ Agoda (${agoda})</button>
+      <button class="pq-filter${activeFilter==='mu'?' on':''}" onclick="setPqFilter('${dsaKey}','mu',this)">Must-solve</button>
+      <button class="pq-filter${activeFilter==='todo'?' on':''}" onclick="setPqFilter('${dsaKey}','todo',this)">To do</button>
+    </div>
+    <div class="pq-stats">Total: <span class="pq-stat-n">${total}</span>&nbsp;&nbsp;Agoda-critical: <span class="pq-stat-n" style="color:#ff6b4a">${agoda}</span>&nbsp;&nbsp;Completed: <span class="pq-stat-n" style="color:var(--green)">${PQ_DONE.size}</span></div>`;
+
+  let anyVisible = false;
+  data.concepts.forEach((concept, ci) => {
+    const filtered = concept.qs.filter((qq, qi) => {
+      const id = pqId(dsaKey, ci, qi);
+      const fMatch = activeFilter === 'all' ? true
+        : activeFilter === 'ag'   ? qq.ag
+        : activeFilter === 'mu'   ? qq.mu
+        : activeFilter === 'todo' ? !PQ_DONE.has(id)
+        : true;
+      const sMatch = !q || qq.tx.toLowerCase().includes(q) || concept.t.toLowerCase().includes(q);
+      return fMatch && sMatch;
+    });
+    if (!filtered.length) return;
+    anyVisible = true;
+
+    html += `<div class="pq-group">
+      <div class="pq-group-label">${concept.t} <span style="font-size:9px;opacity:.6">${filtered.length} question${filtered.length!==1?'s':''}</span></div>`;
+    filtered.forEach(qq => {
+      const origQi = concept.qs.indexOf(qq);
+      const id = pqId(dsaKey, ci, origQi);
+      const isDone = PQ_DONE.has(id);
+      html += `<div class="pq-row">
+        <div class="pq-check${isDone?' done':''}" id="pqc-${id}" onclick="togglePqDone('${id}')" title="Mark complete"></div>
+        <div style="flex:1;min-width:0">
+          <div class="pq-text${isDone?' done':''}" id="pqt-${id}">LC ${qq.lc} — ${qq.tx}</div>
+          <div class="pq-badges">
+            ${qq.ag ? '<span class="b-ag">★ Agoda</span>' : ''}
+            ${qq.mu ? '<span class="b-mu">must</span>' : ''}
+            <span class="b-${qq.d}">${qq.d}</span>
+            <a class="pq-lc" href="${lcUrl(qq.lc)}" target="_blank">↗ LeetCode</a>
+          </div>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+
+  if (!anyVisible) html += `<div class="pq-empty">No questions match this filter.</div>`;
+  panelEl.innerHTML = html;
+  panelEl.setAttribute('data-filter', activeFilter);
+}
+
+// ── Auto-init PQ panels when their tab is clicked ────────────────
+// Intercept switchTab to lazily render PQ panels
+const _origSwitchTab = window.switchTab;
+window.switchTab = function(groupId, tab) {
+  _origSwitchTab(groupId, tab);
+  if (tab === 'pq') {
+    const panel = document.getElementById(`panel-${groupId}-pq`);
+    const dsaKey = PQ_MAP[groupId];
+    if (panel && dsaKey && !panel.hasAttribute('data-rendered')) {
+      renderPqPanelWithFilter(panel, dsaKey, 'all', '');
+      panel.setAttribute('data-rendered', '1');
+    }
+  }
+};
 </script>
 </body>
 </html>
