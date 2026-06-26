@@ -95,6 +95,7 @@ function buildNav(activeId) {
         </button>
         <button class="nav-search-btn" id="search-open-btn" title="Search (/)">🔍</button>
         <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle theme"></button>
+        <div class="nav-cd" id="cd">...</div>
         <button class="nav-hamburger" id="nav-hamburger" title="Menu">☰</button>
       </div>
     </div>
@@ -354,7 +355,7 @@ function toggleCheck(id, done, key, total, statId, pctId, fillId) {
 
 function _updateProg(done, total, statId, pctId, fillId) {
   const n = done.size;
-  const el_s = document.getElementById(statId); if (el_s) el_s.textContent = n;
-  const el_p = document.getElementById(pctId);  if (el_p) el_p.textContent = `${n} / ${total}`;
-  const el_f = document.getElementById(fillId); if (el_f) el_f.style.width = total ? Math.round(n / total * 100) + '%' : '0%';
+  const el_s = statId && document.getElementById(statId); if (el_s) el_s.textContent = n;
+  const el_p = pctId  && document.getElementById(pctId);  if (el_p) el_p.textContent = `${n} / ${total}`;
+  const el_f = fillId && document.getElementById(fillId); if (el_f) el_f.style.width = total ? Math.round(n / total * 100) + '%' : '0%';
 }

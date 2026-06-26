@@ -5,46 +5,67 @@
 <title>PrepKit — Platform Round</title>
 <link rel="stylesheet" href="shared.css">
 <style>
-/* Platform-specific classes not in shared.css */
-.ph1 .sec-icon{background:rgba(108,99,255,0.15)}
-.ph2 .sec-icon{background:rgba(16,185,129,0.15)}
-.ph3 .sec-icon{background:rgba(245,158,11,0.15)}
-.ph4 .sec-icon{background:rgba(255,77,109,0.15)}
-.sec-sum{font-size:12.5px;color:var(--text2);padding:10px 14px 4px;line-height:1.65}
-.block-desc{font-size:12.5px;color:var(--text2);line-height:1.75;margin-bottom:10px}
-.b-must{background:rgba(244,63,94,0.1);color:var(--red);border:1px solid rgba(244,63,94,0.25)}
-.chk{width:18px;height:18px;min-width:18px;border:1.5px solid var(--border2);border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px;flex-shrink:0;transition:all .14s}
-.chk:hover{border-color:var(--accent)}
-.chk.done{background:var(--green);border-color:var(--green)}
-.chk.done::after{content:"✓";font-size:11px;color:#fff;font-weight:700}
-.dot{width:6px;height:6px;min-width:6px;border-radius:50%;margin-top:6px;flex-shrink:0}
+/* Platform page-specific */
+.ph1 .sec-icon { background: rgba(108,99,255,0.15); }
+.ph2 .sec-icon { background: rgba(16,185,129,0.15); }
+.ph3 .sec-icon { background: rgba(245,158,11,0.15); }
+.ph4 .sec-icon { background: rgba(255,77,109,0.15); }
+.b-must { background: rgba(244,63,94,0.1); color: var(--red); border: 1px solid rgba(244,63,94,0.25); padding: 1px 7px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+.b-info { background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(56,189,248,0.2); padding: 1px 7px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+.dot { width: 8px; height: 8px; min-width: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+
+/* Content spacing fixes */
+.sec-body.open .block { padding: 16px 18px; border-bottom: 1px solid var(--border); margin-bottom: 0; }
+.sec-body.open .block:last-child { border-bottom: none; }
+.sec-body.open .block .block-title { font-size: 12px; margin-bottom: 10px; }
+.sec-body.open pre { margin: 10px 0 0; }
+.sec-body.open .callout { margin: 10px 0 0; }
+.sec-body.open .callout + pre { margin-top: 10px; }
+.sec-body.open .two-col { margin: 10px 0 0; }
+.sec-body.open .prose[style] { padding: 14px 18px !important; }
+/* Checklist items need room */
+.sec-body.open .chk-list { padding: 0 18px 4px; }
+.sec-body.open .chk-item { padding: 9px 0; }
+/* Code review blocks need more space from each other */
+.sec-body.open .block + .block .block-title { padding-top: 0; }
+
+/* Checklist and list items */
+.sec-body.open .chk-list { padding: 0; }
+.sec-body.open .chk-item { padding: 9px 0; font-size: 13px; }
+.sec-body.open .callout { margin-top: 12px; }
+.sec-body.open .callout + .callout { margin-top: 8px; }
+/* Two-col cards */
+.sec-body.open .col-card p { font-size: 13px; line-height: 1.7; color: var(--text2); }
+.sec-body.open .col-card h4 { font-size: 13px; margin-bottom: 6px; }
 </style>
 </head>
 <body>
 <nav class="topnav" id="topnav"></nav>
 
 <div class="page">
-  <div class="stats">
-    <div class="stat"><div class="stat-n" id="plat-done" style="color:var(--tag)">0</div><div class="stat-l">Checked off</div></div>
-    <div class="stat"><div class="stat-n" style="color:var(--accent2)">12</div><div class="stat-l">Total topics</div></div>
-    <div class="stat"><div class="stat-n" style="color:var(--warn)">45m</div><div class="stat-l">Avg round</div></div>
-    <div class="stat"><div class="stat-n" style="color:var(--green)">2d</div><div class="stat-l">To prep</div></div>
-  </div>
 
-  <div class="prog-wrap">
-    <div class="prog-label"><span>Checklist progress</span><span id="plat-pct">0 / 12</span></div>
-    <div class="prog-bar"><div class="prog-fill" id="plat-fill" style="width:0%"></div></div>
+<div class="hero" style="margin-bottom:16px">
+  <div class="hero-row">
+    <div class="hero-icon" style="background:rgba(108,99,255,0.15)">⚙️</div>
+    <div>
+      <div class="hero-title">Platform & LLD Round</div>
+      <div class="hero-sub">LLD patterns · Code review · Java internals · Coupon system design · Terraform · Observability · Deployment</div>
+    </div>
   </div>
+  <div class="hero-desc">The most misunderstood round. Not pure system design. Not just coding. It's LLD + practical backend thinking + code review — all in a real product context. They evaluate three things simultaneously: can you design end-to-end, can you spot bugs in existing code, and do you think about caching, idempotency, and failure handling without being prompted?</div>
+</div>
+  
+  
 
   <!-- WHAT IS IT -->
   <div class="section ph1">
     <div class="sec-hd" onclick="toggleSec(this)">
       <div class="sec-icon">📋</div>
-      <div class="sec-title">What is the platform round</div>
+      <div style="flex:1"><div class="sec-title">What is the platform round</div></div>
       <span class="chev open">▼</span>
     </div>
     <div class="sec-body open">
-      <div class="sec-sum">The most misunderstood round. Not pure system design. Not just coding. It is LLD + practical backend thinking + code review — all in a real product context.</div>
+      <div class="prose" style="padding:12px 16px 0;font-size:12.5px">The most misunderstood round. Not pure system design. Not just coding. It is LLD + practical backend thinking + code review — all in a real product context.</div>
       <div class="block">
         <div class="block-title">Three things evaluated simultaneously</div>
         <div class="callout c-tag"><strong>1. End-to-end feature design</strong> — Given a feature, can you think through API, business logic, data model, and failure handling without being prompted?</div>
@@ -69,13 +90,13 @@
   <div class="section ph2">
     <div class="sec-hd" onclick="toggleSec(this)">
       <div class="sec-icon">🧱</div>
-      <div class="sec-title">LLD design patterns</div>
+      <div style="flex:1"><div class="sec-title">LLD design patterns</div></div>
       <span class="chev open">▼</span>
     </div>
     <div class="sec-body open">
       <div class="block">
         <div class="block-title">Strategy pattern <span class="badge b-tag">★ Company</span></div>
-        <div class="block-desc">When behavior needs to swap at runtime. Classic example: multiple payment methods, each with different logic. Without strategy pattern you'd have a giant if-else chain that grows with every new payment method.</div>
+        <div class="prose">When behavior needs to swap at runtime. Classic example: multiple payment methods, each with different logic. Without strategy pattern you'd have a giant if-else chain that grows with every new payment method.</div>
 <pre><span class="kw">interface</span> <span class="cl">PaymentStrategy</span> {
     <span class="kw">boolean</span> <span class="fn">pay</span>(<span class="kw">double</span> amount);
 }
@@ -97,7 +118,7 @@
       </div>
       <div class="block">
         <div class="block-title">Observer pattern <span class="badge b-info">generic</span></div>
-        <div class="block-desc">When one event triggers multiple actions. When a booking is confirmed: send email, update analytics, trigger loyalty points. Observer decouples the booking service from all these concerns.</div>
+        <div class="prose">When one event triggers multiple actions. When a booking is confirmed: send email, update analytics, trigger loyalty points. Observer decouples the booking service from all these concerns.</div>
 <pre><span class="kw">interface</span> <span class="cl">BookingObserver</span> { <span class="kw">void</span> <span class="fn">onBookingConfirmed</span>(<span class="cl">Booking</span> b); }
 
 <span class="kw">class</span> <span class="cl">BookingService</span> {
@@ -116,7 +137,7 @@
       </div>
       <div class="block">
         <div class="block-title">Idempotency pattern <span class="badge b-tag">★ Company</span></div>
-        <div class="block-desc">Network request fails. Client retries. Should the operation happen twice? For payments — absolutely not. Idempotency key ensures each logical operation executes exactly once regardless of retries.</div>
+        <div class="prose">Network request fails. Client retries. Should the operation happen twice? For payments — absolutely not. Idempotency key ensures each logical operation executes exactly once regardless of retries.</div>
 <pre><span class="kw">public class</span> <span class="cl">BookingService</span> {
     <span class="cm">// Production: Redis with 24h TTL. This is the concept.</span>
     <span class="kw">private</span> Map&lt;String, <span class="cl">BookingResult</span>&gt; processed = <span class="kw">new</span> ConcurrentHashMap&lt;&gt;();
@@ -137,7 +158,7 @@
       </div>
       <div class="block">
         <div class="block-title">Circuit breaker <span class="badge b-tag">★ Company</span></div>
-        <div class="block-desc">If payment gateway fails 5 times in 10 seconds, stop calling it for 30 seconds. Fail fast. Prevents cascading failures where one slow service takes down your whole system.</div>
+        <div class="prose">If payment gateway fails 5 times in 10 seconds, stop calling it for 30 seconds. Fail fast. Prevents cascading failures where one slow service takes down your whole system.</div>
 <pre><span class="cm">// States: CLOSED (normal) → OPEN (stop calling) → HALF_OPEN (test recovery)</span>
 <span class="kw">@CircuitBreaker</span>(name=<span class="str">"payment"</span>, fallbackMethod=<span class="str">"fallback"</span>)
 <span class="kw">public</span> <span class="cl">PaymentResult</span> <span class="fn">charge</span>(<span class="cl">PaymentRequest</span> req) {
@@ -151,7 +172,7 @@
       </div>
       <div class="block">
         <div class="block-title">LRU Cache implementation <span class="badge b-must">must</span></div>
-        <div class="block-desc">Least Recently Used cache. When capacity is full, evict the item that was accessed longest ago. HashMap for O(1) lookup + Doubly Linked List for O(1) eviction order maintenance.</div>
+        <div class="prose">Least Recently Used cache. When capacity is full, evict the item that was accessed longest ago. HashMap for O(1) lookup + Doubly Linked List for O(1) eviction order maintenance.</div>
 <pre><span class="kw">class</span> <span class="cl">LRUCache</span> {
     <span class="kw">private final int</span> capacity;
     <span class="cm">// LinkedHashMap with accessOrder=true maintains LRU order automatically</span>
@@ -177,11 +198,11 @@
   <div class="section ph2">
     <div class="sec-hd" onclick="toggleSec(this)">
       <div class="sec-icon">🔍</div>
-      <div class="sec-title">Code review — bug patterns to find</div>
+      <div style="flex:1"><div class="sec-title">Code review — bug patterns to find</div></div>
       <span class="chev open">▼</span>
     </div>
     <div class="sec-body open">
-      <div class="sec-sum">When they show you code, scan in this order: NPE → race condition → resource leak → swallowed exception → N+1 query → wrong collection for concurrency.</div>
+      <div class="prose" style="padding:12px 16px 0;font-size:12.5px">When they show you code, scan in this order: NPE → race condition → resource leak → swallowed exception → N+1 query → wrong collection for concurrency.</div>
       <div class="block">
         <div class="block-title">Bug 1: Null pointer exception</div>
 <pre><span class="cm">// BAD — NPE if hotel is null</span>
@@ -264,7 +285,7 @@ hotels.<span class="fn">forEach</span>(h -> h.<span class="fn">setRooms</span>(b
   <div class="section ph3">
     <div class="sec-hd" onclick="toggleSec(this)">
       <div class="sec-icon">☕</div>
-      <div class="sec-title">Java internals — what gets asked</div>
+      <div style="flex:1"><div class="sec-title">Java internals — what gets asked</div></div>
       <span class="chev open">▼</span>
     </div>
     <div class="sec-body open">
@@ -339,11 +360,11 @@ String result = sb.<span class="fn">toString</span>();
   <div class="section ph3">
     <div class="sec-hd" onclick="toggleSec(this)">
       <div class="sec-icon">🎯</div>
-      <div class="sec-title">Scenario: coupon system design</div>
+      <div style="flex:1"><div class="sec-title">Scenario: coupon system design</div></div>
       <span class="chev open">▼</span>
     </div>
     <div class="sec-body open">
-      <div class="sec-sum">The most commonly reported platform prompt. Walk through every layer before writing any code.</div>
+      <div class="prose" style="padding:12px 16px 0;font-size:12.5px">The most commonly reported platform prompt. Walk through every layer before writing any code.</div>
       <div class="block">
         <div class="block-title">API design</div>
 <pre><span class="cm">// Validate a coupon before applying it to a booking</span>
@@ -399,253 +420,29 @@ CouponUsage(id, couponId, userId, bookingId, discountAmount, usedAt)
     </div>
   </div>
 
-  <!-- TERRAFORM -->
-  <div class="section ph4">
-    <div class="sec-hd" onclick="toggleSec(this)">
-      <div class="sec-icon">🏗️</div>
-      <div><div class="sec-title">Terraform — Infrastructure as Code</div><div class="sec-sub">Resources · State · Modules · Plan/Apply · Remote state</div></div>
-      <span class="chev">▼</span>
-    </div>
-    <div class="sec-body">
-<pre><span class="cm"># Basic Terraform structure</span>
-<span class="cm"># main.tf — resources</span>
-provider <span class="str">"aws"</span> { region = <span class="str">"ap-southeast-1"</span> }
-
-resource <span class="str">"aws_instance"</span> <span class="str">"app"</span> {
-  ami           = <span class="str">"ami-0abcdef"</span>
-  instance_type = var.instance_type
-  tags = { Name = <span class="str">"${var.env}-app-server"</span> }
-}
-
-<span class="cm"># variables.tf</span>
-variable <span class="str">"env"</span> { default = <span class="str">"prod"</span> }
-variable <span class="str">"instance_type"</span> { default = <span class="str">"t3.medium"</span> }
-
-<span class="cm"># outputs.tf</span>
-output <span class="str">"instance_ip"</span> { value = aws_instance.app.public_ip }
-
-<span class="cm"># Remote state — critical for team usage, prevents state conflicts</span>
-terraform {
-  backend <span class="str">"s3"</span> {
-    bucket         = <span class="str">"my-tf-state"</span>
-    key            = <span class="str">"prod/terraform.tfstate"</span>
-    region         = <span class="str">"ap-southeast-1"</span>
-    dynamodb_table = <span class="str">"tf-state-lock"</span>  <span class="cm"># prevents concurrent apply</span>
-  }
-}
-
-<span class="cm"># Workflow:
-# terraform init       → download providers, configure backend
-# terraform plan       → show what will change (always review before apply)
-# terraform apply      → make changes (prompts for confirmation)
-# terraform destroy    → delete all resources
-# terraform state list → show current state
-#
-# Modules: reusable terraform packages
-# module "vpc" { source = "./modules/vpc"; cidr = "10.0.0.0/16" }
-#
-# Key concepts for interview:
-# State file: tracks real-world resources to planned config
-# Drift: manual changes outside terraform → terraform plan shows it
-# Import: bring existing resources under terraform management</span></pre>
-    </div>
-  </div>
-
-  <!-- OBSERVABILITY DEEP DIVE -->
-  <div class="section ph4">
-    <div class="sec-hd" onclick="toggleSec(this)">
-      <div class="sec-icon">🔭</div>
-      <div><div class="sec-title">Observability — Prometheus, Grafana, ELK, OpenTelemetry</div><div class="sec-sub">Metrics · Logs · Traces · Alerting · SLO/SLA/SLI</div></div>
-      <span class="chev">▼</span>
-    </div>
-    <div class="sec-body">
-      <div class="tabs">
-        <div class="tab active" data-group="obs" id="tab-obs-metrics" onclick="switchTab('obs','metrics')">Prometheus</div>
-        <div class="tab" data-group="obs" id="tab-obs-logs" onclick="switchTab('obs','logs')">ELK / Logs</div>
-        <div class="tab" data-group="obs" id="tab-obs-slo" onclick="switchTab('obs','slo')">SLO/SLI/SLA</div>
-      </div>
-      <div class="tab-panel active" data-group="obs" id="panel-obs-metrics">
-<pre><span class="cm"># Prometheus metric types:</span>
-<span class="cm"># Counter:   only goes up (requests_total, errors_total)</span>
-<span class="cm"># Gauge:     goes up and down (memory_bytes, active_connections)</span>
-<span class="cm"># Histogram: samples in buckets (request_duration_seconds)</span>
-<span class="cm"># Summary:   like histogram but pre-computed percentiles</span>
-
-<span class="cm"># Spring Boot auto-exposes /actuator/prometheus with micrometer</span>
-<span class="cm"># Key metrics to track for any service:</span>
-<span class="cm">#</span>
-<span class="cm"># http_requests_total{method, path, status}   → rate of requests</span>
-<span class="cm"># http_request_duration_seconds{quantile=0.99} → p99 latency</span>
-<span class="cm"># jvm_memory_used_bytes{area="heap"}           → heap usage</span>
-<span class="cm"># hikaricp_connections{pool, state}            → DB pool saturation</span>
-
-<span class="cm"># PromQL examples:</span>
-<span class="cm"># Error rate: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m])</span>
-<span class="cm"># p99 latency: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))</span>
-<span class="cm"># Alert rule:</span>
-<span class="cm"># - alert: HighErrorRate</span>
-<span class="cm">#   expr: error_rate > 0.01  # 1% errors</span>
-<span class="cm">#   for: 5m</span>
-<span class="cm">#   annotations: { summary: "{{ $labels.service }} error rate > 1%" }</span></pre>
-      </div>
-      <div class="tab-panel" data-group="obs" id="panel-obs-logs">
-<pre><span class="cm"># ELK Stack: Elasticsearch + Logstash + Kibana
-# Or: Loki (log storage) + Promtail (collector) + Grafana (visualise)</span>
-
-<span class="cm"># Structured logging — always use JSON in production</span>
-<span class="cm"># BAD:  log.info("User {} booked hotel {}", userId, hotelId);</span>
-<span class="cm"># GOOD: log.info("Booking created", Map.of("userId", userId, "hotelId", hotelId, "traceId", traceId));</span>
-
-<span class="cm"># Key log fields (every log entry should have these):</span>
-{
-  <span class="str">"timestamp"</span>: <span class="str">"2026-07-09T09:00:00Z"</span>,
-  <span class="str">"level"</span>:     <span class="str">"INFO"</span>,
-  <span class="str">"service"</span>:   <span class="str">"booking-service"</span>,
-  <span class="str">"traceId"</span>:   <span class="str">"abc123"</span>,     <span class="cm">// links to distributed trace</span>
-  <span class="str">"userId"</span>:    <span class="str">"u456"</span>,
-  <span class="str">"message"</span>:   <span class="str">"Booking confirmed"</span>,
-  <span class="str">"durationMs"</span>: <span class="nu">142</span>
-}
-
-<span class="cm"># Log levels — use them correctly:
-# ERROR: something is broken, needs immediate attention
-# WARN:  something unexpected but system continues
-# INFO:  normal operational events (booking created, payment processed)
-# DEBUG: detailed info for debugging (don't log in production unless needed)
-# NEVER log: passwords, card numbers, PII → legal liability</span></pre>
-      </div>
-      <div class="tab-panel" data-group="obs" id="panel-obs-slo">
-<pre><span class="cm"># SLI (Service Level Indicator): the metric you measure
-# SLO (Service Level Objective): the target for that metric
-# SLA (Service Level Agreement): the contractual commitment (usually weaker than SLO)
-# Error budget: 100% - SLO = how much downtime/errors are allowed
-
-# Example for booking API:
-# SLI: % of booking requests with latency < 500ms
-# SLO: 99.5% of requests under 500ms over a 30-day window
-# Error budget: 0.5% = ~3.6 hours of total outage per month
-# SLA: 99% (what we commit to customers — more lenient than internal SLO)
-
-# When error budget is exhausted:
-# - Freeze new feature releases
-# - Focus all engineering on reliability
-# - Post-incident review required
-
-# Interview tip: "We use SLOs to make reliability a first-class engineering concern.
-# When the error budget drops below 20%, we shift sprint priority from features to reliability work."</span></pre>
-      </div>
-    </div>
-  </div>
-
-  <!-- DEPLOYMENT STRATEGIES -->
-  <div class="section ph4">
-    <div class="sec-hd" onclick="toggleSec(this)">
-      <div class="sec-icon">🚀</div>
-      <div><div class="sec-title">Deployment Strategies — Blue/Green, Canary, Rolling</div><div class="sec-sub">Zero-downtime deploys · Rollback strategies · Feature flags</div></div>
-      <span class="chev">▼</span>
-    </div>
-    <div class="sec-body">
-      <table class="ctable">
-        <tr><th>Strategy</th><th>How it works</th><th>Rollback</th><th>Risk</th><th>Best for</th></tr>
-        <tr><td><strong>Rolling</strong></td><td>Replace instances one by one. 10% at a time.</td><td>Slow — roll forward</td><td>Both versions live simultaneously</td><td>Stateless services, K8s default</td></tr>
-        <tr><td><strong>Blue/Green</strong></td><td>Two identical envs. Switch load balancer from blue to green.</td><td>Instant — flip LB back</td><td>2x infrastructure cost</td><td>Major version changes, DB migrations</td></tr>
-        <tr><td><strong>Canary</strong></td><td>Send 5% of traffic to new version. Monitor. Increase gradually.</td><td>Redirect 100% back to old</td><td>Partial exposure</td><td>High-risk changes, A/B testing</td></tr>
-        <tr><td><strong>Feature Flags</strong></td><td>Deploy code dark. Enable per user/region/% via config.</td><td>Toggle off instantly</td><td>Code complexity</td><td>Gradual rollouts, kill switches</td></tr>
-      </table>
-<pre><span class="cm"># Kubernetes rolling update (default strategy)</span>
-spec:
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1        <span class="cm"># max pods above desired during update</span>
-      maxUnavailable: 0  <span class="cm"># zero downtime — always have desired pods running</span>
-
-<span class="cm"># Canary with Argo Rollouts (or Istio):
-# apiVersion: argoproj.io/v1alpha1
-# kind: Rollout
-# spec:
-#   strategy:
-#     canary:
-#       steps:
-#       - setWeight: 10   # 10% to canary
-#       - pause: {duration: 10m}
-#       - setWeight: 50
-#       - pause: {duration: 10m}
-#       - setWeight: 100</span>
-
-<span class="cm"># Pre-deploy checklist (mental model):
-# 1. DB migration backward compatible? (add column before code uses it)
-# 2. API changes backward compatible? (both old + new clients work)
-# 3. Rollback plan tested?
-# 4. Monitoring/alerts in place for new code paths?
-# 5. Feature flag added for high-risk changes?</span></pre>
-    </div>
-  </div>
-
-  <!-- PRODUCTION DEBUGGING -->
-  <div class="section ph4">
-    <div class="sec-hd" onclick="toggleSec(this)">
-      <div class="sec-icon">🐛</div>
-      <div><div class="sec-title">Production Debugging — Memory Leaks, Thread Dumps, High CPU</div><div class="sec-sub">jstack · jmap · heap dumps · GC tuning · Linux tools</div></div>
-      <span class="chev">▼</span>
-    </div>
-    <div class="sec-body">
-<pre><span class="cm"># Scenario: Java service slowly consuming more memory, OOM after 6h
-# 1. Check heap usage trend in Grafana (jvm_memory_used_bytes{area="heap"})
-# 2. If growing steadily → likely memory leak</span>
-
-<span class="cm"># Take heap dump:</span>
-jmap -dump:format=b,file=heap.hprof &lt;pid&gt;
-<span class="cm"># Or via JVM flag: -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp/</span>
-
-<span class="cm"># Analyse with Eclipse MAT or VisualVM:
-# "Leak Suspects" report → shows objects accumulating
-# Common causes: static caches growing unbounded, listeners not deregistered,
-#                ThreadLocal not cleaned up, Hibernate session not closed</span>
-
-<span class="cm"># Scenario: service high CPU, requests timing out</span>
-<span class="cm"># 1. Identify PID: ps aux | grep java | sort -k3 -r</span>
-<span class="cm"># 2. Find hot threads: top -H -p &lt;pid&gt;  (H = show threads)</span>
-<span class="cm"># 3. Take thread dump: jstack &lt;pid&gt; > thread.txt</span>
-<span class="cm"># 4. In thread dump: RUNNABLE threads in tight loop = CPU hog</span>
-<span class="cm"># 5. Common cause: infinite loop, regex catastrophic backtracking, GC thrashing</span>
-
-<span class="cm"># GC thrashing: GC spending > 10% of time → not enough heap
-# Fix: -Xmx4g (increase max heap) or find memory leak
-# View GC: -Xlog:gc*:file=/tmp/gc.log:time,uptime:filecount=5,filesize=20m</span>
-
-<span class="cm"># Linux tools for production debugging:
-# top / htop:  CPU and memory per process
-# iostat -x:   disk I/O wait (high await = disk bottleneck)  
-# netstat -an: open connections (too many TIME_WAIT = connection pool problem)
-# strace -p:   system calls (advanced — use sparingly in prod)
-# lsof -p:     open file handles (leaking file descriptors → FD limit hit)</span></pre>
-    </div>
-  </div>
-
   <!-- PREP CHECKLIST -->
   <div class="section ph4">
     <div class="sec-hd" onclick="toggleSec(this)">
       <div class="sec-icon">✅</div>
-      <div class="sec-title">Readiness checklist</div>
+      <div style="flex:1"><div class="sec-title">Readiness checklist</div></div>
       <span class="chev open">▼</span>
     </div>
     <div class="sec-body open">
       <div class="block">
         <div class="block-title">Can you explain these without notes?</div>
         <ul class="chk-list">
-          <li class="chk-item"><div class="chk" id="chk-p1" onclick="platTgl('p1')"></div><div class="chk-text" id="txt-p1">Strategy, Observer, Repository patterns — give a booking domain example for each</div></li>
-          <li class="chk-item"><div class="chk" id="chk-p2" onclick="platTgl('p2')"></div><div class="chk-text" id="txt-p2">Idempotency key pattern — why needed, how Redis NX flag implements it</div></li>
-          <li class="chk-item"><div class="chk" id="chk-p3" onclick="platTgl('p3')"></div><div class="chk-text" id="txt-p3">Circuit breaker — three states (CLOSED, OPEN, HALF_OPEN), Resilience4j config</div></li>
-          <li class="chk-item"><div class="chk" id="chk-p4" onclick="platTgl('p4')"></div><div class="chk-text" id="txt-p4">LRU Cache — implement with LinkedHashMap, explain why accessOrder=true</div></li>
-          <li class="chk-item"><div class="chk" id="chk-p5" onclick="platTgl('p5')"></div><div class="chk-text" id="txt-p5">volatile vs synchronized vs AtomicInteger — exact use case for each</div></li>
-          <li class="chk-item"><div class="chk" id="chk-p6" onclick="platTgl('p6')"></div><div class="chk-text" id="txt-p6">@Transactional propagation — REQUIRED vs REQUIRES_NEW, give a real example</div></li>
-          <li class="chk-item"><div class="chk" id="chk-p7" onclick="platTgl('p7')"></div><div class="chk-text" id="txt-p7">N+1 query — spot it in code, explain why it's bad, fix with batch query</div></li>
-          <li class="chk-item"><div class="chk" id="chk-p8" onclick="platTgl('p8')"></div><div class="chk-text" id="txt-p8">Redis caching — @Cacheable, cache key design, TTL strategy, eviction</div></li>
-          <li class="chk-item"><div class="chk" id="chk-p9" onclick="platTgl('p9')"></div><div class="chk-text" id="txt-p9">Rate limiting — token bucket algorithm, Redis INCR with TTL implementation</div></li>
-          <li class="chk-item"><div class="chk" id="chk-p10" onclick="platTgl('p10')"></div><div class="chk-text" id="txt-p10">Cursor-based vs offset pagination — why cursor wins for large datasets</div></li>
-          <li class="chk-item"><div class="chk" id="chk-p11" onclick="platTgl('p11')"></div><div class="chk-text" id="txt-p11">One concrete Kubernetes story from your work — a config you set, a bug you debugged</div></li>
-          <li class="chk-item"><div class="chk" id="chk-p12" onclick="platTgl('p12')"></div><div class="chk-text" id="txt-p12">One concrete Prometheus story — a metric you set up, an alert that fired</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-p1" onclick="platTgl('p1')"></div><div class="chk-text" id="txt-p1">Strategy, Observer, Repository patterns — give a booking domain example for each</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-p2" onclick="platTgl('p2')"></div><div class="chk-text" id="txt-p2">Idempotency key pattern — why needed, how Redis NX flag implements it</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-p3" onclick="platTgl('p3')"></div><div class="chk-text" id="txt-p3">Circuit breaker — three states (CLOSED, OPEN, HALF_OPEN), Resilience4j config</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-p4" onclick="platTgl('p4')"></div><div class="chk-text" id="txt-p4">LRU Cache — implement with LinkedHashMap, explain why accessOrder=true</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-p5" onclick="platTgl('p5')"></div><div class="chk-text" id="txt-p5">volatile vs synchronized vs AtomicInteger — exact use case for each</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-p6" onclick="platTgl('p6')"></div><div class="chk-text" id="txt-p6">@Transactional propagation — REQUIRED vs REQUIRES_NEW, give a real example</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-p7" onclick="platTgl('p7')"></div><div class="chk-text" id="txt-p7">N+1 query — spot it in code, explain why it's bad, fix with batch query</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-p8" onclick="platTgl('p8')"></div><div class="chk-text" id="txt-p8">Redis caching — @Cacheable, cache key design, TTL strategy, eviction</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-p9" onclick="platTgl('p9')"></div><div class="chk-text" id="txt-p9">Rate limiting — token bucket algorithm, Redis INCR with TTL implementation</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-p10" onclick="platTgl('p10')"></div><div class="chk-text" id="txt-p10">Cursor-based vs offset pagination — why cursor wins for large datasets</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-p11" onclick="platTgl('p11')"></div><div class="chk-text" id="txt-p11">One concrete Kubernetes story from your work — a config you set, a bug you debugged</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-p12" onclick="platTgl('p12')"></div><div class="chk-text" id="txt-p12">One concrete Prometheus story — a metric you set up, an alert that fired</div></li>
         </ul>
       </div>
       <div class="callout c-warn" style="margin:0 14px 14px"><strong>Resume defense:</strong> Every technology you've listed → prepare one story: what you built, what broke, what you learned. Vague answers here fail the platform round.</div>
@@ -661,9 +458,6 @@ const TOTAL_PLAT=12;
 
 function updatePlatStats(){
   const n=platDone.size;
-  document.getElementById('plat-done').textContent=n;
-  document.getElementById('plat-pct').textContent=`${n} / ${TOTAL_PLAT}`;
-  document.getElementById('plat-fill').style.width=Math.round(n/TOTAL_PLAT*100)+'%';
 }
 
 function platTgl(id){
@@ -673,7 +467,6 @@ function platTgl(id){
   const txt=document.getElementById('txt-'+id);
   if(chk)chk.classList.toggle('done',platDone.has(id));
   if(txt)txt.classList.toggle('done',platDone.has(id));
-  updatePlatStats();
 }
 
 platDone.forEach(id=>{
@@ -681,13 +474,7 @@ platDone.forEach(id=>{
   const txt=document.getElementById('txt-'+id);
   if(chk){chk.classList.add('done');if(txt)txt.classList.add('done');}
 });
-updatePlatStats();
 
-function updateCd(){
-  const diff=new Date('2026-07-09T09:00:00')-new Date();
-  const el=document.getElementById('cd');
-  if(!el)return;
-  if(diff<=0){el.textContent='Interview day!';return;}
   el.textContent=`${Math.floor(diff/864e5)}d ${Math.floor((diff%864e5)/36e5)}h left`;
 }
 </script>

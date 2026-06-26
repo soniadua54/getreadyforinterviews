@@ -5,44 +5,61 @@
 <title>PrepKit — System Design</title>
 <link rel="stylesheet" href="shared.css">
 <style>
-/* Sysdesign-specific classes not in shared.css */
-.ph1 .sec-icon{background:rgba(108,99,255,0.15)}
-.ph2 .sec-icon{background:rgba(16,185,129,0.15)}
-.ph3 .sec-icon{background:rgba(245,158,11,0.15)}
-.ph4 .sec-icon{background:rgba(255,77,109,0.15)}
-.sec-sum{font-size:12.5px;color:var(--text2);padding:10px 14px 4px;line-height:1.65}
-.block-desc{font-size:12.5px;color:var(--text2);line-height:1.75;margin-bottom:10px}
-.chk{width:18px;height:18px;min-width:18px;border:1.5px solid var(--border2);border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px;flex-shrink:0;transition:all .14s}
-.chk:hover{border-color:var(--accent)}
-.chk.done{background:var(--green);border-color:var(--green)}
-.chk.done::after{content:"✓";font-size:11px;color:#fff;font-weight:700}
+/* Sysdesign page-specific */
+.ph1 .sec-icon { background: rgba(108,99,255,0.15); }
+.ph2 .sec-icon { background: rgba(16,185,129,0.15); }
+.ph3 .sec-icon { background: rgba(245,158,11,0.15); }
+.ph4 .sec-icon { background: rgba(255,77,109,0.15); }
+.b-generic { background: var(--bg4); color: var(--text3); border: 1px solid var(--border2); padding: 1px 7px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+.dot { width: 8px; height: 8px; min-width: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+
+/* Content spacing fixes */
+.sec-body.open .block { padding: 16px 18px; border-bottom: 1px solid var(--border); margin-bottom: 0; }
+.sec-body.open .block:last-child { border-bottom: none; }
+.sec-body.open .block .block-title { font-size: 12px; margin-bottom: 10px; }
+.sec-body.open pre { margin: 10px 0 0; }
+.sec-body.open .callout { margin: 10px 0 0; }
+.sec-body.open .callout + pre { margin-top: 10px; }
+.sec-body.open .two-col { margin: 10px 0 0; }
+.sec-body.open .prose[style] { padding: 14px 18px !important; }
+
+/* Checklist and list items */
+.sec-body.open .chk-list { padding: 0; }
+.sec-body.open .chk-item { padding: 9px 0; font-size: 13px; }
+.sec-body.open .callout { margin-top: 12px; }
+.sec-body.open .callout + .callout { margin-top: 8px; }
+/* Two-col cards */
+.sec-body.open .col-card p { font-size: 13px; line-height: 1.7; color: var(--text2); }
+.sec-body.open .col-card h4 { font-size: 13px; margin-bottom: 6px; }
 </style>
 </head>
 <body>
 <nav class="topnav" id="topnav"></nav>
 
 <div class="page">
-  <div class="stats">
-    <div class="stat"><div class="stat-n" style="color:var(--accent2)">8</div><div class="stat-l">Designs</div></div>
-    <div class="stat"><div class="stat-n" style="color:var(--tag)">5</div><div class="stat-l">Travel-domain</div></div>
-    <div class="stat"><div class="stat-n" style="color:var(--green)" id="sd-done">0</div><div class="stat-l">Checked off</div></div>
-    <div class="stat"><div class="stat-n" style="color:var(--warn)">60m</div><div class="stat-l">Avg round</div></div>
-  </div>
 
-  <div class="prog-wrap">
-    <div class="prog-label"><span>Checklist progress</span><span id="sd-pct">0 / 12</span></div>
-    <div class="prog-bar"><div class="prog-fill" id="sd-fill" style="width:0%"></div></div>
+<div class="hero" style="margin-bottom:16px">
+  <div class="hero-row">
+    <div class="hero-icon" style="background:rgba(245,158,11,0.15)">🏗️</div>
+    <div>
+      <div class="hero-title">System Design Round</div>
+      <div class="hero-sub">Hotel booking · Search · Payment · Notifications · Rate limiter · CAP · CQRS · Caching · Sharding · Observability</div>
+    </div>
   </div>
+  <div class="hero-desc">System design is the round where Staff-level thinking is most visible. Senior engineers describe what to build. Staff engineers describe trade-offs, failure modes, and why. Every answer here has a structure: clarify → estimate → HLD → data model → deep dive on the hardest part. Know the hotel booking system cold — it covers 80% of what comes up.</div>
+</div>
+  
+  
 
   <!-- FRAMEWORK -->
   <div class="section ph1">
     <div class="sec-hd" onclick="toggleSec(this)">
       <div class="sec-icon">📐</div>
-      <div class="sec-title">The framework — use every time</div>
+      <div style="flex:1"><div class="sec-title">The framework — use every time</div></div>
       <span class="chev open">▼</span>
     </div>
     <div class="sec-body open">
-      <div class="sec-sum">Every system design answer follows the same 5-step structure. Interviewers expect you to drive it. If they're asking "what about scale?" — you already lost points.</div>
+      <div class="prose" style="padding:12px 16px 0;font-size:12.5px">Every system design answer follows the same 5-step structure. Interviewers expect you to drive it. If they're asking "what about scale?" — you already lost points.</div>
       <div class="block">
         <div class="block-title">5-step template</div>
         <div class="callout c-info">
@@ -68,13 +85,13 @@
   <div class="section ph1">
     <div class="sec-hd" onclick="toggleSec(this)">
       <div class="sec-icon">🧠</div>
-      <div class="sec-title">Core concepts — know these cold</div>
+      <div style="flex:1"><div class="sec-title">Core concepts — know these cold</div></div>
       <span class="chev open">▼</span>
     </div>
     <div class="sec-body open">
       <div class="block">
         <div class="block-title">CAP theorem</div>
-        <div class="block-desc">Distributed systems can guarantee only 2 of 3: Consistency, Availability, Partition tolerance. Since network partitions always happen — you choose CP or AP.</div>
+        <div class="prose">Distributed systems can guarantee only 2 of 3: Consistency, Availability, Partition tolerance. Since network partitions always happen — you choose CP or AP.</div>
         <div class="two-col">
           <div class="col-card">
             <h4>CP — Consistency + Partition</h4>
@@ -145,11 +162,11 @@ Kafka (cluster):         ~1,000,000 msg/sec</pre>
   <div class="section ph2">
     <div class="sec-hd" onclick="toggleSec(this)">
       <div class="sec-icon">🏨</div>
-      <div class="sec-title">Design: hotel booking system <span class="badge b-tag" style="font-size:10px;margin-left:4px">★ Company</span></div>
+      <div style="flex:1"><div class="sec-title">Design: hotel booking system <span class="badge b-tag" style="font-size:10px;margin-left:4px">★ Company</span></div></div>
       <span class="chev open">▼</span>
     </div>
     <div class="sec-body open">
-      <div class="sec-sum">The core travel product. Very likely to appear in a system design round. Know every layer and the concurrency solution cold.</div>
+      <div class="prose" style="padding:12px 16px 0;font-size:12.5px">The core travel product. Very likely to appear in a system design round. Know every layer and the concurrency solution cold.</div>
       <div class="block">
         <div class="block-title">Requirements to state upfront</div>
         <div class="callout c-info"><strong>Functional:</strong> Search hotels by city/dates/guests. View room availability. Book a room. Cancel booking. View booking history.<br><br><strong>Non-functional:</strong> 10M DAU. 100K concurrent searches. 1K bookings/sec at peak. Search latency &lt;200ms. No double booking (strong consistency on inventory). 99.99% availability.</div>
@@ -209,13 +226,13 @@ Redis (cache)   Redis (distributed lock)
   <div class="section ph2">
     <div class="sec-hd" onclick="toggleSec(this)">
       <div class="sec-icon">🔍</div>
-      <div class="sec-title">Design: hotel search system <span class="badge b-tag" style="font-size:10px;margin-left:4px">★ Company</span></div>
+      <div style="flex:1"><div class="sec-title">Design: hotel search system <span class="badge b-tag" style="font-size:10px;margin-left:4px">★ Company</span></div></div>
       <span class="chev open">▼</span>
     </div>
     <div class="sec-body open">
       <div class="block">
         <div class="block-title">Why not just SQL?</div>
-        <div class="block-desc">Full-text search in SQL is slow. Geo-radius queries need specialized indexes. Faceted filtering ("show me count of results per star rating") is expensive. Multi-signal ranking doesn't fit relational model.</div>
+        <div class="prose">Full-text search in SQL is slow. Geo-radius queries need specialized indexes. Faceted filtering ("show me count of results per star rating") is expensive. Multi-signal ranking doesn't fit relational model.</div>
         <div class="callout c-info"><strong>Answer:</strong> Elasticsearch for search (text, geo, filtering, ranking) + Redis bitmap for real-time availability + PostgreSQL as source of truth for hotel data.</div>
       </div>
       <div class="block">
@@ -258,7 +275,7 @@ Availability changes → NOT indexed in Elasticsearch
   <div class="section ph2">
     <div class="sec-hd" onclick="toggleSec(this)">
       <div class="sec-icon">💳</div>
-      <div class="sec-title">Design: payment & wallet system <span class="badge b-tag" style="font-size:10px;margin-left:4px">★ Company</span></div>
+      <div style="flex:1"><div class="sec-title">Design: payment & wallet system <span class="badge b-tag" style="font-size:10px;margin-left:4px">★ Company</span></div></div>
       <span class="chev open">▼</span>
     </div>
     <div class="sec-body open">
@@ -276,7 +293,7 @@ Transaction (id, wallet_id, type, amount, currency, status,
       </div>
       <div class="block">
         <div class="block-title">Outbox pattern — exactly-once event publishing</div>
-        <div class="block-desc">Problem: if you save payment to DB AND publish event to Kafka in two separate operations, one can succeed and the other fail → inconsistent state forever.</div>
+        <div class="prose">Problem: if you save payment to DB AND publish event to Kafka in two separate operations, one can succeed and the other fail → inconsistent state forever.</div>
 <pre><span class="cm">// Solution: outbox pattern — atomic write to DB + outbox table</span>
 BEGIN TRANSACTION;
   UPDATE wallet SET balance = balance - amount WHERE id = ?;
@@ -305,13 +322,13 @@ Request validated → create REFUND Transaction (PENDING)
   <div class="section ph3">
     <div class="sec-hd" onclick="toggleSec(this)">
       <div class="sec-icon">🔔</div>
-      <div class="sec-title">Design: notification system <span class="badge b-tag" style="font-size:10px;margin-left:4px">★ Company</span></div>
+      <div style="flex:1"><div class="sec-title">Design: notification system <span class="badge b-tag" style="font-size:10px;margin-left:4px">★ Company</span></div></div>
       <span class="chev open">▼</span>
     </div>
     <div class="sec-body open">
       <div class="block">
         <div class="block-title">Key insight: never block booking on notification</div>
-        <div class="block-desc">A slow email provider should not make every booking slow. Decouple completely with a message queue. The booking service just publishes an event — it doesn't know or care who receives it.</div>
+        <div class="prose">A slow email provider should not make every booking slow. Decouple completely with a message queue. The booking service just publishes an event — it doesn't know or care who receives it.</div>
 <pre>Booking Service → Kafka topic "booking.events"
                          ↓
                 Notification Service (Kafka consumer)
@@ -338,109 +355,11 @@ Before sending: check — user opted out of SMS? Skip. In quiet hours? Defer pus
     </div>
   </div>
 
-  <!-- RATE LIMITER -->
-  <div class="section ph3">
-    <div class="sec-hd" onclick="toggleSec(this)">
-      <div class="sec-icon">🚦</div>
-      <div class="sec-title">Design: rate limiter <span class="badge b-generic" style="font-size:10px;margin-left:4px">generic</span></div>
-      <span class="chev open">▼</span>
-    </div>
-    <div class="sec-body open">
-      <div class="block">
-        <div class="block-title">Four algorithms</div>
-<pre>Token Bucket:    Bucket holds max N tokens. Refill at R tokens/sec.
-                 Each request consumes 1 token. Empty → reject (429).
-                 Allows burst up to bucket size. Most common.
-
-Fixed Window:    Count requests in 1-minute window.
-                 Problem: burst at window boundary doubles allowed rate.
-
-Sliding Window:  More accurate. Use Redis sorted set with timestamps.
-                 ZADD user:reqs {now} {uuid}
-                 ZREMRANGEBYSCORE ... 0 {now - window}
-                 count = ZCARD → if &gt; limit → reject
-
-Leaking Bucket:  Queue of fixed size. Process at fixed rate.
-                 Smooth output. Good for strict throughput guarantees.</pre>
-      </div>
-      <div class="block">
-        <div class="block-title">Distributed rate limiter — Redis implementation</div>
-<pre><span class="cm">// Token bucket with Redis (atomic Lua script)</span>
-<span class="kw">local</span> tokens = redis.call(<span class="str">'GET'</span>, key) or MAX_TOKENS
-<span class="kw">if</span> tokens &gt; <span class="nu">0</span> <span class="kw">then</span>
-  redis.call(<span class="str">'DECR'</span>, key)
-  redis.call(<span class="str">'EXPIRE'</span>, key, WINDOW_SECONDS)
-  <span class="kw">return</span> <span class="nu">1</span>  <span class="cm">-- allowed</span>
-<span class="kw">else</span>
-  <span class="kw">return</span> <span class="nu">0</span>  <span class="cm">-- rejected → HTTP 429</span>
-<span class="kw">end</span>
-
-<span class="cm">// Rate limit keys: per userId, per IP, per API key, per endpoint
-// Response headers: X-RateLimit-Limit, X-RateLimit-Remaining, Retry-After</span></pre>
-      </div>
-    </div>
-  </div>
-
-  <!-- GENERIC DESIGNS -->
-  <div class="section ph3">
-    <div class="sec-hd" onclick="toggleSec(this)">
-      <div class="sec-icon">🌐</div>
-      <div class="sec-title">Generic designs — URL shortener, feed, chat <span class="badge b-generic" style="font-size:10px;margin-left:4px">generic</span></div>
-      <span class="chev open">▼</span>
-    </div>
-    <div class="sec-body open">
-      <div class="block">
-        <div class="block-title">URL shortener</div>
-<pre>Short code: 6 chars from [a-zA-Z0-9] = 62^6 = 56 billion combinations
-Generation: Base62(auto_increment_id) — no collisions, no randomness needed
-Storage:    (short_code, original_url, user_id, created_at, expires_at)
-Redirect:   HTTP 302 (not 301!) — 302 allows us to track analytics
-            301 = permanent, browser caches, we lose tracking ability
-Scale:      Read-heavy ~1000:1. Cache hot URLs in Redis (LRU, no TTL)
-Expiry:     Background job: DELETE WHERE expires_at &lt; NOW()</pre>
-      </div>
-      <div class="block">
-        <div class="block-title">News/activity feed</div>
-<pre>Fan-out on write (push): On post, immediately write to all followers' feeds.
-  Pros: O(1) read. Cons: O(followers) write. Bad for celebrities (10M followers).
-
-Fan-out on read (pull):  On load, fetch posts from all followees. Merge sort by time.
-  Pros: O(1) write. Cons: O(followees) read. Bad for users following many people.
-
-Hybrid (production choice):
-  Push for regular users (&lt;1M followers).
-  Pull for celebrity accounts at read time, merge with pushed feed.
-
-Storage: Redis sorted set per user — ZADD feed:{userId} {timestamp} {postId}
-         ZREVRANGE feed:{userId} 0 19 → latest 20 posts for feed page</pre>
-      </div>
-      <div class="block">
-        <div class="block-title">Chat system</div>
-<pre>WebSocket: persistent bidirectional connection. Server pushes on message.
-  HTTP polling: too many connections, too much latency.
-  Long polling: better but still wasteful. WebSocket is the answer.
-
-Delivery guarantee (like WhatsApp):
-  1. Client sends → server ACKs storage (single tick ✓)
-  2. Server delivers to recipient device → device ACKs (double tick ✓✓)
-  3. Recipient opens chat → read receipt (blue ticks ✓✓)
-
-Storage: Cassandra — write-heavy, time-series, no single point of failure
-  Row key: (conversation_id, created_at_bucket)
-  Efficient range queries for chat history
-
-Presence (online/offline): Redis with heartbeat TTL
-  SET user:online:{userId} 1 EX 30  ← user sends heartbeat every 20s
-  No heartbeat for 30s → key expires → user appears offline</pre>
-      </div>
-    </div>
-  </div>
-
   <!-- CHECKLIST -->
   <div class="section ph4">
     <div class="sec-hd" onclick="toggleSec(this)">
       <div class="sec-icon">🏛️</div>
-      <div><div class="sec-title">CAP Theorem & Consistency Models</div><div class="sec-sub">CP vs AP · Strong vs Eventual · Read-your-writes · Linearizability</div></div>
+      <div><div style="flex:1"><div class="sec-title">CAP Theorem & Consistency Models</div></div><div class="sec-sub">CP vs AP · Strong vs Eventual · Read-your-writes · Linearizability</div></div>
       <span class="chev open">▼</span>
     </div>
     <div class="sec-body open">
@@ -485,7 +404,7 @@ Presence (online/offline): Redis with heartbeat TTL
   <div class="section ph4">
     <div class="sec-hd" onclick="toggleSec(this)">
       <div class="sec-icon">📬</div>
-      <div><div class="sec-title">CQRS & Event Sourcing</div><div class="sec-sub">Command Query Responsibility Segregation · Event store · Projections</div></div>
+      <div><div style="flex:1"><div class="sec-title">CQRS & Event Sourcing</div></div><div class="sec-sub">Command Query Responsibility Segregation · Event store · Projections</div></div>
       <span class="chev open">▼</span>
     </div>
     <div class="sec-body open">
@@ -548,47 +467,8 @@ Compensation 1: BookingService cancels → publishes BOOKING_CANCELLED
 
   <div class="section ph4">
     <div class="sec-hd" onclick="toggleSec(this)">
-      <div class="sec-icon">📦</div>
-      <div><div class="sec-title">Caching Strategies — Cache-aside, Write-through, Write-behind, Read-through</div><div class="sec-sub">When to invalidate, thundering herd, cache stampede prevention</div></div>
-      <span class="chev">▼</span>
-    </div>
-    <div class="sec-body">
-<pre><span class="cm">// 1. CACHE-ASIDE (Lazy loading) — most common
-// Read: check cache first. Miss → fetch from DB → write to cache → return.
-// Write: write to DB. Invalidate (or update) cache.
-// Pro: only cache what's requested. Con: first request always slow (cold miss).
-// Use for: hotel details, user profiles, search results</span>
-
-String key = "hotel:" + hotelId;
-Hotel hotel = cache.get(key);
-<span class="kw">if</span> (hotel == <span class="kw">null</span>) {
-    hotel = db.findById(hotelId);       <span class="cm">// cache miss</span>
-    cache.set(key, hotel, Duration.ofMinutes(<span class="nu">10</span>));
-}
-<span class="kw">return</span> hotel;
-
-<span class="cm">// 2. WRITE-THROUGH
-// Write to DB AND cache synchronously on every write.
-// Pro: cache always fresh. Con: writes slower, cache fills with infrequently-read data.
-// Use for: user session data, recently modified hotel prices</span>
-
-<span class="cm">// 3. WRITE-BEHIND (Write-back)  
-// Write to cache immediately, async batch write to DB later.
-// Pro: fast writes. Con: data loss risk if cache fails before flush.
-// Use for: view counts, like counts, analytics (losing a few OK)</span>
-
-<span class="cm">// THUNDERING HERD: popular cache key expires → 10,000 concurrent requests all hit DB
-// Fix 1: Mutex/lock — first thread fetches, others wait
-// Fix 2: Stale-while-revalidate — serve stale data while refreshing async
-// Fix 3: Jitter — randomize TTL by ±10% to prevent simultaneous expiry
-cache.set(key, value, Duration.ofMinutes(10 + random.nextInt(2)));</span></pre>
-    </div>
-  </div>
-
-  <div class="section ph4">
-    <div class="sec-hd" onclick="toggleSec(this)">
       <div class="sec-icon">🔀</div>
-      <div><div class="sec-title">Database Sharding & Replication</div><div class="sec-sub">Horizontal scaling · Sharding strategies · Read replicas · Replication lag</div></div>
+      <div><div style="flex:1"><div class="sec-title">Database Sharding & Replication</div></div><div class="sec-sub">Horizontal scaling · Sharding strategies · Read replicas · Replication lag</div></div>
       <span class="chev">▼</span>
     </div>
     <div class="sec-body">
@@ -629,7 +509,7 @@ cache.set(key, value, Duration.ofMinutes(10 + random.nextInt(2)));</span></pre>
   <div class="section ph4">
     <div class="sec-hd" onclick="toggleSec(this)">
       <div class="sec-icon">🔭</div>
-      <div><div class="sec-title">Distributed Tracing & Observability</div><div class="sec-sub">OpenTelemetry · Trace ID propagation · Metrics vs Logs vs Traces</div></div>
+      <div><div style="flex:1"><div class="sec-title">Distributed Tracing & Observability</div></div><div class="sec-sub">OpenTelemetry · Trace ID propagation · Metrics vs Logs vs Traces</div></div>
       <span class="chev">▼</span>
     </div>
     <div class="sec-body">
@@ -667,25 +547,25 @@ cache.set(key, value, Duration.ofMinutes(10 + random.nextInt(2)));</span></pre>
   <div class="section ph4">
     <div class="sec-hd" onclick="toggleSec(this)">
       <div class="sec-icon">✅</div>
-      <div class="sec-title">Readiness checklist</div>
+      <div style="flex:1"><div class="sec-title">Readiness checklist</div></div>
       <span class="chev open">▼</span>
     </div>
     <div class="sec-body open">
       <div class="block">
         <div class="block-title">Can you answer these without notes?</div>
         <ul class="chk-list">
-          <li class="chk-item"><div class="chk" id="chk-s1" onclick="sdTgl('s1')"></div><div class="chk-text" id="txt-s1">CAP theorem — which side does a booking system pick and why</div></li>
-          <li class="chk-item"><div class="chk" id="chk-s2" onclick="sdTgl('s2')"></div><div class="chk-text" id="txt-s2">Hotel booking system end-to-end in under 10 minutes</div></li>
-          <li class="chk-item"><div class="chk" id="chk-s3" onclick="sdTgl('s3')"></div><div class="chk-text" id="txt-s3">Three approaches to prevent double booking and their trade-offs</div></li>
-          <li class="chk-item"><div class="chk" id="chk-s4" onclick="sdTgl('s4')"></div><div class="chk-text" id="txt-s4">Notification system step-by-step: what happens when booking is confirmed?</div></li>
-          <li class="chk-item"><div class="chk" id="chk-s5" onclick="sdTgl('s5')"></div><div class="chk-text" id="txt-s5">Idempotency key pattern — why needed, Redis NX implementation</div></li>
-          <li class="chk-item"><div class="chk" id="chk-s6" onclick="sdTgl('s6')"></div><div class="chk-text" id="txt-s6">Token bucket algorithm — explain and implement in Redis Lua</div></li>
-          <li class="chk-item"><div class="chk" id="chk-s7" onclick="sdTgl('s7')"></div><div class="chk-text" id="txt-s7">Kafka vs SQS vs RabbitMQ — concrete example for when to use each</div></li>
-          <li class="chk-item"><div class="chk" id="chk-s8" onclick="sdTgl('s8')"></div><div class="chk-text" id="txt-s8">Elasticsearch for hotel search — what you index vs what stays in Redis</div></li>
-          <li class="chk-item"><div class="chk" id="chk-s9" onclick="sdTgl('s9')"></div><div class="chk-text" id="txt-s9">Cache-aside vs write-through vs write-behind — examples for each</div></li>
-          <li class="chk-item"><div class="chk" id="chk-s10" onclick="sdTgl('s10')"></div><div class="chk-text" id="txt-s10">URL shortener — Base62 encoding, why 302 not 301, scale approach</div></li>
-          <li class="chk-item"><div class="chk" id="chk-s11" onclick="sdTgl('s11')"></div><div class="chk-text" id="txt-s11">When Cassandra over PostgreSQL? Give a specific scenario.</div></li>
-          <li class="chk-item"><div class="chk" id="chk-s12" onclick="sdTgl('s12')"></div><div class="chk-text" id="txt-s12">Outbox pattern — what problem it solves, exactly how it works</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-s1" onclick="sdTgl('s1')"></div><div class="chk-text" id="txt-s1">CAP theorem — which side does a booking system pick and why</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-s2" onclick="sdTgl('s2')"></div><div class="chk-text" id="txt-s2">Hotel booking system end-to-end in under 10 minutes</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-s3" onclick="sdTgl('s3')"></div><div class="chk-text" id="txt-s3">Three approaches to prevent double booking and their trade-offs</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-s4" onclick="sdTgl('s4')"></div><div class="chk-text" id="txt-s4">Notification system step-by-step: what happens when booking is confirmed?</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-s5" onclick="sdTgl('s5')"></div><div class="chk-text" id="txt-s5">Idempotency key pattern — why needed, Redis NX implementation</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-s6" onclick="sdTgl('s6')"></div><div class="chk-text" id="txt-s6">Token bucket algorithm — explain and implement in Redis Lua</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-s7" onclick="sdTgl('s7')"></div><div class="chk-text" id="txt-s7">Kafka vs SQS vs RabbitMQ — concrete example for when to use each</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-s8" onclick="sdTgl('s8')"></div><div class="chk-text" id="txt-s8">Elasticsearch for hotel search — what you index vs what stays in Redis</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-s9" onclick="sdTgl('s9')"></div><div class="chk-text" id="txt-s9">Cache-aside vs write-through vs write-behind — examples for each</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-s10" onclick="sdTgl('s10')"></div><div class="chk-text" id="txt-s10">URL shortener — Base62 encoding, why 302 not 301, scale approach</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-s11" onclick="sdTgl('s11')"></div><div class="chk-text" id="txt-s11">When Cassandra over PostgreSQL? Give a specific scenario.</div></li>
+          <li class="chk-item"><div class="chkbox" id="chk-s12" onclick="sdTgl('s12')"></div><div class="chk-text" id="txt-s12">Outbox pattern — what problem it solves, exactly how it works</div></li>
         </ul>
       </div>
       <div class="callout c-warn" style="margin:0 14px 14px"><strong>Practice format:</strong> Time yourself. HLD + data model + hardest part should take under 15 minutes. If it takes 30+ — more practice, not more reading. Draw it out on paper before you do it in an interview.</div>
@@ -713,7 +593,6 @@ function sdTgl(id){
   const txt=document.getElementById('txt-'+id);
   if(chk)chk.classList.toggle('done',sdDone.has(id));
   if(txt)txt.classList.toggle('done',sdDone.has(id));
-  updateSdStats();
 }
 
 sdDone.forEach(id=>{
@@ -721,13 +600,7 @@ sdDone.forEach(id=>{
   const txt=document.getElementById('txt-'+id);
   if(chk){chk.classList.add('done');if(txt)txt.classList.add('done');}
 });
-updateSdStats();
 
-function updateCd(){
-  const diff=new Date('2026-07-09T09:00:00')-new Date();
-  const el=document.getElementById('cd');
-  if(!el)return;
-  if(diff<=0){el.textContent='Interview day!';return;}
   el.textContent=`${Math.floor(diff/864e5)}d ${Math.floor((diff%864e5)/36e5)}h left`;
 }
 </script>
